@@ -1,4 +1,4 @@
-package progettoMapDDL;
+package progettoMapDDL.src;
 
 public class DiscreteAttribute extends Attribute 
 {
