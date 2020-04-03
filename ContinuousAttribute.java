@@ -1,3 +1,4 @@
+package progettoMapDDL;
 
 public class ContinuousAttribute extends Attribute
 {

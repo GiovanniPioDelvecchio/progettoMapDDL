@@ -1,3 +1,4 @@
+package progettoMapDDL;
 
 public abstract class Attribute 
 {
