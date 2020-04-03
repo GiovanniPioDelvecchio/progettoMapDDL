@@ -1,10 +1,10 @@
 package progettoMapDDL.src;
 
-public class ContinuousAttribute extends Attribute
-{
+public class ContinuousAttribute extends Attribute {
+	
 	//Metodi
-	ContinuousAttribute(String name, int index)
-	{
+	ContinuousAttribute(String name, int index) {
+		
 		super(name, index);
 	}
 }
