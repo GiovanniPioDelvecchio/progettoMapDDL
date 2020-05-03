@@ -90,6 +90,9 @@ public class Data {
 		return explanatorySet.length;
 	}
 	
+	/*
+	 * dato l'indice di riga, restituisce il valore (il Double)
+	 */
 	Double getClassValue(int exampleIndex) 
 	{
 		if(exampleIndex >= 0 && exampleIndex < getNumberOfExamples()) 
@@ -99,6 +102,9 @@ public class Data {
 		else return 0.0; //da sostituire con un'eccezione
 	}
 	
+	/*
+	 * restituisce il valore di un attributo dato indice di riga e indice dell'attributo
+	 */
 	Object getExplanatoryValue(int exampleIndex, int attributeIndex) 
 	{
 		if( (exampleIndex >= 0 && exampleIndex < getNumberOfExamples() ) && (attributeIndex < getNumberOfExplanatoryAttributes() ) ) 
@@ -109,6 +115,9 @@ public class Data {
 		return data[exampleIndex][attributeIndex];  //da sostituire con un'eccezione
 	}
 	
+	/*
+	 * restituisce l'attributo in indice index all'interno dello schema 
+	 */
 	Attribute getExplanatoryAttribute(int index) 
 	{
 		if(index < getNumberOfExplanatoryAttributes()) 
@@ -119,6 +128,9 @@ public class Data {
 		return explanatorySet[index]; //da sostituire con un'eccezione
 	}
 	
+	/*
+	 * 
+	 */
 	ContinuousAttribute getClassAttribute() 
 	{
 		return classAttribute;
