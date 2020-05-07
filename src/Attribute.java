@@ -25,9 +25,11 @@ public abstract class Attribute
 	
 	}
 	
-	public String toString() {
+
+	public String toString() 
+	{
 	
-		return getName() + " " + getIndex();
+    return getName();
 	}
 	
 }

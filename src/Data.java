@@ -106,10 +106,13 @@ public class Data {
 		return explanatorySet.length;
 	}
 	
-	Double getClassValue(int exampleIndex) {
-		
-		if (exampleIndex >= 0 && exampleIndex < getNumberOfExamples()) {
-			
+
+	/*
+	 * dato l'indice di riga, restituisce il valore (il Double)
+	 */
+	Double getClassValue(int exampleIndex) 	{
+		if(exampleIndex >= 0 && exampleIndex < getNumberOfExamples()) 
+		{
 			return (double)data[exampleIndex][classAttribute.getIndex()];
 			
 		}else {
@@ -117,29 +120,39 @@ public class Data {
 			return 0.0; //da sostituire con un'eccezione
 		} 
 	}
-	
-	Object getExplanatoryValue(int exampleIndex, int attributeIndex) {
-		
-		if ( (exampleIndex >= 0 && exampleIndex < getNumberOfExamples() ) && (attributeIndex < getNumberOfExplanatoryAttributes() ) ) {
-			
+
+  
+	/*
+	 * restituisce il valore di un attributo dato indice di riga e indice dell'attributo
+	 */
+	Object getExplanatoryValue(int exampleIndex, int attributeIndex) 	{
+		if( (exampleIndex >= 0 && exampleIndex < getNumberOfExamples() ) && (attributeIndex < getNumberOfExplanatoryAttributes() ) ) 
+		{
 			return data[exampleIndex][attributeIndex];
 		}
 		
 		return data[exampleIndex][attributeIndex];  //da sostituire con un'eccezione
 	}
 	
-	Attribute getExplanatoryAttribute(int index) {
-		
-		if(index < getNumberOfExplanatoryAttributes()) {
-			
+
+	/*
+	 * restituisce l'attributo in indice index all'interno dello schema 
+	 */
+	Attribute getExplanatoryAttribute(int index) 	{
+		if(index < getNumberOfExplanatoryAttributes()) 
+		{
 			return explanatorySet[index];
 		}
 		
 		return explanatorySet[index]; //da sostituire con un'eccezione
 	}
 	
-	ContinuousAttribute getClassAttribute() {
-		
+
+	/*
+	 * 
+	 */
+	ContinuousAttribute getClassAttribute()	{
+    
 		return classAttribute;
 	}
 	
