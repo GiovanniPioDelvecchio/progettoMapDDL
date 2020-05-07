@@ -3,7 +3,16 @@ Progetto di metodi avanzati di programmazione di Domenico Dell'Olio, Giovanni Pi
 
 Stile adottato:https://google.github.io/styleguide/javaguide.html#s4-formatting
 
-N.d.r.: Se non lo seguite, vi piace il cazzo.
+**Note del Redattore:**
 
-N.d.r. #2 : no homo
+## Regole della casa (per il _Drip_ che costa tanto)
+
+  * Se il blocco è piccolo,la riga vuota solo dopo la segnatura
+  
+  * Spazi interni riguardanti operatori sono a libera interpretazione
+  
+  * Lasciare le dichiarazioni array _c-style_ (cioè le quadre come parte del nome es int pippo[] e non int[] pippo)
+  
+  * Se non le seguite, vi piace il cazzo. (no homo)
+  
 
