@@ -1,4 +1,9 @@
-package progettoMapDDL.src;
+package progettoMapDDL.src.tree;
+
+import progettoMapDDL.src.data.Attribute;
+import progettoMapDDL.src.data.Data;
+import progettoMapDDL.src.data.DiscreteAttribute;
+import progettoMapDDL.src.tree.SplitNode.SplitInfo;
 
 /*
 
@@ -32,7 +37,7 @@ public class DiscreteNode extends SplitNode{
 	 * 
 
 	 */
-	void setSplitInfo(Data trainingSet,int beginExampelIndex, int endExampleIndex,  Attribute attribute) {
+	public void setSplitInfo(Data trainingSet,int beginExampelIndex, int endExampleIndex,  Attribute attribute) {
 		
 		int mapSplitIndex = 0;
 		int attributeIndex = ((DiscreteAttribute)attribute).getIndex();

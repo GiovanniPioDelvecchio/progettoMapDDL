@@ -1,9 +1,9 @@
-package progettoMapDDL.src;
+package progettoMapDDL.src.data;
 
 public class ContinuousAttribute extends Attribute {
 	
 	//Metodi
-	ContinuousAttribute(String name, int index) {
+	public ContinuousAttribute(String name, int index) {
 		
 		super(name, index);
 	}

@@ -1,4 +1,7 @@
-package progettoMapDDL.src;
+package progettoMapDDL.src.tree;
+
+import progettoMapDDL.src.data.Attribute;
+import progettoMapDDL.src.data.Data;
 
 public abstract class SplitNode extends Node {
 	// Classe che colelzione informazioni descrittive dello split
@@ -43,17 +46,17 @@ public abstract class SplitNode extends Node {
 		
 	}
 
-	Attribute attribute;	
+	private Attribute attribute;	
 
-	SplitInfo mapSplit[];
+	protected SplitInfo mapSplit[];
 	
-	double splitVariance;
+	private double splitVariance;
 		
-	abstract void setSplitInfo(Data trainingSet,int beginExampelIndex, int endExampleIndex, Attribute attribute);
+	public abstract void setSplitInfo(Data trainingSet,int beginExampelIndex, int endExampleIndex, Attribute attribute);
 	
 	abstract int testCondition (Object value);
 	
-	SplitNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute){
+	public SplitNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute){
 			super(trainingSet, beginExampleIndex,endExampleIndex);
 			this.attribute=attribute;
 			trainingSet.sort(attribute, beginExampleIndex, endExampleIndex); // order by attribute
@@ -67,28 +70,28 @@ public abstract class SplitNode extends Node {
 			}
 	}
 	
-	Attribute getAttribute() {
+	public Attribute getAttribute() {
 		
 		return attribute;
 	}
 	
-	double getVariance() {
+	public double getVariance() {
 		
 		return splitVariance;
 	}
 	
-	int getNumberOfChildren() {
+	public int getNumberOfChildren() {
 		 
 		return mapSplit.length;
 	}
 	
-	SplitInfo getSplitInfo(int child) {
+	public SplitInfo getSplitInfo(int child) {
 		
 		return mapSplit[child];
 	}
 
 	
-	String formulateQuery() {
+	public String formulateQuery() {
 		
 		String query = "";
 		for(int i=0;i<mapSplit.length;i++)

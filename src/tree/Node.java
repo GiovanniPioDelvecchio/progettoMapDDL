@@ -1,6 +1,8 @@
-package progettoMapDDL.src;
+package progettoMapDDL.src.tree;
 
-abstract class Node {
+import progettoMapDDL.src.data.Data;
+
+public abstract class Node {
 	// Attributi
 
 	private static int idNodeCount = 0; //contatore dei nodi generati nell'albero
@@ -40,7 +42,7 @@ abstract class Node {
 	//Metodi
 
 	
-	Node(Data trainingSet, int beginExampleIndex, int endExampleIndex) {
+	public Node(Data trainingSet, int beginExampleIndex, int endExampleIndex) {
 
 		
 
@@ -64,27 +66,27 @@ abstract class Node {
 		
 	}
 	
-	int getIdNode() {
+	public int getIdNode() {
 		
 		return this.idNode;
 	}
 	
-	int getBeginExampleIndex() {
+	public int getBeginExampleIndex() {
 		
 		return this.beginExampleIndex;
 	}
 	
-	int getEndExampleIndex() {
+	public int getEndExampleIndex() {
 		
 		return this.endExampleIndex;
 	}
 	
-	double getVariance() {
+	public double getVariance() {
 		
 		return this.variance;
 	}
 	
-	abstract int getNumberOfChildren();
+	public abstract int getNumberOfChildren();
 	
 	public String toString() {
 		
@@ -94,7 +96,7 @@ abstract class Node {
 	}
 	
 	
-	double computeAverage(Data trainingSet) {
+	public double computeAverage(Data trainingSet) {
 		
 		double toReturn = 0;
 		

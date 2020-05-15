@@ -1,27 +1,29 @@
 
-package progettoMapDDL.src;
+package progettoMapDDL.src.tree;
+
+import progettoMapDDL.src.data.Data;
 
 public class LeafNode extends Node {
 	
 	// Attributi
 	
-	Double predictedClassValue;
+	private Double predictedClassValue;
 	
 	// Metodi
 	
-	LeafNode(Data trainingSet, int beginExampleIndex, int endExampleIndex) {
+	public LeafNode(Data trainingSet, int beginExampleIndex, int endExampleIndex) {
 		
 		super(trainingSet, beginExampleIndex, endExampleIndex);
 		
 		predictedClassValue = super.computeAverage(trainingSet);
 	}
 	
-	double getPredictedClassValue() {
+	public double getPredictedClassValue() {
 		
 		return predictedClassValue;
 	}
 	
-	int getNumberOfChildren() {
+	public int getNumberOfChildren() {
 		
 		//Ritorna 0 perché è un nodo foglia
 		return 0;

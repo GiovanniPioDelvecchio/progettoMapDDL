@@ -1,6 +1,11 @@
-package progettoMapDDL.src;
+package progettoMapDDL.src.tree;
 
-class RegressionTree {
+import progettoMapDDL.src.data.Data;
+import progettoMapDDL.src.data.DiscreteAttribute;
+import progettoMapDDL.src.exceptions.UnknownValueException;
+import progettoMapDDL.src.utility.Keyboard;
+
+public class RegressionTree {
 		
 		// Attributi
 	
@@ -72,7 +77,7 @@ class RegressionTree {
 			
 		}
 		
-		RegressionTree(Data trainingSet){
+		public RegressionTree(Data trainingSet){
 			
 			learnTree(trainingSet,0,trainingSet.getNumberOfExamples()-1,trainingSet.getNumberOfExamples()*10/100);
 		}
@@ -103,7 +108,28 @@ class RegressionTree {
 			}
 		}
 		
-		void printRules() {
+		public Double predictClass() throws UnknownValueException {
+			
+			if(root instanceof LeafNode) {
+				
+			    return ((LeafNode) root).getPredictedClassValue(); 
+			} else { 
+				
+				int risp; 
+				System.out.println(((SplitNode)root).formulateQuery()); 
+				risp=Keyboard.readInt(); 
+			
+				if(risp==-1 || risp>=root.getNumberOfChildren()) {
+			    	
+						throw new UnknownValueException("The answer should be an integer between 0 and " +(root.getNumberOfChildren()-1)+"!");  
+				} else {
+			    	
+					return childTree[risp].predictClass();  
+				}
+			}
+		}
+		
+		public void printRules() {
 			
 			//esplora i nodi dell'albero, se è di split crea la regola, se è leaf si scrive il valore predetto
 			//la regola è data dagli split info in mapSplit di Discrete node
@@ -137,7 +163,7 @@ class RegressionTree {
 	        }
 	    }
 		
-		void printTree(){
+		public void printTree(){
 			System.out.println("********* TREE **********\n");
 			System.out.println(toString());
 			System.out.println("*************************\n");
