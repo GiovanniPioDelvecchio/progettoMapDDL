@@ -1,15 +1,11 @@
-package progettoMapDDL.src.tree;
+package tree;
 
-import progettoMapDDL.src.data.Attribute;
-import progettoMapDDL.src.data.Data;
-import progettoMapDDL.src.data.DiscreteAttribute;
-import progettoMapDDL.src.tree.SplitNode.SplitInfo;
+import java.util.ArrayList;
 
-/*
-
- * Classe che rappresenta un nodo di split su attributo discreto. Eredita da SplitNode
-
- */
+import data.Attribute;
+import data.Data;
+import data.DiscreteAttribute;
+import server.UnknownValueException;
 
 public class DiscreteNode extends SplitNode{
 	
@@ -44,59 +40,34 @@ public class DiscreteNode extends SplitNode{
 		int beginSplitIndex = beginExampelIndex;
 		int endSplitIndex = beginSplitIndex;
 		
-		mapSplit = new SplitInfo[((DiscreteAttribute)attribute).getNumberOfDistinctValues()];
+		mapSplit = new ArrayList<>();
 		
 		if (beginExampelIndex == endExampleIndex) {
 			
 			Object onlyVal = trainingSet.getExplanatoryValue(beginExampelIndex, attributeIndex);
-			mapSplit[mapSplitIndex] = new SplitInfo(onlyVal, beginSplitIndex, endSplitIndex, mapSplitIndex);
+			mapSplit.add(new SplitInfo(onlyVal, beginSplitIndex, endSplitIndex, mapSplitIndex));
 			
 		} else {
 			
+			Object distinctValues = trainingSet.getExplanatoryValue(beginExampelIndex, attributeIndex);
 			
-			for (int i = beginExampelIndex; i < endExampleIndex; i++) {
+			for (int i = beginExampelIndex + 1; i<=endExampleIndex; i++) {
 				
-				
-				
-				Object currentVal = trainingSet.getExplanatoryValue(i + 1, attributeIndex);
-				Object previousVal = trainingSet.getExplanatoryValue(i, attributeIndex);
-				
-				if (((String)(currentVal)).equals(((String)(previousVal)))) {
+				if(!(((String)(trainingSet.getExplanatoryValue(i, attributeIndex))).equals((String)distinctValues))) {
 					
-					endSplitIndex++;
-									
-				} else {
+					mapSplit.add(new SplitInfo(distinctValues, beginSplitIndex, i - 1, mapSplitIndex));
+					beginSplitIndex = i;
+					distinctValues = trainingSet.getExplanatoryValue(i, attributeIndex);
 					
-					mapSplit[mapSplitIndex] = new SplitInfo(previousVal, beginSplitIndex, endSplitIndex, mapSplitIndex);
-					endSplitIndex++;
-					beginSplitIndex = endSplitIndex;
 					mapSplitIndex++;
-					
-				}
-				
-				if (endSplitIndex == endExampleIndex) {
-					
-					mapSplit[mapSplitIndex] = new SplitInfo(currentVal, beginSplitIndex, endSplitIndex, mapSplitIndex);
 				}
 			}
-		}
-		
-		int counter = 0;
-		
-		while( (counter < mapSplit.length) && (mapSplit[counter] != null)) {
 			
-			counter++;
+			mapSplit.add(new SplitInfo(distinctValues, beginSplitIndex, endExampleIndex, mapSplitIndex)) ;
 		}
 		
-		SplitInfo temp[] = new SplitInfo[counter];
-		
-		for (int i = 0; i < counter; i++) {
-			
-			temp[i] = mapSplit[i];
-		}
-		
-		mapSplit = temp;
-		
+	
+				
 	}
 	 
 	/**
@@ -110,16 +81,16 @@ public class DiscreteNode extends SplitNode{
 	 * @return L'eventaule indice dello SplitInfo all'interno di mapSplit con valore di split value
 
 	 */
-	int testCondition(Object value) {
+	int testCondition(Object value) throws UnknownValueException{
 		
-		for (int i = 0; i < mapSplit.length; i++) {
+		for (int i = 0; i < mapSplit.size(); i++) {
 			
-			if (value.equals(mapSplit[i].getSplitValue())) {
+			if (value.equals(mapSplit.get(i).getSplitValue())) {
 				return i;
 			}
 		}
 		
-		return -1; //da sostituire con un'eccezione
+		throw new UnknownValueException("testCondition failure"); //da sostituire con un'eccezione
 	} 
 	
 	/**

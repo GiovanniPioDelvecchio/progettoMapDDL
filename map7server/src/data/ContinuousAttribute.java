@@ -1,4 +1,6 @@
-package progettoMapDDL.src.data;
+package data;
+
+import data.Attribute;
 
 public class ContinuousAttribute extends Attribute {
 	

@@ -1,7 +1,8 @@
-package progettoMapDDL.src.data;
+package data;
 
-public abstract class Attribute 
-{
+import java.io.Serializable;
+
+public abstract class Attribute implements Serializable {
 	//Attributi
 	private String name; //nome simbolico dell'attributo
 	
@@ -30,6 +31,4 @@ public abstract class Attribute
 	
 		return getName();
 	}
-	
 }
-

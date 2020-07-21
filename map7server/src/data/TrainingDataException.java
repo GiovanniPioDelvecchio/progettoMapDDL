@@ -1,6 +1,4 @@
-package progettoMapDDL.src.data;
-
-
+package data;
 
 public class TrainingDataException extends Exception {
 
@@ -12,15 +10,11 @@ public class TrainingDataException extends Exception {
 
 	}
 
-	
-
 	TrainingDataException(){
 
 		super();
 
 	}
-
-	
 
 	TrainingDataException(String message, Throwable cause) {
 
@@ -40,5 +34,4 @@ public class TrainingDataException extends Exception {
 		return this.getClass().getName() +": "+ this.getMessage() /*+ ": " + (this.getCause()!=null ?  this.getCause().toString() : "")*/;
 	}
 	
-
 }

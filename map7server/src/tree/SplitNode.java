@@ -1,11 +1,18 @@
-package progettoMapDDL.src.tree;
+package tree;
 
-import progettoMapDDL.src.data.Attribute;
-import progettoMapDDL.src.data.Data;
+import java.io.Serializable;
+import java.util.ArrayList;
 
-public abstract class SplitNode extends Node {
+import data.Attribute;
+import data.Data;
+import server.UnknownValueException;
+
+
+
+public abstract class SplitNode extends Node implements Comparable<SplitNode> {
+	
 	// Classe che colelzione informazioni descrittive dello split
-	protected class SplitInfo{
+	protected class SplitInfo implements Serializable {
 		Object splitValue;
 		int beginIndex;
 		int endIndex;
@@ -48,13 +55,13 @@ public abstract class SplitNode extends Node {
 
 	private Attribute attribute;	
 
-	protected SplitInfo mapSplit[];
+	protected ArrayList<SplitInfo> mapSplit;
 	
 	private double splitVariance;
 		
 	public abstract void setSplitInfo(Data trainingSet,int beginExampelIndex, int endExampleIndex, Attribute attribute);
 	
-	abstract int testCondition (Object value);
+	abstract int testCondition (Object value) throws UnknownValueException;
 	
 	public SplitNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute){
 			super(trainingSet, beginExampleIndex,endExampleIndex);
@@ -64,9 +71,9 @@ public abstract class SplitNode extends Node {
 						
 			//compute variance
 			splitVariance=0;
-			for(int i=0;i<mapSplit.length;i++){
-					double localVariance = new LeafNode(trainingSet, mapSplit[i].getBeginindex(), mapSplit[i].getEndIndex()).getVariance();
-					splitVariance+=(localVariance);
+			for(SplitInfo si : mapSplit) {
+				double localVariance = new LeafNode(trainingSet, si.getBeginindex(), si.getEndIndex()).getVariance();
+				splitVariance+=(localVariance);
 			}
 	}
 	
@@ -82,20 +89,20 @@ public abstract class SplitNode extends Node {
 	
 	public int getNumberOfChildren() {
 		 
-		return mapSplit.length;
+		return mapSplit.size();
 	}
 	
 	public SplitInfo getSplitInfo(int child) {
 		
-		return mapSplit[child];
+		return mapSplit.get(child);
 	}
 
 	
 	public String formulateQuery() {
 		
 		String query = "";
-		for(int i=0;i<mapSplit.length;i++)
-			query+= (i + ":" + attribute + mapSplit[i].getComparator() +mapSplit[i].getSplitValue())+"\n";
+		for(int i=0;i<mapSplit.size();i++)
+			query+= (i + ":" + attribute + mapSplit.get(i).getComparator() +mapSplit.get(i).getSplitValue())+"\n";
 		return query;
 	}
 	
@@ -103,10 +110,23 @@ public abstract class SplitNode extends Node {
 		
 		String v= "SPLIT : attribute=" +attribute +" Nodo: "+ super.toString()+  " Split Variance: " + getVariance()+ "\n" ;
 		
-		for(int i=0;i<mapSplit.length;i++){
-			v+= "\t"+mapSplit[i]+"\n";
+		for(SplitInfo si : mapSplit) {
+			v+= "\t"+si+"\n";
 		}
 		
 		return v;
+	}
+	
+	public int compareTo(SplitNode o) {
+		if(this.splitVariance == o.getVariance()) {
+			
+			return 0;
+		} else if (this.splitVariance > o.getVariance()) {
+			
+			return 1;
+		} else {
+			
+			return -1;
+		}
 	}
 }

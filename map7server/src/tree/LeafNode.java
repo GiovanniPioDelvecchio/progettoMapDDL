@@ -1,7 +1,6 @@
+package tree;
 
-package progettoMapDDL.src.tree;
-
-import progettoMapDDL.src.data.Data;
+import data.Data;
 
 public class LeafNode extends Node {
 	

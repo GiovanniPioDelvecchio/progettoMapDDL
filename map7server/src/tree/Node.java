@@ -1,8 +1,10 @@
-package progettoMapDDL.src.tree;
+package tree;
 
-import progettoMapDDL.src.data.Data;
+import java.io.Serializable;
 
-public abstract class Node {
+import data.Data;
+
+public abstract class Node implements Serializable{
 	// Attributi
 
 	private static int idNodeCount = 0; //contatore dei nodi generati nell'albero
