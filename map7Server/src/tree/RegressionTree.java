@@ -82,7 +82,7 @@ public class RegressionTree  implements Serializable{
             */
         	Attribute toCheck = trainingSet.getExplanatoryAttribute(i);
         	
-        	if (toCheck instanceof DiscreteAttribute) {
+        	if (toCheck instanceof DiscreteAttribute) { //qui viene utilizzato l'RTTI
         		
         		ts.add(new DiscreteNode(trainingSet, begin, end, (DiscreteAttribute)toCheck));
         		

@@ -118,7 +118,7 @@ public class Data {
 			return (double)data.get(exampleIndex).get(classAttribute.getIndex());
 		} else {
 			
-			return 0.0; //da sostituire con un'eccezione
+			throw new IndexOutOfBoundsException();
 		}
 	}
 
@@ -137,7 +137,7 @@ public class Data {
 			return data.get(exampleIndex).get(attributeIndex);
 		}
 		
-		return data.get(exampleIndex).get(attributeIndex);  //da sostituire con un'eccezione
+		throw new IndexOutOfBoundsException();
 	}
 	
 
@@ -150,7 +150,7 @@ public class Data {
 			return explanatorySet.get(index);
 		}
 		
-		return explanatorySet.get(index); //da sostituire con un'eccezione
+		throw new IndexOutOfBoundsException();
 	}
 
 

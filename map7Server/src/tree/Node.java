@@ -54,16 +54,21 @@ public abstract class Node implements Serializable{
 
 		this.endExampleIndex = endExampleIndex;
 
-		Double mean = this.computeAverage(trainingSet);
+		Double mean = 0.0;
 
 		//calcolo varianza
 
 		variance = 0;
 
-		for (int i = beginExampleIndex; i <= endExampleIndex; i++ ) {
+		double delta;
+		int n = 0;
+		
+		for (int i = beginExampleIndex; i <= endExampleIndex; i++ ) { //algoritmo di Knutt
 
-			variance += Math.pow(trainingSet.getClassValue(i) - mean, 2);
-			
+			n += 1;
+			delta = trainingSet.getClassValue(i) - mean;
+			mean += delta/(n);
+			variance += delta*(trainingSet.getClassValue(i) - mean);
 		}
 		
 	}
@@ -94,22 +99,6 @@ public abstract class Node implements Serializable{
 		
 		String toReturn = new String("[Examples:"+this.beginExampleIndex + "-" + this.endExampleIndex + "]" 
 								+" variance:"+ this.variance);
-		return toReturn;
-	}
-	
-	
-	public double computeAverage(Data trainingSet) {
-		
-		double toReturn = 0;
-		
-		double size = endExampleIndex - beginExampleIndex + 1;
-		
-		for (int i = beginExampleIndex; i <= endExampleIndex; i++) {
-			
-			toReturn = toReturn + trainingSet.getClassValue(i);
-		}
-		toReturn = toReturn/(size);
-		
 		return toReturn;
 	}
 }

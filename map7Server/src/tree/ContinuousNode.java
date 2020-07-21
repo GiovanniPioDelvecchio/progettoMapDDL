@@ -15,7 +15,7 @@ public class ContinuousNode extends SplitNode{
 		super(trainingSet, beginExampleIndex, endExampleIndex, attribute);
 	}
 
-	public void setSplitInfo(Data trainingSet,int beginExampleIndex, int endExampleIndex, Attribute attribute){
+	void setSplitInfo(Data trainingSet,int beginExampleIndex, int endExampleIndex, Attribute attribute){
 		//Update mapSplit defined in SplitNode -- contiene gli indici del partizionamento
 		Double currentSplitValue= (Double)trainingSet.getExplanatoryValue(beginExampleIndex,attribute.getIndex());
 		double bestInfoVariance=0;

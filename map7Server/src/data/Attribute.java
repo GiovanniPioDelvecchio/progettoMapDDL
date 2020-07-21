@@ -26,8 +26,7 @@ public abstract class Attribute implements Serializable {
 	
 	}
 
-	public String toString() 
-	{
+	public String toString() {
 	
 		return getName();
 	}

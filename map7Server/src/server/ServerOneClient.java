@@ -30,10 +30,7 @@ public class ServerOneClient extends Thread {
 			try {
 				
 				Integer clientDecision = null;
-				
-			
 				clientDecision = (Integer)in.readObject();
-				
 				RegressionTree tree = null;
 				
 				
@@ -105,11 +102,7 @@ public class ServerOneClient extends Thread {
 				//da risp y in poi
 				
 				
-				
 				clientDecision = (Integer)in.readObject();
-				
-				tree.printTree();
-				tree.printRules();
 				
 				while(clientDecision == 3) {
 					
@@ -130,8 +123,8 @@ public class ServerOneClient extends Thread {
 					
 				}
 				
-				socket.close();
-				return;
+				//socket.close();
+				//return;
 				
 			} catch (IOException e) {
 				

@@ -14,7 +14,16 @@ public class LeafNode extends Node {
 		
 		super(trainingSet, beginExampleIndex, endExampleIndex);
 		
-		predictedClassValue = super.computeAverage(trainingSet);
+		predictedClassValue = 0.0;
+		
+		double size = endExampleIndex - beginExampleIndex + 1;
+		
+		for (int i = beginExampleIndex; i <= endExampleIndex; i++) {
+			
+			predictedClassValue +=  trainingSet.getClassValue(i);
+		}
+		predictedClassValue = predictedClassValue/(size);
+		
 	}
 	
 	public double getPredictedClassValue() {

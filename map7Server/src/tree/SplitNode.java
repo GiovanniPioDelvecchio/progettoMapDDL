@@ -55,11 +55,11 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 
 	private Attribute attribute;	
 
-	protected ArrayList<SplitInfo> mapSplit;
+	ArrayList<SplitInfo> mapSplit;
 	
 	private double splitVariance;
 		
-	public abstract void setSplitInfo(Data trainingSet,int beginExampelIndex, int endExampleIndex, Attribute attribute);
+	abstract void setSplitInfo(Data trainingSet,int beginExampelIndex, int endExampleIndex, Attribute attribute);
 	
 	abstract int testCondition (Object value) throws UnknownValueException;
 	
@@ -77,7 +77,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 			}
 	}
 	
-	public Attribute getAttribute() {
+	Attribute getAttribute() {
 		
 		return attribute;
 	}
@@ -92,13 +92,13 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		return mapSplit.size();
 	}
 	
-	public SplitInfo getSplitInfo(int child) {
+	SplitInfo getSplitInfo(int child) {
 		
 		return mapSplit.get(child);
 	}
 
 	
-	public String formulateQuery() {
+	String formulateQuery() {
 		
 		String query = "";
 		for(int i=0;i<mapSplit.size();i++)
