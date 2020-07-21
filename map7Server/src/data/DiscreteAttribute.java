@@ -6,7 +6,8 @@ import java.util.TreeSet;
 
 public class DiscreteAttribute extends Attribute implements Iterable<String>{
 	
-	private Set<String> values=new TreeSet<>(); // order by asc
+	// order by asc
+	private Set<String> values=new TreeSet<>();
 	
 	public DiscreteAttribute(String name, int index, Set<String> values) {
 		super(name,index);

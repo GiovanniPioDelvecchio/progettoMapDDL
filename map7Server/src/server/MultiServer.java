@@ -9,8 +9,8 @@ public class MultiServer {
 private int PORT = 8080;
 	
 	public MultiServer(int port) {
-		this.PORT = port;
-		try{
+		PORT = port;
+		try {
 			this.run();
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
@@ -24,8 +24,10 @@ private int PORT = 8080;
 				
 				Socket csocket = ssocket.accept();
 				try {
-						new ServerOneClient(csocket);
+
+					new ServerOneClient(csocket);
 				} catch (IOException e) {
+
 					csocket.close();
 					System.out.println("Connection to client failed :" + e.getMessage());
 				}

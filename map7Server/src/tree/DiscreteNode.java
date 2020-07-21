@@ -17,21 +17,13 @@ public class DiscreteNode extends SplitNode{
 	}
 	
 	/**
-
 	 * Calcola il numero di figli dello split e popola l'array mapSplit con le informazioni di ogni split.
-
 	 * 
-
 	 * @param trainingSet Dataset su cui si sta costruendo l'albero di regressione
-
 	 * @param beginExampleIndex Indice del primo valore contenuto nel nodo
-
 	 * @param endExampleIndex Indice dell'ultimo valore contenuto nel nodo
-
 	 * @param attribute Attributo su cui si sta effettuando lo split
-
 	 * 
-
 	 */
 	public void setSplitInfo(Data trainingSet,int beginExampelIndex, int endExampleIndex,  Attribute attribute) {
 		
@@ -65,21 +57,13 @@ public class DiscreteNode extends SplitNode{
 			
 			mapSplit.add(new SplitInfo(distinctValues, beginSplitIndex, endExampleIndex, mapSplitIndex)) ;
 		}
-		
-	
-				
 	}
 	 
 	/**
-
 	 * Controlla l'esistenza di un figlio che assume il valore di split del parametro passato.
-
-	 * 
-
+	 *
 	 * @param value Valore su cui effettuare il test
-
 	 * @return L'eventaule indice dello SplitInfo all'interno di mapSplit con valore di split value
-
 	 */
 	int testCondition(Object value) throws UnknownValueException{
 		
@@ -94,14 +78,11 @@ public class DiscreteNode extends SplitNode{
 	} 
 	
 	/**
-
-	 * Specializzazione del metodo toString per DiscreteNode.
-
+	 * Specializzazione del metodo toString per DiscreteNode
 	 */
 	public String toString() {
 		
 		String v = "DISCRETE "  +super.toString();
 		return v;
-		
 	}
 }

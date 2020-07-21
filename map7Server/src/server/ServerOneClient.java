@@ -32,9 +32,9 @@ public class ServerOneClient extends Thread {
 				Integer clientDecision = null;
 				clientDecision = (Integer)in.readObject();
 				RegressionTree tree = null;
-				
-				
-				if(clientDecision==0) { //learn from database
+
+				// learn from database
+				if(clientDecision==0) {
 
 					Data trainingSet=null;
 					
@@ -48,7 +48,8 @@ public class ServerOneClient extends Thread {
 						
 						clientDecision = (Integer)in.readObject();
 						
-						if (clientDecision == 1) { //save tree
+						// save tree
+						if (clientDecision == 1) {
 							
 							try {
 								
@@ -63,17 +64,15 @@ public class ServerOneClient extends Thread {
 							
 							
 						} 
-					}
-					catch(TrainingDataException e) {
-						
+					} catch(TrainingDataException e) {
+
 						out.writeObject(e.toString());
 						return;
-						
 					}
 				} 
 				
-				
-				if(clientDecision == 2) { //learn from file
+				// learn from file
+				if(clientDecision == 2) {
 					
 					Data trainingSet=null;
 					try{
@@ -99,9 +98,7 @@ public class ServerOneClient extends Thread {
 					
 				}
 				
-				//da risp y in poi
-				
-				
+				// da risp y in poi
 				clientDecision = (Integer)in.readObject();
 				
 				while(clientDecision == 3) {
@@ -134,7 +131,6 @@ public class ServerOneClient extends Thread {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 				return;
-			} 
-					
+			}		
 		}
 }

@@ -110,7 +110,7 @@ public class Data {
 	}
 	
 	/*
-	 * dato l'indice di riga, restituisce il valore (il Double)
+	 * dato l'indice di riga, restituisce il valore come Double
 	 */
 	public Double getClassValue(int exampleIndex) 	{
 		if(exampleIndex >= 0 && exampleIndex < getNumberOfExamples()) {
@@ -170,7 +170,7 @@ public class Data {
 	}
 	
 
-	// scambio esempio i con esempi oj
+	// scambio esempio i con esempi j
 	private void swap(int i,int j){
 
 		Example temp = data.get(i);
@@ -183,7 +183,6 @@ public class Data {
 	/*
 	 * Partiziona il vettore rispetto all'elemento x e restiutisce il punto di separazione
 	 */
-	
 	private  int partition(DiscreteAttribute attribute, int inf, int sup){
 		int i,j;
 	
@@ -255,7 +254,6 @@ public class Data {
 	/*
 	 * Algoritmo quicksort per l'ordinamento di un array di interi A
 	 * usando come relazione d'ordine totale "<="
-	 * @param A
 	 */
 	private void quicksort(Attribute attribute, int inf, int sup){
 		
@@ -271,15 +269,11 @@ public class Data {
 				quicksort(attribute, inf, pos-1); 
 				quicksort(attribute, pos+1,sup);
 			}
-			else
-			{
+			else {
 				quicksort(attribute, pos+1, sup); 
 				quicksort(attribute, inf, pos-1);
 			}
-			
-			
 		}
-		
 	}
-	
+
 }

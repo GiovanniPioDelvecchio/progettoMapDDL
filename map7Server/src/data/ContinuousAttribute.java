@@ -4,7 +4,7 @@ import data.Attribute;
 
 public class ContinuousAttribute extends Attribute {
 	
-	//Metodi
+	// Metodi
 	public ContinuousAttribute(String name, int index) {
 		
 		super(name, index);

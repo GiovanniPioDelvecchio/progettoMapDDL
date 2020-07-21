@@ -28,21 +28,13 @@ public class RegressionTree  implements Serializable{
 	
 
 	/**
-
 	 * Verifica se il sottoinsieme può essere rappresentato come nodo foglia all'interno dell'albero di regressione.
-
 	 * 
-
 	 * @param trainingSet
-
 	 * @param begin Indice di inizio del sottoinsieme nel dataset
-
 	 * @param end Indice di fine del sottoinsieme nel dataset
-
 	 * @param numberOfExamplesPerLeaf
-
 	 * @return Vero se il sottoinsieme può essere rappresentato tramite una foglia, falso altrimenti.
-
 	 */
 	private boolean isLeaf(Data trainingSet,int begin, int end, int  numberOfExamplesPerLeaf) {
 				
@@ -52,19 +44,12 @@ public class RegressionTree  implements Serializable{
 	
 
 	/**
-
 	 * Dato un sottoinsieme del data set, determina il miglior attributo su cui eseguire uno split.
-
 	 * 	
-
 	 * @param trainingSet Dataset su cui si sta costruendo un albero di regressione
-
 	 * @param begin Indice di inizio del sottoinsieme
-
 	 * @param end Indice di fine del sottoinsieme
-
 	 * @return Ritorna un nodo di tipo SplitNode sull'attributo indipendente la cui varianza nel sottoinsieme specificato è minima.
-
 	 */
 	private SplitNode determineBestSplitNode(Data trainingSet, int begin, int end) {
 				
@@ -105,18 +90,18 @@ public class RegressionTree  implements Serializable{
 	}
 	
 	private void learnTree(Data trainingSet,int begin, int end,int numberOfExamplesPerLeaf){
-		if( isLeaf(trainingSet, begin, end, numberOfExamplesPerLeaf)){
-			//determina la classe che compare pi� frequentemente nella partizione corrente
+		
+		if(isLeaf(trainingSet, begin, end, numberOfExamplesPerLeaf)){
+			// determina la classe che compare pi� frequentemente nella partizione corrente
 			root=new LeafNode(trainingSet,begin,end);
-		}
-		else //split node
-		{
+		} else {
+			// split node
 			root = determineBestSplitNode(trainingSet, begin, end);
 		
 			if(root.getNumberOfChildren() > 1) {
 				
-				childTree=new RegressionTree[root.getNumberOfChildren()];	//il numero di figli di un nodo di split è pari al numero di
-																			//splitInfo in un nodo di split
+				childTree=new RegressionTree[root.getNumberOfChildren()];	// il numero di figli di un nodo di split è pari al numero di
+																			// splitInfo in un nodo di split
 				
 				for(int i=0; i < root.getNumberOfChildren(); i++) {
 					
@@ -162,10 +147,10 @@ public class RegressionTree  implements Serializable{
 				}
 			} catch(IOException e) {
 				
-				e.printStackTrace();	//da propagare
+				e.printStackTrace();	// da propagare
 				
 			} catch(ClassNotFoundException e) {
-				e.printStackTrace();	//da propagare
+				e.printStackTrace();	// da propagare
 			}
 			return null;
 		}

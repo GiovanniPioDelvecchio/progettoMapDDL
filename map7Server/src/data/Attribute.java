@@ -3,12 +3,13 @@ package data;
 import java.io.Serializable;
 
 public abstract class Attribute implements Serializable {
-	//Attributi
-	private String name; //nome simbolico dell'attributo
 	
-	private int index; 	//identificativo numerico dell'attributo
+	// Attributi
+	private String name;	// nome simbolico dell'attributo
 	
-	//Metodi
+	private int index; 		// identificativo numerico dell'attributo
+	
+	// Metodi
 	public Attribute(String name, int index) {
 		
 		this.name = name;

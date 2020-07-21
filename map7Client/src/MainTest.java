@@ -12,11 +12,9 @@ import utility.Keyboard;
 
 public class MainTest {
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args){
 		
+		// addr viene dichiarata ma poi viene utilizzato direttamente args[0] nel costruttore di Socket(?)
 		InetAddress addr;
 		try {
 			
@@ -32,10 +30,10 @@ public class MainTest {
 		ObjectInputStream in=null;
 		try {
 			
-			socket = new Socket(args[0], new Integer(args[1]).intValue());
+			socket = new Socket(args[0], Integer.parseInt(args[1]));
 			System.out.println(socket);		
 			out = new ObjectOutputStream(socket.getOutputStream());
-			in = new ObjectInputStream(socket.getInputStream());	; // stream con richieste del client
+			in = new ObjectInputStream(socket.getInputStream());		// stream con richieste del client
 			
 		}  catch (IOException e) {
 			
@@ -43,9 +41,6 @@ public class MainTest {
 			return;
 		}
 
-		
-
-		
 		String answer="";
 		
 		int decision=0;
@@ -91,11 +86,7 @@ public class MainTest {
 			System.out.println(answer);
 			return;
 		}
-			
-		
-		
-		// .........
-		
+
 		char risp='y';
 		
 		do{
@@ -114,15 +105,17 @@ public class MainTest {
 				answer=in.readObject().toString();
 			}
 		
-			if(answer.equals("OK"))
-			{ // Reading prediction
+			// Reading prediction
+			if(answer.equals("OK")) {
 				answer=in.readObject().toString();
 				System.out.println("Predicted class:"+answer);
 				
 			}
-			else //Printing error message
+			else {
+
+				// Printing error message
 				System.out.println(answer);
-			
+			}
 		
 			System.out.println("Would you repeat ? (y/n)");
 			risp=Keyboard.readChar();

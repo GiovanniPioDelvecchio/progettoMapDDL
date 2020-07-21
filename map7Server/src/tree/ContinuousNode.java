@@ -75,7 +75,7 @@ public class ContinuousNode extends SplitNode{
 			}
 		}
 		
-		return -1; //da sostituire con un'eccezione
+		return -1; // da sostituire con un'eccezione
 	} 
 
 	public String toString() {
