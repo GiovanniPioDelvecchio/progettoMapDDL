@@ -9,11 +9,6 @@ public class TrainingDataException extends Exception {
 		super(message);
 	}
 
-	TrainingDataException(){
-
-		super();
-	}
-	
 	public String toString() {
 		
 		return this.getClass().getName() +": "+ this.getMessage();
