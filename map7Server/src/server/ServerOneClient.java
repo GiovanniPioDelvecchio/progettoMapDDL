@@ -133,7 +133,6 @@ public class ServerOneClient extends Thread {
 						
 						// log di chiusura
 						System.out.println("Closing connection with " + socket + " at " + Instant.now());
-						out.writeObject("OK");
 					} else {
 						
 						System.out.println("Aborted connection with " + socket + " at " + Instant.now());

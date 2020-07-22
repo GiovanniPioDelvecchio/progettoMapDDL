@@ -40,9 +40,13 @@ public class MainTest {
 			out = new ObjectOutputStream(socket.getOutputStream());
 			in = new ObjectInputStream(socket.getInputStream());
 			
-		}  catch (IOException e) {
-
+		} catch(UnknownHostException e) {
+			
 			System.out.println("Error: server not found");
+			return;
+		} catch (IOException e) {
+
+			System.out.println("Error during communication with server");
 			return;
 		}
 
@@ -136,11 +140,8 @@ public class MainTest {
 
 				// invio il codice -1 al server per indicare la chiusura delle comunicazioni
 				out.writeObject(-1);
-				if(in.readObject().toString().equals("OK")) {
-
-					socket.close();
-				}
-			} catch (IOException | ClassNotFoundException e) {
+				socket.close();
+			} catch (IOException e) {
 
 				System.out.println("Error closing connection with the server: " + e.getClass().getName() + " : " + e.getMessage());
 			}
