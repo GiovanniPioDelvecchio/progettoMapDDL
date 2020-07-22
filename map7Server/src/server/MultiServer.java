@@ -3,6 +3,7 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.Instant;
 
 public class MultiServer {
 
@@ -11,7 +12,9 @@ private int PORT = 8080;
 	public MultiServer(int port) {
 		PORT = port;
 		try {
+			
 			this.run();
+			System.out.println("Started server at" + Instant.now());
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		}

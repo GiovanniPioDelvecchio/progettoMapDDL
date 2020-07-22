@@ -56,76 +56,89 @@ public class MainTest {
 		tableName=Keyboard.readString();
 		try{
 		
-		if(decision==1) {
-			System.out.println("Starting data acquisition phase!");
+			if(decision==1) {
+				System.out.println("Starting data acquisition phase!");
+				
+				
+				out.writeObject(0);
+				out.writeObject(tableName);
+				answer=in.readObject().toString();
+				
+				if(!answer.equals("OK")) {
+					System.out.println(answer);
+					return;
+				}
+					
 			
+				System.out.println("Starting learning phase!");
+				out.writeObject(1);
+				
 			
-			out.writeObject(0);
-			out.writeObject(tableName);
+			} else {
+				
+				out.writeObject(2);
+				out.writeObject(tableName);	
+			}
+			
 			answer=in.readObject().toString();
 			
 			if(!answer.equals("OK")) {
 				System.out.println(answer);
 				return;
 			}
+	
+			char risp='y';
+			
+			do {
+				out.writeObject(3);
 				
-		
-			System.out.println("Starting learning phase!");
-			out.writeObject(1);
-			
-		
-		} else {
-			
-			out.writeObject(2);
-			out.writeObject(tableName);	
-		}
-		
-		answer=in.readObject().toString();
-		
-		if(!answer.equals("OK")) {
-			System.out.println(answer);
-			return;
-		}
-
-		char risp='y';
-		
-		do{
-			out.writeObject(3);
-			
-			System.out.println("Starting prediction phase!");
-			answer=in.readObject().toString();
-		
-			
-			while(answer.equals("QUERY")){
-				// Formualting query, reading answer
+				System.out.println("Starting prediction phase!");
 				answer=in.readObject().toString();
-				System.out.println(answer);
-				int path=Keyboard.readInt();
-				out.writeObject(path);
-				answer=in.readObject().toString();
-			}
-		
-			// Reading prediction
-			if(answer.equals("OK")) {
-				answer=in.readObject().toString();
-				System.out.println("Predicted class:"+answer);
+			
 				
-			}
-			else {
-
-				// Printing error message
-				System.out.println(answer);
-			}
-		
-			System.out.println("Would you repeat ? (y/n)");
-			risp=Keyboard.readChar();
-				
-		}while (Character.toUpperCase(risp)=='Y');
-		
+				while(answer.equals("QUERY")){
+					// Formualting query, reading answer
+					answer=in.readObject().toString();
+					System.out.println(answer);
+					int path=Keyboard.readInt();
+					out.writeObject(path);
+					answer=in.readObject().toString();
+				}
+			
+				// Reading prediction
+				if(answer.equals("OK")) {
+					answer=in.readObject().toString();
+					System.out.println("Predicted class:"+answer);
+					
+				}
+				else {
+	
+					// Printing error message
+					System.out.println(answer);
+				}
+			
+				System.out.println("Would you repeat ? (y/n)");
+				risp=Keyboard.readChar();
+					
+			} while(Character.toUpperCase(risp)=='Y');
 		}
 		catch(IOException | ClassNotFoundException e){
 			System.out.println(e.toString());
 			
+		} finally {
+			
+			try {
+
+				// invio il codice -1 al server per indicare la chiusura delle comunicazioni
+				out.writeObject(-1);
+				if(in.readObject().toString().equals("OK")) {
+
+					socket.close();
+				}
+			} catch (IOException | ClassNotFoundException e) {
+
+				System.out.println("Error closing connection with the server: " + e.getClass().getName() + " : " + e.getMessage());
+			}
 		}
 	}
 
