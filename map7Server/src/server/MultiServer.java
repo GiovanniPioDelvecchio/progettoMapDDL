@@ -13,8 +13,8 @@ private int PORT = 8080;
 		PORT = port;
 		try {
 			
+			System.out.println("Started server at " + Instant.now());
 			this.run();
-			System.out.println("Started server at" + Instant.now());
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		}

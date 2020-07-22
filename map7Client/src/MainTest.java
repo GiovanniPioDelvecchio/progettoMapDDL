@@ -16,14 +16,19 @@ public class MainTest {
 		
 		// addr viene dichiarata ma poi viene utilizzato direttamente args[0] nel costruttore di Socket(?)
 		InetAddress addr;
+		
+		if(args.length != 2) {
+			
+			System.out.println("Error: missing arguments");
+			return;
+		}
 		try {
 			
 			addr = InetAddress.getByName(args[0]);
 		} catch (UnknownHostException e) {
 			
-			System.out.println(e.toString());
+			System.out.println("Error: server not found");
 			return;
-			
 		}
 		Socket socket=null;
 		ObjectOutputStream out=null;
@@ -33,11 +38,11 @@ public class MainTest {
 			socket = new Socket(args[0], Integer.parseInt(args[1]));
 			System.out.println(socket);		
 			out = new ObjectOutputStream(socket.getOutputStream());
-			in = new ObjectInputStream(socket.getInputStream());		// stream con richieste del client
+			in = new ObjectInputStream(socket.getInputStream());
 			
 		}  catch (IOException e) {
-			
-			System.out.println(e.toString());
+
+			System.out.println("Error: server not found");
 			return;
 		}
 

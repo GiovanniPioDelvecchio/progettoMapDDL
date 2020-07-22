@@ -20,9 +20,11 @@ public class ServerOneClient extends Thread {
 		private ObjectOutputStream out;
 		
 		public ServerOneClient(Socket s) throws IOException {
+			
 			socket = s;
 			in = new ObjectInputStream(s.getInputStream());
 			out = new ObjectOutputStream(s.getOutputStream());
+			System.out.println("Connected with client " + socket + " at " + Instant.now());
 			this.start();
 		}
 		
@@ -78,7 +80,7 @@ public class ServerOneClient extends Thread {
 					Data trainingSet=null;
 					try{
 						String trainingfileName = (String)in.readObject();
-						tree = RegressionTree.carica(trainingfileName);
+						tree = RegressionTree.carica(trainingfileName + ".dmp");
 					} catch(FileNotFoundException e) {
 						
 						out.writeObject(e.toString());
