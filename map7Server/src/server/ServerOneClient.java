@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.time.Instant;
 
 import data.Data;
 import data.TrainingDataException;
@@ -19,17 +20,19 @@ public class ServerOneClient extends Thread {
 		private ObjectOutputStream out;
 		
 		public ServerOneClient(Socket s) throws IOException {
+			
 			socket = s;
 			in = new ObjectInputStream(s.getInputStream());
 			out = new ObjectOutputStream(s.getOutputStream());
+			System.out.println("Connected with client " + socket + " at " + Instant.now());
 			this.start();
 		}
 		
 		public void run() {
 				
+			Integer clientDecision = null;
 			try {
 				
-				Integer clientDecision = null;
 				clientDecision = (Integer)in.readObject();
 				RegressionTree tree = null;
 
@@ -77,7 +80,7 @@ public class ServerOneClient extends Thread {
 					Data trainingSet=null;
 					try{
 						String trainingfileName = (String)in.readObject();
-						tree = RegressionTree.carica(trainingfileName);
+						tree = RegressionTree.carica(trainingfileName + ".dmp");
 					} catch(FileNotFoundException e) {
 						
 						out.writeObject(e.toString());
@@ -111,18 +114,8 @@ public class ServerOneClient extends Thread {
 						e.printStackTrace();
 						out.writeObject(e.toString());
 						
-					} catch(SocketException e) {
-						System.out.println("A client has been closed");
-						socket.close();
-						return;
 					}
-					
-					
 				}
-				
-				//socket.close();
-				//return;
-				
 			} catch (IOException e) {
 				
 				System.out.println(e);
@@ -131,6 +124,25 @@ public class ServerOneClient extends Thread {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 				return;
-			}		
+			} finally {
+				
+				try {
+					
+				// la chiusura corretta delle comunicazioni con il client viene indicata dall'invio del codice -1
+					if(clientDecision != null && clientDecision == -1) {
+						
+						// log di chiusura
+						System.out.println("Closing connection with " + socket + " at " + Instant.now());
+					} else {
+						
+						System.out.println("Aborted connection with " + socket + " at " + Instant.now());
+					}
+					socket.close();
+				} catch(IOException e) {
+
+					System.out.println("Error closing connection with " + socket + " : " + e.getClass().getName()
+							+ " : " + e.getMessage());
+				}
+			}
 		}
 }

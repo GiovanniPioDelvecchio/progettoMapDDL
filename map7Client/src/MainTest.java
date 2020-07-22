@@ -16,14 +16,19 @@ public class MainTest {
 		
 		// addr viene dichiarata ma poi viene utilizzato direttamente args[0] nel costruttore di Socket(?)
 		InetAddress addr;
+		
+		if(args.length != 2) {
+			
+			System.out.println("Error: missing arguments");
+			return;
+		}
 		try {
 			
 			addr = InetAddress.getByName(args[0]);
 		} catch (UnknownHostException e) {
 			
-			System.out.println(e.toString());
+			System.out.println("Error: server not found");
 			return;
-			
 		}
 		Socket socket=null;
 		ObjectOutputStream out=null;
@@ -33,11 +38,15 @@ public class MainTest {
 			socket = new Socket(args[0], Integer.parseInt(args[1]));
 			System.out.println(socket);		
 			out = new ObjectOutputStream(socket.getOutputStream());
-			in = new ObjectInputStream(socket.getInputStream());		// stream con richieste del client
+			in = new ObjectInputStream(socket.getInputStream());
 			
-		}  catch (IOException e) {
+		} catch(UnknownHostException e) {
 			
-			System.out.println(e.toString());
+			System.out.println("Error: server not found");
+			return;
+		} catch (IOException e) {
+
+			System.out.println("Error during communication with server");
 			return;
 		}
 
@@ -56,76 +65,86 @@ public class MainTest {
 		tableName=Keyboard.readString();
 		try{
 		
-		if(decision==1) {
-			System.out.println("Starting data acquisition phase!");
+			if(decision==1) {
+				System.out.println("Starting data acquisition phase!");
+				
+				
+				out.writeObject(0);
+				out.writeObject(tableName);
+				answer=in.readObject().toString();
+				
+				if(!answer.equals("OK")) {
+					System.out.println(answer);
+					return;
+				}
+					
 			
+				System.out.println("Starting learning phase!");
+				out.writeObject(1);
+				
 			
-			out.writeObject(0);
-			out.writeObject(tableName);
+			} else {
+				
+				out.writeObject(2);
+				out.writeObject(tableName);	
+			}
+			
 			answer=in.readObject().toString();
 			
 			if(!answer.equals("OK")) {
 				System.out.println(answer);
 				return;
 			}
+	
+			char risp='y';
+			
+			do {
+				out.writeObject(3);
 				
-		
-			System.out.println("Starting learning phase!");
-			out.writeObject(1);
-			
-		
-		} else {
-			
-			out.writeObject(2);
-			out.writeObject(tableName);	
-		}
-		
-		answer=in.readObject().toString();
-		
-		if(!answer.equals("OK")) {
-			System.out.println(answer);
-			return;
-		}
-
-		char risp='y';
-		
-		do{
-			out.writeObject(3);
-			
-			System.out.println("Starting prediction phase!");
-			answer=in.readObject().toString();
-		
-			
-			while(answer.equals("QUERY")){
-				// Formualting query, reading answer
+				System.out.println("Starting prediction phase!");
 				answer=in.readObject().toString();
-				System.out.println(answer);
-				int path=Keyboard.readInt();
-				out.writeObject(path);
-				answer=in.readObject().toString();
-			}
-		
-			// Reading prediction
-			if(answer.equals("OK")) {
-				answer=in.readObject().toString();
-				System.out.println("Predicted class:"+answer);
+			
 				
-			}
-			else {
-
-				// Printing error message
-				System.out.println(answer);
-			}
-		
-			System.out.println("Would you repeat ? (y/n)");
-			risp=Keyboard.readChar();
-				
-		}while (Character.toUpperCase(risp)=='Y');
-		
+				while(answer.equals("QUERY")){
+					// Formualting query, reading answer
+					answer=in.readObject().toString();
+					System.out.println(answer);
+					int path=Keyboard.readInt();
+					out.writeObject(path);
+					answer=in.readObject().toString();
+				}
+			
+				// Reading prediction
+				if(answer.equals("OK")) {
+					answer=in.readObject().toString();
+					System.out.println("Predicted class:"+answer);
+					
+				}
+				else {
+	
+					// Printing error message
+					System.out.println(answer);
+				}
+			
+				System.out.println("Would you repeat ? (y/n)");
+				risp=Keyboard.readChar();
+					
+			} while(Character.toUpperCase(risp)=='Y');
 		}
 		catch(IOException | ClassNotFoundException e){
 			System.out.println(e.toString());
 			
+		} finally {
+			
+			try {
+
+				// invio il codice -1 al server per indicare la chiusura delle comunicazioni
+				out.writeObject(-1);
+				socket.close();
+			} catch (IOException e) {
+
+				System.out.println("Error closing connection with the server: " + e.getClass().getName() + " : " + e.getMessage());
+			}
 		}
 	}
 
