@@ -1,47 +1,73 @@
-
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
 import utility.Keyboard;
 
+/**
+ * Classe utilizzata per definire un client CLI che comunica con il server definito in map7Server.
+ * 
+ * L'unico elemento contenuto nella classe e' il metodo <code>main</code>.
+ * 
+ * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
+ * 
+ */
 
 public class MainTest {
 
+	/**
+	 * Metodo che implementa un'interfaccia a riga di comando per comunicare con il server.
+	 * 
+	 * Per la comunicazione con il sever, il client invia degli interi per identificare l'azione
+	 * da effettuare. Vengono stampati sia errori lato client che lato server.
+	 * 
+	 * @param args Gli argomenti con cui chiamare il main sono:<br>
+	 * <ol>
+	 * <li>indirizzo IP della macchina su cui e' eseguito il server</li>
+	 * <li>porta dove e' esposto il server</li>
+	 * </ol>
+	 */
 	public static void main(String[] args){
-		
-		// addr viene dichiarata ma poi viene utilizzato direttamente args[0] nel costruttore di Socket(?)
+
 		InetAddress addr;
-		
+
+		/*
+		 * Se non sono stati forniti i parametri richiesti dall'applicazione, viene
+		 * visualizzato un messaggio di errore.
+		 */
 		if(args.length != 2) {
-			
+
 			System.out.println("Error: missing arguments");
 			return;
 		}
+
 		try {
-			
+
 			addr = InetAddress.getByName(args[0]);
 		} catch (UnknownHostException e) {
-			
+
 			System.out.println("Error: server not found");
 			return;
 		}
-		Socket socket=null;
-		ObjectOutputStream out=null;
-		ObjectInputStream in=null;
+
+		Socket socket = null;
+		ObjectOutputStream out = null;
+		ObjectInputStream in = null;
+
+		/*
+		 * Viene inizializzata la socket di comunicazione con il client (e stram di input/output)
+		 * tramite gli argomenti forniti al client.
+		 */
 		try {
 			
 			socket = new Socket(args[0], Integer.parseInt(args[1]));
 			System.out.println(socket);		
 			out = new ObjectOutputStream(socket.getOutputStream());
 			in = new ObjectInputStream(socket.getInputStream());
-			
 		} catch(UnknownHostException e) {
-			
+
 			System.out.println("Error: server not found");
 			return;
 		} catch (IOException e) {
@@ -50,95 +76,131 @@ public class MainTest {
 			return;
 		}
 
-		String answer="";
+		String answer = "";
 		
-		int decision=0;
-		do{
+		/*
+		 * L'utente puo' scegliere se generare un nuovo albero di regressione a
+		 * partire da un dataset presente nel database del server, o caricarne
+		 * uno già creato in precedenza dal server. La scelta e' identificata
+		 * da un intero.
+		 */
+		int decision = 0;
+		do {
 		
 			System.out.println("Learn Regression Tree from data [1]");
 			System.out.println("Load Regression Tree from archive [2]");
-			decision=Keyboard.readInt();
-		}while(!(decision==1) && !(decision ==2));
+			decision = Keyboard.readInt();
+		} while(!(decision == 1) && !(decision == 2));
 		
-		String tableName="";
+		/*
+		 * In entrambi i casi, l'utente dovra' fornire il nome del dataset di cui
+		 * esplorare l'albero di regressione. Il nome corrisponde al nome della tabella
+		 * SQL su cui sono memorizzati gli esempi nel server.
+		 */
+		String tableName = "";
 		System.out.println("File name:");
-		tableName=Keyboard.readString();
+		tableName = Keyboard.readString();
+		
 		try{
 		
-			if(decision==1) {
+			/*
+			 * Se l'utente vuole creare un  nuovo albero di regressione, viene inviato
+			 * l'intero 0 al server, che creera' un nuovo albero di regressione a partire
+			 * dal nome della tabella fornita dall'utente.
+			 */
+			if(decision == 1) {
 				System.out.println("Starting data acquisition phase!");
 				
 				
 				out.writeObject(0);
 				out.writeObject(tableName);
-				answer=in.readObject().toString();
+				answer = in.readObject().toString();
 				
+				/*
+				 * Se non sono stati sollevati problemi lato server, il client riceve
+				 * la stringa "OK". In caso di errore, verra' stampato il messaggio ricevuto.
+				 */
 				if(!answer.equals("OK")) {
+
 					System.out.println(answer);
 					return;
 				}
-					
-			
+
+				/*
+				 * A questo punto il client invia al server l'intero 1, la cui lettura
+				 * lato server porta al salvataggio dell'albero di regressione appena creato.
+				 */
 				System.out.println("Starting learning phase!");
 				out.writeObject(1);
-				
-			
 			} else {
-				
+
+				/*
+				 * Nel caso in cui l'utente voglia caricare un albero di regressione gia' creato,
+				 * verra' inviato al server l'intero 2 e il nome dell'albero di regressione da caricare.
+				 */
 				out.writeObject(2);
 				out.writeObject(tableName);	
 			}
 			
-			answer=in.readObject().toString();
+			// Se la comunicazione con il server e' andata a buon fine, verra' letta la stringa "OK" dal socket.
+			answer = in.readObject().toString();
 			
 			if(!answer.equals("OK")) {
+
 				System.out.println(answer);
 				return;
 			}
-	
-			char risp='y';
-			
+
+			/*
+			 * La partenza dell'esplorazione dell'albero da parte dell'utente viene segnalata dal
+			 * server dalla scrittura dell'intero 3 sulla socket. Le query da presentare all'utente
+			 * sono fornite sotto forma di stringa da parte del server.
+			 */
+			char risp = 'y';
 			do {
+
 				out.writeObject(3);
-				
 				System.out.println("Starting prediction phase!");
-				answer=in.readObject().toString();
-			
-				
+				answer = in.readObject().toString();
+
 				while(answer.equals("QUERY")){
-					// Formualting query, reading answer
-					answer=in.readObject().toString();
+
+					// La lettura della stringa "QUERY" indica la formulazione di una query all'utente
+					answer = in.readObject().toString();
 					System.out.println(answer);
-					int path=Keyboard.readInt();
+					int path = Keyboard.readInt();
 					out.writeObject(path);
-					answer=in.readObject().toString();
+					answer = in.readObject().toString();
 				}
 			
-				// Reading prediction
+				/* 
+				 * Alla lettura di "OK" si e' raggiunto un nodo foglia dell'albero, che presentera' la predizione
+				 * sull'attributo target.
+				 */
 				if(answer.equals("OK")) {
-					answer=in.readObject().toString();
-					System.out.println("Predicted class:"+answer);
+
+					answer = in.readObject().toString();
+					System.out.println("Predicted class:" + answer);
 					
-				}
-				else {
+				} else {
 	
-					// Printing error message
+					// In caso di mancato raggiungimento di un nodo foglia, viene stampato il messaggio inviato dal server
 					System.out.println(answer);
 				}
 			
+				// L'utente puo' ripetere l'esplorazione dell'albero
 				System.out.println("Would you repeat ? (y/n)");
-				risp=Keyboard.readChar();
-					
-			} while(Character.toUpperCase(risp)=='Y');
+				risp = Keyboard.readChar();
+			} while(Character.toUpperCase(risp) == 'Y');
 		}
 		catch(IOException | ClassNotFoundException e){
-			System.out.println(e.toString());
 			
+			System.out.println(e.toString());
 		} finally {
 			
 			try {
 
-				// invio il codice -1 al server per indicare la chiusura delle comunicazioni
+				// Il client indica la sua chiusura al server scrivendo l'intero -1 sul socket
 				out.writeObject(-1);
 				socket.close();
 			} catch (IOException e) {
