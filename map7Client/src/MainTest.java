@@ -25,8 +25,8 @@ public class MainTest {
 	 * 
 	 * @param args Gli argomenti con cui chiamare il main sono:<br>
 	 * <ol>
-	 * <li>indirizzo IP della macchina su cui e' eseguito il server</li>
-	 * <li>porta dove e' esposto il server</li>
+	 * <li>l'indirizzo IP della macchina su cui e' eseguito il server</li>
+	 * <li>la porta dove e' locato il server</li>
 	 * </ol>
 	 */
 	public static void main(String[] args){
@@ -37,7 +37,7 @@ public class MainTest {
 		 * Se non sono stati forniti i parametri richiesti dall'applicazione, viene
 		 * visualizzato un messaggio di errore.
 		 */
-		if(args.length != 2) {
+		if (args.length != 2) {
 
 			System.out.println("Error: missing arguments");
 			return;
@@ -66,12 +66,20 @@ public class MainTest {
 			System.out.println(socket);		
 			out = new ObjectOutputStream(socket.getOutputStream());
 			in = new ObjectInputStream(socket.getInputStream());
-		} catch(UnknownHostException e) {
+		} catch (UnknownHostException e) {
 
+			/*
+			 * Se il Client non riesce a contattare la macchina specificata dall'utente,
+			 * verra' catturata una UnknownHostException.
+			 */
 			System.out.println("Error: server not found");
 			return;
 		} catch (IOException e) {
 
+			/*
+			 * In caso di errore di comunicazione con il Server (con cui si e' riuscita a stabilire
+			 * una connessione), viene catturata una IOException.
+			 */
 			System.out.println("Error during communication with server");
 			return;
 		}
@@ -90,7 +98,7 @@ public class MainTest {
 			System.out.println("Learn Regression Tree from data [1]");
 			System.out.println("Load Regression Tree from archive [2]");
 			decision = Keyboard.readInt();
-		} while(!(decision == 1) && !(decision == 2));
+		} while (!(decision == 1) && !(decision == 2));
 		
 		/*
 		 * In entrambi i casi, l'utente dovra' fornire il nome del dataset di cui
@@ -101,14 +109,14 @@ public class MainTest {
 		System.out.println("File name:");
 		tableName = Keyboard.readString();
 		
-		try{
+		try {
 		
 			/*
 			 * Se l'utente vuole creare un  nuovo albero di regressione, viene inviato
 			 * l'intero 0 al server, che creera' un nuovo albero di regressione a partire
 			 * dal nome della tabella fornita dall'utente.
 			 */
-			if(decision == 1) {
+			if (decision == 1) {
 				System.out.println("Starting data acquisition phase!");
 				
 				
@@ -120,7 +128,7 @@ public class MainTest {
 				 * Se non sono stati sollevati problemi lato server, il client riceve
 				 * la stringa "OK". In caso di errore, verra' stampato il messaggio ricevuto.
 				 */
-				if(!answer.equals("OK")) {
+				if (!answer.equals("OK")) {
 
 					System.out.println(answer);
 					return;
@@ -145,7 +153,7 @@ public class MainTest {
 			// Se la comunicazione con il server e' andata a buon fine, verra' letta la stringa "OK" dal socket.
 			answer = in.readObject().toString();
 			
-			if(!answer.equals("OK")) {
+			if (!answer.equals("OK")) {
 
 				System.out.println(answer);
 				return;
@@ -163,7 +171,7 @@ public class MainTest {
 				System.out.println("Starting prediction phase!");
 				answer = in.readObject().toString();
 
-				while(answer.equals("QUERY")){
+				while (answer.equals("QUERY")){
 
 					// La lettura della stringa "QUERY" indica la formulazione di una query all'utente
 					answer = in.readObject().toString();
@@ -177,7 +185,7 @@ public class MainTest {
 				 * Alla lettura di "OK" si e' raggiunto un nodo foglia dell'albero, che presentera' la predizione
 				 * sull'attributo target.
 				 */
-				if(answer.equals("OK")) {
+				if (answer.equals("OK")) {
 
 					answer = in.readObject().toString();
 					System.out.println("Predicted class:" + answer);
@@ -191,10 +199,15 @@ public class MainTest {
 				// L'utente puo' ripetere l'esplorazione dell'albero
 				System.out.println("Would you repeat ? (y/n)");
 				risp = Keyboard.readChar();
-			} while(Character.toUpperCase(risp) == 'Y');
-		}
-		catch(IOException | ClassNotFoundException e){
+			} while (Character.toUpperCase(risp) == 'Y');
+		} catch (IOException | ClassNotFoundException e){
 			
+			/*
+			 * Nel processo di comunicazione con il Server, eventuali errori vengono catturati sotto forma di
+			 * IOException. L'eccezione ClassNotFoundException viene catturata nel caso in cui viene letto un oggetto
+			 * il cui classfile non e' stato caricato dal Client. In entrambi casi viene stampata la causa dell'eccezione tramite
+			 * il suo metodo toString.
+			 */
 			System.out.println(e.toString());
 		} finally {
 			
@@ -205,6 +218,10 @@ public class MainTest {
 				socket.close();
 			} catch (IOException e) {
 
+				/*
+				 * Questa IOException viene catturata in caso di errore durante la comunicazione al Server
+				 * della chiusura del Client, o in caso di errore nella chiusura del Socket con il Server.
+				 */
 				System.out.println("Error closing connection with the server: " + e.getClass().getName() + " : " + e.getMessage());
 			}
 		}
