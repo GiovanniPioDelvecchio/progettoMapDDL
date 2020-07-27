@@ -27,26 +27,39 @@ public abstract class Attribute implements Serializable {
 	/**
 	 * Costruttore di Attribute
 	 * Inizializza il nome e l'indice dell'attributo con i parametri passati in input.
-	 * @param name
-	 * @param index
+	 * @param name String contentente il nome dell'attributo
+	 * @param index intero identificativo dell'attributo. Affinchè rappresenti una colonna del dataset
+	 * 				dovrebbe essere maggiore o uguale di 0. Tale controllo non è qui eseguito.
 	 */
 	public Attribute(String name, int index) {
 		
 		this.name = name;
 		this.index = index;
 	}
-		
+	
+	/**
+	 * Metodo getter per ottenere il nome dell'attributo	
+	 * @return un oggetto di tipo String contenente il nome dell'attributo
+	 */
 	public String getName() {
 	
 		return name;
 	}
 	
+	/**
+	 * Metodo getter per ottenere l'indice dell'attributi
+	 * @return l'intero rappresentante l'indice dell'attributo
+	 */
 	public int getIndex() {
 	
 		return index;
 	
 	}
-
+	
+	/**
+	 * Sovrascrittura del metodo toString di Object per Attribute
+	 * @return lo stato dell'attributo sottoforma di stringa (il nome)
+	 */
 	public String toString() {
 	
 		return getName();
