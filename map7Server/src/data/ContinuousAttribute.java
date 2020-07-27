@@ -23,4 +23,5 @@ public class ContinuousAttribute extends Attribute {
 		
 		super(name, index);
 	}
+
 }
