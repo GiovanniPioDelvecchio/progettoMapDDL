@@ -35,7 +35,7 @@ public class MainTest {
 
 		/*
 		 * Se non sono stati forniti i parametri richiesti dall'applicazione, viene
-		 * visualizzato un messaggio di errore.
+		 * visualizzato un messaggio di errore e il programma viene terminato.
 		 */
 		if (args.length != 2) {
 
@@ -70,7 +70,7 @@ public class MainTest {
 
 			/*
 			 * Se il Client non riesce a contattare la macchina specificata dall'utente,
-			 * verra' catturata una UnknownHostException.
+			 * verra' catturata una UnknownHostException, e il programma viene terminato.
 			 */
 			System.out.println("Error: server not found");
 			return;
@@ -78,7 +78,7 @@ public class MainTest {
 
 			/*
 			 * In caso di errore di comunicazione con il Server (con cui si e' riuscita a stabilire
-			 * una connessione), viene catturata una IOException.
+			 * una connessione), viene catturata una IOException e il programma viene terminato.
 			 */
 			System.out.println("Error during communication with server");
 			return;
@@ -126,7 +126,8 @@ public class MainTest {
 				
 				/*
 				 * Se non sono stati sollevati problemi lato server, il client riceve
-				 * la stringa "OK". In caso di errore, verra' stampato il messaggio ricevuto.
+				 * la stringa "OK". In caso di errore, viene stampato il messaggio ricevuto e
+				 * il programma viene terminato.
 				 */
 				if (!answer.equals("OK")) {
 
@@ -155,6 +156,10 @@ public class MainTest {
 			
 			if (!answer.equals("OK")) {
 
+				/*
+				 * In caso di ricezione errata da parte del Server dell'intero, viene stampato il messaggio ricevuto
+				 * e terminato il programma
+				 */
 				System.out.println(answer);
 				return;
 			}
