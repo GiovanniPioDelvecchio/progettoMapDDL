@@ -13,7 +13,7 @@ import java.io.Serializable;
  */
 
 public abstract class Attribute implements Serializable {
-	
+
 	/**
 	 * nome simbolico dell'attributo
 	 */
@@ -23,7 +23,7 @@ public abstract class Attribute implements Serializable {
 	 * identificativo numerico dell'attributo
 	 */
 	private int index;
-	
+
 	/**
 	 * Costruttore di Attribute
 	 * Inizializza il nome e l'indice dell'attributo con i parametri passati in input.
@@ -36,7 +36,7 @@ public abstract class Attribute implements Serializable {
 		this.name = name;
 		this.index = index;
 	}
-	
+
 	/**
 	 * Metodo getter per ottenere il nome dell'attributo	
 	 * @return un oggetto di tipo String contenente il nome dell'attributo
@@ -45,7 +45,7 @@ public abstract class Attribute implements Serializable {
 	
 		return name;
 	}
-	
+
 	/**
 	 * Metodo getter per ottenere l'indice dell'attributi
 	 * @return l'intero rappresentante l'indice dell'attributo
@@ -55,7 +55,7 @@ public abstract class Attribute implements Serializable {
 		return index;
 	
 	}
-	
+
 	/**
 	 * Sovrascrittura del metodo toString di Object per Attribute
 	 * @return lo stato dell'attributo sottoforma di stringa (il nome)
@@ -64,4 +64,5 @@ public abstract class Attribute implements Serializable {
 	
 		return getName();
 	}
+
 }
