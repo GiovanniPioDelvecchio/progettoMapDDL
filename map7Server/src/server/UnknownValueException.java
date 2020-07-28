@@ -1,8 +1,8 @@
 package server;
 
 /**
- * Eccezione che modella un errore da parte dell'utente durante l'esplorazione di un
- * albero di regressione.
+ * Classe che modella un'eccezione sollevata se viene immesso dall'utente un valore non valido.
+ * In particolare viene utilizzato durante l'esplorazione di un albero di regressione
  * 
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
  *
@@ -19,7 +19,7 @@ public class UnknownValueException extends Exception {
 	}
 
 	/**
-	 * Costruttore che permette di specificare la causa del sollevamento dell'eccezione.
+	 * Costruttore che permette di associare un messaggio descrittivo all'eccezione.
 	 * 
 	 * @param message Stringa contenente un messaggio di errore.
 	 */

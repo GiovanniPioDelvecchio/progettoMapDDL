@@ -59,7 +59,7 @@ public class MultiServer {
 
 			while (true) {
 				
-				// Il server rimane in attesa di un contatto da parte di una Client
+				// Il server rimane in attesa di un contatto da parte di un Client
 				Socket csocket = ssocket.accept();
 				try {
 
