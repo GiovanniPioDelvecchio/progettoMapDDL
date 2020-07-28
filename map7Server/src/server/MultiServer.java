@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.time.Instant;
 
 /**
- * Classe utilizzata per modellare un Server multithreaded per la comunicazione con più Client.
+ * Classe utilizzata per modellare un Server multithreaded per la comunicazione con piu' Client.
  * 
  * Il server si espone di default sulla porta 8080, e genera una nuova istanza di ServerOneClient ogni volta
  * che viene contatto da un Client.
@@ -20,11 +20,11 @@ public class MultiServer {
 	private int PORT = 8080;
 	
 	/**
-	 * Costruttore di MultiServer
+	 * Costruttore di MultiServer.
 	 * L'istanziazione di MultiServer equivale all'esecuzione
 	 * del server sulla macchina, poiche' richiama il metodo <code>run</code>.
 	 * 
-	 * @param port Porta su cui si vogliono offrire i servizi del Server
+	 * @param port Porta su cui si vogliono offrire i servizi del Server.
 	 */
 	public MultiServer(int port) {
 

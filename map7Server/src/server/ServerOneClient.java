@@ -36,8 +36,8 @@ public class ServerOneClient extends Thread {
 	 * 
 	 * La nuova istanza della classe comunichera' con il Client su di un nuovo thread.
 	 * 
-	 * @param s Socket di comunicazione con il Client che ha effettuato la connessione
-	 * @throws IOException Lanciata in caso di errore di comunicazione con il Client
+	 * @param s Socket di comunicazione con il Client che ha effettuato la connessione.
+	 * @throws IOException Lanciata in caso di errore di comunicazione con il Client.
 	 */
 	public ServerOneClient(Socket s) throws IOException {
 

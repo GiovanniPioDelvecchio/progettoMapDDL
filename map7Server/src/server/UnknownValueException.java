@@ -19,7 +19,7 @@ public class UnknownValueException extends Exception {
 	}
 
 	/**
-	 * Costruttore che permette di specificare la causa del sollevamento dell'eccezione
+	 * Costruttore che permette di specificare la causa del sollevamento dell'eccezione.
 	 * 
 	 * @param message Stringa contenente un messaggio di errore.
 	 */
