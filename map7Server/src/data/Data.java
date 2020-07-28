@@ -17,8 +17,10 @@ import database.Column;
 
 /**
  * Classe creata per modellare un insieme di esempi per l'addestramento di un albero di regressione.<br>
- * Una sua istanza può essere inizializzata a partire da una tabella di un database attraverso i metodi e le classi 
- * esposte dal package database. @see database
+ * Una sua istanza può essere inizializzata a partire da una tabella MySQL di un database attraverso i metodi 
+ * e le classi esposte dal package database.
+ * 
+ * @see database
  * 
  * 
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
@@ -48,7 +50,7 @@ public class Data {
 	private ContinuousAttribute classAttribute;
 	
 	/**
-	 * Costruttore di Data.
+	 * Costruttore di <code>Data</code>.
 	 * Inizializza il training set a partire da una tabella di un database, il cui nome è fornito in 
 	 * input. Tale tabella deve essere non vuota, con almeno due attributi di cui l'ultimo deve sempre essere l'attributo target.
 	 * In caso vi siano errori nella inizializzazione del set viene lanciata <code>TrainingDataException</code>.
@@ -174,7 +176,8 @@ public class Data {
 	}
 	
 	/**
-	 * Sovrascrittura del metodo toString() di Object.
+	 * Sovrascrittura del metodo <code>toString</code> di <code>Object</code>.
+	 * 
 	 * @return una stringa contenente tutti gli esempi del training set separati dal carattere di fine linea e
 	 * 		   coi valori separati da virgole.
 	 */
@@ -213,6 +216,7 @@ public class Data {
 
 	/**
 	 * Metodo getter per la dimensione del training set.
+	 * 
 	 * @return un intero indicante il numero di esempi dell'insieme di training.
 	 */
 	public int getNumberOfExamples() {
@@ -227,7 +231,7 @@ public class Data {
 	 * @param exampleIndex intero non negativo rappresentante un indice di un esempio. 
 	 * @param attributeIndex intero non negativo rappresentante un indice di un attributo.
 	 * 
-	 * @return un oggetto di tipo Object contenente il valore dell'attributo indicato, dell'esempio indicato.
+	 * @return un oggetto di tipo <code>Object</code> contenente il valore dell'attributo indicato, dell'esempio indicato.
 	 * 
 	 * @throws IndexOutOfBoundsException Lancia un'eccezione se uno dei due indici è fuori range.
 	 */
@@ -239,13 +243,13 @@ public class Data {
 	
 
 	/**
-	 * Metodo getter per ottenere, dato un indice intero, il corrispondente attributo tra quelli registrati nel data set
+	 * Metodo getter per ottenere, dato un indice intero, il corrispondente attributo tra quelli registrati nel data set.
 	 * 
-	 * @param index indice intero non negativo che indica un attributo del data set
+	 * @param index indice intero non negativo che indica un attributo del data set.
 	 * 
-	 * @return L'attributo rinvenuto al corrispondente indice
+	 * @return L'attributo rinvenuto al corrispondente indice.
 	 * 
-	 * @throws IndexOutOfBoundsException Lancia un'eccezione se l'indice è fuori range
+	 * @throws IndexOutOfBoundsException Lancia un'eccezione se l'indice è fuori range.
 	 */
 	public Attribute getExplanatoryAttribute(int index) {
 
@@ -253,9 +257,9 @@ public class Data {
 	}
 
 	/**
-	 * Metodo getter per ottenere l'attributo di classe del training set
+	 * Metodo getter per ottenere l'attributo di classe del training set.
 	 *
-	 * @return l'attributo continuo del target nel training set
+	 * @return l'attributo continuo del target nel training set.
 	 */
 	public ContinuousAttribute getClassAttribute()	{
     
@@ -263,9 +267,9 @@ public class Data {
 	}
 	
 	/**
-	 * Metodo getter per ottenere il numero di attributi del training set
+	 * Metodo getter per ottenere il numero di attributi del training set.
 	 * 
-	 * @return il numero di attributi presenti
+	 * @return il numero di attributi presenti.
 	 */
 	public int getNumberOfExplanatoryAttributes() {
 		
@@ -276,12 +280,12 @@ public class Data {
 	 * Metodo di sorting per Data. Ordina il set rispetto attributo passato in input sulla porzione di esempi
 	 * indicata da beginExampleIndex e endExampleIndex, utilizzando la strategia del quicksort.
 	 * 
-	 * @param attribute Attributo rispetto al quale eseguire il sorting del set
-	 * @param beginExampleIndex Indice dell'esempio da cui comincia la porzione del set da ordinare
-	 * @param endExampleIndex Indice dell'esempio in cui finisce (compreso) la porzione del set da ordinare
+	 * @param attribute Attributo rispetto al quale eseguire il sorting del set.
+	 * @param beginExampleIndex Indice dell'esempio da cui comincia la porzione del set da ordinare.
+	 * @param endExampleIndex Indice dell'esempio in cui finisce (compreso) la porzione del set da ordinare.
 	 * 
 	 * @throws IndexOutOfBoundsException Lancia un'eccezione se uno dei due indici è 
-	 *		   oppure l'attributo ha un indice fuori range
+	 *		   oppure l'attributo ha un indice fuori range.
 	 */
 	public void sort(Attribute attribute, int beginExampleIndex, int endExampleIndex){
 		quicksort(attribute, beginExampleIndex, endExampleIndex);
@@ -289,10 +293,10 @@ public class Data {
 	
 
 	/**
-	 * Metodo che cambia di posizione due esempi nel set
+	 * Metodo che cambia di posizione due esempi nel set.
 	 * 
-	 * @param i indice del primo elemento da scambiare
-	 * @param j indice del secondo elemento da scambiare
+	 * @param i indice del primo elemento da scambiare.
+	 * @param j indice del secondo elemento da scambiare.
 	 */
 	private void swap(int i,int j){
 
@@ -392,9 +396,9 @@ public class Data {
 	}
 	
 	/**
-	 * Metodo di supporto che implementa l'algoritmo di quicksort per l'ordinamento del dataset
+	 * Metodo di supporto che implementa l'algoritmo di quicksort per l'ordinamento del dataset.
 	 * 
-	 * @param attribute attributo rispetto al quale si sta eseguendo il sorting
+	 * @param attribute attributo rispetto al quale si sta eseguendo il sorting.
 	 * @param inf indice inferiore della porzione di esempi da ordinare.
 	 * @param sup indice Superiore della porzione di esempi da ordinare.
 	 */

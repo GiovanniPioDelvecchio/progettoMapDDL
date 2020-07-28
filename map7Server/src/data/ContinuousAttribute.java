@@ -13,8 +13,10 @@ import data.Attribute;
 public class ContinuousAttribute extends Attribute {
 	
 	/**
-	 * Costruttore per la classe ContinuousAttribute. Richiama semplicemente il costruttore della
-	 * super-classe. @see Attribute
+	 * Costruttore per la classe <code>ContinuousAttribute</code>. Richiama semplicemente il costruttore della
+	 * super-classe.
+	 * 
+	 * @see Attribute
 	 * 
 	 * @param name Stringa contenente il nome dell'attributo.
 	 * @param index Intero indicante l'indice identificativo dell'attributo.
