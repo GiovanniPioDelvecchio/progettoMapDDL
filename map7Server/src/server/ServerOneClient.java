@@ -51,7 +51,7 @@ public class ServerOneClient extends Thread {
 		
 		/*
 		 * Si avvia l'esecuzione del metodo run() su di un nuovo Thread, per permettere la comunicazione
-		 * con piu' Client contemporaneamente 
+		 * con piu' Client contemporaneamente da parte di MultiServer.
 		 */
 		this.start();
 	}
@@ -82,7 +82,7 @@ public class ServerOneClient extends Thread {
 				try {
 
 					/*
-					 * Viene letto dallo Stream la stringa contenente il nome della tabella SQL
+					 * Viene letta dallo Stream la stringa contenente il nome della tabella SQL
 					 * contenente il dataset da cui creare l'albero di regressione.
 					 */
 					String trainingfileName = (String) in.readObject();
@@ -117,7 +117,7 @@ public class ServerOneClient extends Thread {
 				} catch (TrainingDataException e) {
 
 					/*
-					 * Nel caso in cui il costrttore di Data solleva un'eccezione (quindi non e' possibile creare
+					 * Nel caso in cui il costrttore di Data sollevi un'eccezione (quindi non e' possibile creare
 					 * l'albero di regressione), viene inviata la motivazione dell'errore al Client sotto forma di
 					 * stringa. Cio' portera' alla terminazione della comunicazione con il Client.
 					 */
@@ -136,7 +136,8 @@ public class ServerOneClient extends Thread {
 
 					/*
 					 * Viene letta dal Client la stringa contenente il nome della tabella SQL di cui si era creato
-					 * l'albero di regressione in precedenza. L'utente non ha bisogno di inserire l'estenzione ".dmp".
+					 * l'albero di regressione in precedenza. L'utente non ha bisogno di inserire l'estenzione ".dmp"
+					 * nella stringa inserita.
 					 */
 					String trainingfileName = (String) in.readObject();
 					tree = RegressionTree.carica(trainingfileName + ".dmp");
@@ -203,9 +204,9 @@ public class ServerOneClient extends Thread {
 				} catch (UnknownValueException e) {
 
 					/*
-					 * Nel caso in cui l'utente effettua una scelta sbagliata durante l'esplorazione dell'albero di regressione
-					 * viene catturata una UnknownValueException. Il suo toString() verra' inviato come messaggio al Client per notificare
-					 * l'utente.
+					 * Nel caso in cui l'utente effettui una scelta sbagliata durante l'esplorazione dell'albero di regressione,
+					 * viene catturata una UnknownValueException. Il suo toString() verra' inviato come messaggio di errore 
+					 * al Client. La connessione rimane aperta per permettere una nuova esplorazione dell'albero.
 					 */
 					out.writeObject(e.toString());
 				}
@@ -221,7 +222,7 @@ public class ServerOneClient extends Thread {
 		} finally {
 
 			/*
-			 * Nel blocco finally si tental a terminazione della comunicaizone con il Client, indicata dalla lettura sullo stream
+			 * Nel blocco finally si tenta la terminazione della comunicaizone con il Client, indicata dalla lettura sullo stream
 			 * dell'intero -1.
 			 */
 			try {
