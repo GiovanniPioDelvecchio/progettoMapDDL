@@ -25,7 +25,7 @@ public class Column {
 	 * @param name Stringa contenente il nome da assegnare all'istanza di Column.
 	 * @param type Stringa contenente il tipo della colonan da assegnare all'istanza di Column.
 	 */
-	Column(String name,String type) {
+	Column(String name, String type) {
 		
 		this.name = name;
 		this.type = type;
@@ -58,7 +58,7 @@ public class Column {
 	 * 
 	 * @return Una stringa che concatena nome e tipo della colonna nel formato "[nome]:[tipo]".
 	 */
-	public String toString(){
+	public String toString() {
 		
 		return name + ":" + type;
 	}
