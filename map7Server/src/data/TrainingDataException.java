@@ -29,7 +29,7 @@ public class TrainingDataException extends Exception {
 	 */
 	public String toString() {
 		
-		return this.getClass().getName() +": "+ this.getMessage();
+		return this.getClass().getName() + ": " + this.getMessage();
 	}
 	
 }
