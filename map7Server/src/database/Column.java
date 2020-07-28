@@ -20,10 +20,10 @@ public class Column {
 	private String type;
 
 	/**
-	 * Costruttore di Column. Inizializza i campi di nome e tipo con quelli passati in input.
+	 * Costruttore di <code>Column</code>. Inizializza i campi di nome e tipo con quelli passati in input.
 	 * 
-	 * @param name Stringa contenente il nome da assegnare all'istanza di Column.
-	 * @param type Stringa contenente il tipo della colonan da assegnare all'istanza di Column.
+	 * @param name Stringa contenente il nome da assegnare all'istanza di <code>Column</code>.
+	 * @param type Stringa contenente il tipo della colonan da assegnare all'istanza di <code>Column</code>.
 	 */
 	Column(String name, String type) {
 		
@@ -46,7 +46,7 @@ public class Column {
 	 * Metodo utilizzato per stabilire se una colonna contiene degli attributi
 	 * a dominio numerico (continuo) oppure no.
 	 * 
-	 * @return true se la colonna contiene valori di tipo numerico, false altrimenti.
+	 * @return True se la colonna contiene valori di tipo numerico, False altrimenti.
 	 */
 	public boolean isNumber() {
 		
@@ -54,7 +54,7 @@ public class Column {
 	}
 
 	/**
-	 * Sovrascrittura del metodo toString() di Object.
+	 * Sovrascrittura del metodo <code>toString</code> di <code>Object</code>.
 	 * 
 	 * @return Una stringa che concatena nome e tipo della colonna nel formato "[nome]:[tipo]".
 	 */
