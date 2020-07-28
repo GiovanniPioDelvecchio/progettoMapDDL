@@ -20,7 +20,8 @@ public class MultiServer {
 	private int PORT = 8080;
 	
 	/**
-	 * Costruttore di MultiServer. L'istanziazione di MultiServer equivale all'esecuzione
+	 * Costruttore di MultiServer
+	 * L'istanziazione di MultiServer equivale all'esecuzione
 	 * del server sulla macchina, poiche' richiama il metodo <code>run</code>.
 	 * 
 	 * @param port Porta su cui si vogliono offrire i servizi del Server
@@ -58,6 +59,7 @@ public class MultiServer {
 
 			while (true) {
 				
+				// Il server rimane in attesa di un contatto da parte di una Client
 				Socket csocket = ssocket.accept();
 				try {
 
