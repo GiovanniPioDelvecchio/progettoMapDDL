@@ -22,7 +22,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	/**
 	 * Classe contenente informazioni che descrivono lo split effettuato nello SplitNode.
 	 * 
-	 * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, GiuseppeLamantea
+	 * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
 	 *
 	 */
 	protected class SplitInfo implements Serializable {
