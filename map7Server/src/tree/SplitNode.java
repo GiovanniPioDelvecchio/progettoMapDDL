@@ -203,48 +203,86 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 			}
 	}
 	
+	/**
+	 * Getter per l'attributo attribute.
+	 * 
+	 * @return Il valore di attribute.
+	 */
 	Attribute getAttribute() {
 		
 		return attribute;
 	}
 	
+	/**
+	 * Getter per la varianza dell'attributo target nel nodo di split.
+	 * 
+	 * @return Il valore del parametro splitVariance.
+	 */
 	public double getVariance() {
 		
 		return splitVariance;
 	}
 	
+	/**
+	 * Getter per il numero di figli generati dallo split.
+	 * 
+	 * @return Il numero di figli dello split (> 0).
+	 */
 	public int getNumberOfChildren() {
 		 
 		return mapSplit.size();
 	}
 	
+	/**
+	 * Getter per l'istanza di SplitInfo che descrive un certo figlio del nodo di split.
+	 * 
+	 * @param child Indice del figlio del nodo di split di cui conoscere lo SplitInfo.
+	 * @return L'istanza di SplitInfo associata al figlio dello split node specificato.
+	 */
 	SplitInfo getSplitInfo(int child) {
 		
 		return mapSplit.get(child);
 	}
 
 	
+	/**
+	 * Metodo per formulare una stringa che descrive un nodo di split ed enumera i suoi figli.
+	 * 
+	 * @return Una stringa contenente informazioni sullo split e i suoi figli.
+	 */
 	String formulateQuery() {
 		
 		String query = "";
-		for(int i=0;i<mapSplit.size();i++)
-			query+= (i + ":" + attribute + mapSplit.get(i).getComparator() +mapSplit.get(i).getSplitValue())+"\n";
+		for (int i=0; i < mapSplit.size(); i++)
+			query += (i + ":" + attribute + mapSplit.get(i).getComparator() + mapSplit.get(i).getSplitValue()) + "\n";
 		return query;
 	}
 	
+	/**
+	 * Sovrascrittura del metodo toString per SplitNode.
+	 * 
+	 * @return Una stringa che descrive il nodo di Split.
+	 */
+	@Override
 	public String toString() {
 		
-		String v= "SPLIT : attribute=" +attribute +" Nodo: "+ super.toString()+  " Split Variance: " + getVariance()+ "\n" ;
+		String v = "SPLIT : attribute=" + attribute + " Nodo: " + super.toString() +  " Split Variance: " + getVariance() + "\n" ;
 		
-		for(SplitInfo si : mapSplit) {
-			v+= "\t"+si+"\n";
+		for (SplitInfo si : mapSplit) {
+			v += "\t" + si + "\n";
 		}
 		
 		return v;
 	}
 	
+	/**
+	 * Implementazione del metodo compareTo dell'interfaccia Comparable.
+	 * 
+	 * @return 0 se i due nodi di split hanno la stessa varianza, 1 se la prima varianza e' maggire della seconda,
+	 * -1 altrimenti.
+	 */
 	public int compareTo(SplitNode o) {
-		if(this.splitVariance == o.getVariance()) {
+		if (this.splitVariance == o.getVariance()) {
 			
 			return 0;
 		} else if (this.splitVariance > o.getVariance()) {
