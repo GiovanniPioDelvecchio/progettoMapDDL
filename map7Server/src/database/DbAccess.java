@@ -93,15 +93,18 @@ public class DbAccess {
 			throw new DatabaseConnectionException();
 		}
 		
+		// Si compone la stringa per la connessione al database
 		String connectionString = DBMS + "://" + SERVER + ":" + PORT + "/" + DATABASE
 				+ "?user=" + USER_ID + "&password=" + PASSWORD + "&serverTimezone=UTC";
 		
 		try {
-
+			// Si tenta la connessione al database...
 			conn = DriverManager.getConnection(connectionString);
 			
 		} catch(SQLException e) {
 			
+			// ...e in caso di errore, si stampa un messaggio lato server e 
+			// si rilancia una DbCException per notificare il client.
 			System.out.println("[!] SQLException: " + e.getMessage());
 			System.out.println("[!] SQLState: " + e.getSQLState());
 			System.out.println("[!] VendorError: " + e.getErrorCode());
@@ -112,7 +115,7 @@ public class DbAccess {
 	/**
 	 * Metodo getter per ottenere la connessione incapsulata in un'istanza di DBAccess.
 	 *
-	 * @return la connessione al database se inizializzata, null altrimenti
+	 * @return la connessione al database se inizializzata, null altrimenti.
 	 */
 	public Connection getConnection() {
 
@@ -120,15 +123,18 @@ public class DbAccess {
 	}
 
 	/**
+	 * Chiude la connessione al database. Se la connessione non è stata inizializzata, non esegue alcuna operazione.
 	 * 
-	 * @throws DatabaseConnectionException
+	 * @throws DatabaseConnectionException Lancia un'eccezione se la chiusura di una connessione genera una <code>SQLExcepition</code>.
 	 */
 	public void closeConnection() throws DatabaseConnectionException {
 		
 		try {
-			conn.close();
+			if (conn!=null)
+				conn.close();
+			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+
 			throw new DatabaseConnectionException("Error while closing the database connection");
 		}
 	}
