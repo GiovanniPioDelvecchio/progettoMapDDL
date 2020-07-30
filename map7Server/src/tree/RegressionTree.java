@@ -18,7 +18,7 @@ import data.ContinuousAttribute;
 /**
  * Classe utilizzata per modellare un albero di regressione.
  * 
- * La creazione di un albero di regressione puo' essere effettuata utilizzando un'istanza di @link Data.
+ * La creazione di un albero di regressione puo' essere effettuata utilizzando un'istanza di Data.
  * Fornisce dei metodi di salvataggio e di caricamento tramite serializzazione di un oggetto.
  * 
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
@@ -203,7 +203,7 @@ public class RegressionTree  implements Serializable {
 				 */
 				risp = (Integer) in.readObject(); 
 
-				if(risp == -1 || risp >= root.getNumberOfChildren()) {
+				if (risp == -1 || risp >= root.getNumberOfChildren()) {
 
 					/*
 					 * In caso di scelta errata viene sollevata una UnknownValueException. 
@@ -217,10 +217,10 @@ public class RegressionTree  implements Serializable {
 					 */
 					return childTree[risp].predictClass(out, in);  
 				}
-			} catch(IOException e) {
+			} catch (IOException e) {
 				
 				System.out.println("Error during communication with client: " + e.getClass() + " : " + e.getMessage());
-			} catch(ClassNotFoundException e) {
+			} catch (ClassNotFoundException e) {
 
 				System.out.println("Error during the value prediction: " + e.getClass() + " : " + e.getMessage());
 			}

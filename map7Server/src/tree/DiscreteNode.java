@@ -23,7 +23,7 @@ public class DiscreteNode extends SplitNode {
 	 * Richiama il costruttore della superclasse SplitNode.
 	 * 
 	 * @param trainingSet Istanza di Data contenente gli esempi del training set da cui costruire un albero di regressinoe.
-	 * @param beginExampelIndex Indice di inizio nella tabella contenente il sottoinsieme di esempi rappresentato dal nodo di split.
+	 * @param beginExampleIndex Indice di inizio nella tabella contenente il sottoinsieme di esempi rappresentato dal nodo di split.
 	 * @param endExampleIndex Indice di fine nella tabella contenente il sottoinsieme di esempi rappresentato dal nodo di split.
 	 * @param attribute Attributo discreto su cui si sta effettuando uno split in un albero di regressione.
 	 * 

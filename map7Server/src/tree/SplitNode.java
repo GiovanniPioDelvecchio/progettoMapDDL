@@ -229,7 +229,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	/**
 	 * Getter per il numero di figli generati dallo split.
 	 * 
-	 * @return Il numero di figli dello split (> 0).
+	 * @return Il numero di figli dello split (maggiore di 0).
 	 */
 	public int getNumberOfChildren() {
 		 
