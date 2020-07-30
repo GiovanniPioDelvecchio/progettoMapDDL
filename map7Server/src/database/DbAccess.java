@@ -130,8 +130,10 @@ public class DbAccess {
 	public void closeConnection() throws DatabaseConnectionException {
 		
 		try {
-			if (conn!=null)
+			if (conn!=null) {
+				
 				conn.close();
+			}
 			
 		} catch (SQLException e) {
 

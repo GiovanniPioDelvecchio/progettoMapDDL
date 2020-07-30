@@ -60,14 +60,14 @@ public class Example implements Comparable<Example>, Iterable<Object> {
 		
 		int i = 0;
 		
-		for (Object o : ex.example){
+		for (Object o : ex.example) {
 
 			if (!o.equals(this.example.get(i))) {
 
 				return ((Comparable) o).compareTo(example.get(i));
 			}
 			
-			i ++;
+			i++;
 		}
 		
 		return 0;

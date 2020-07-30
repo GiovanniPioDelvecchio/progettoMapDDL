@@ -40,9 +40,12 @@ public class DatabaseConnectionException extends Exception {
 	 */
 	public String toString() {
 		
-		if (this.getMessage() == null )
+		if (this.getMessage() == null ) {
+		
 			return this.getClass().getName() + ": Failure during connection with Database.";
-		 else
+		} else {
+		
 			return this.getClass().getName() + ": " + this.getMessage();
+		}
 	}
 }
