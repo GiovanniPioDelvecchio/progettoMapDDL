@@ -83,6 +83,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * @param comparator Stringa con cui avvalorare il parametro comparator
 		 */
 		SplitInfo(Object splitValue, int beginIndex, int endIndex, int numberChild, String comparator) {
+
 			this.splitValue = splitValue;
 			this.beginIndex = beginIndex;
 			this.endIndex = endIndex;
@@ -170,8 +171,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	abstract void setSplitInfo(Data trainingSet, int beginExampelIndex, int endExampleIndex, Attribute attribute);
 	
 	/**
-	 * Metodo che permette di testare rispetto ad un possibile valore dell'attributo di split la sua appartenenza
-	 * rispetto ad un figlio dello SplitNode.
+	 * Dato un valore, controlla se esiste un figlio del nodo di split con split value pari all'attributo passato in input.
 	 * 
 	 * @param value Possibile valore dell'attributo di split.
 	 * @return Identificativo del figlio a cui appartiene il valore rappresentato di value.
@@ -184,22 +184,25 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * 
 	 * Implementato in maniera incrementale ripetto alla superclasse Node.
 	 * Dopo la chiamata al costruttore della superclasse, avvalora gli attributi esclusivi a SplitNode.
-	 * @param trainingSet 
-	 * @param beginExampleIndex
-	 * @param endExampleIndex
-	 * @param attribute
+	 * 
+	 * @param trainingSet Istanza di Data contenente la popolazione del training set.
+	 * @param beginExampleIndex Indice iniziale nella tabella del sottoinsieme del training set rappresentato dallo SplitNode.
+	 * @param endExampleIndex Indice finale nella tabella del sottoinsieme del training set rappresentato dallo SplitNode.
+	 * @param attribute Attributo su cui viene effettuato lo split.
 	 */
-	public SplitNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute){
-			super(trainingSet, beginExampleIndex,endExampleIndex);
-			this.attribute=attribute;
-			trainingSet.sort(attribute, beginExampleIndex, endExampleIndex); // order by attribute
+	public SplitNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
+
+			super(trainingSet, beginExampleIndex, endExampleIndex);
+			this.attribute = attribute;
+			trainingSet.sort(attribute, beginExampleIndex, endExampleIndex);
 			setSplitInfo(trainingSet, beginExampleIndex, endExampleIndex, attribute);
 						
-			// compute variance
-			splitVariance=0;
+			// calcolo della varianza
+			splitVariance = 0;
 			for(SplitInfo si : mapSplit) {
+
 				double localVariance = new LeafNode(trainingSet, si.getBeginindex(), si.getEndIndex()).getVariance();
-				splitVariance+=(localVariance);
+				splitVariance += (localVariance);
 			}
 	}
 	
@@ -253,7 +256,8 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	String formulateQuery() {
 		
 		String query = "";
-		for (int i=0; i < mapSplit.size(); i++)
+		for (int i = 0; i < mapSplit.size(); i++)
+
 			query += (i + ":" + attribute + mapSplit.get(i).getComparator() + mapSplit.get(i).getSplitValue()) + "\n";
 		return query;
 	}
@@ -269,6 +273,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		String v = "SPLIT : attribute=" + attribute + " Nodo: " + super.toString() +  " Split Variance: " + getVariance() + "\n" ;
 		
 		for (SplitInfo si : mapSplit) {
+
 			v += "\t" + si + "\n";
 		}
 		
@@ -282,14 +287,15 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * -1 altrimenti.
 	 */
 	public int compareTo(SplitNode o) {
+
 		if (this.splitVariance == o.getVariance()) {
 			
 			return 0;
 		} else if (this.splitVariance > o.getVariance()) {
-			
+
 			return 1;
 		} else {
-			
+
 			return -1;
 		}
 	}

@@ -25,6 +25,8 @@ public class ContinuousNode extends SplitNode {
 	 * @param beginExampleIndex Indice di inizio nella tabella contenente il sottoinsieme di training set rappresentato dal nodo di split continuo.
 	 * @param endExampleIndex Indice di fine nella tabella contenente il sottoinsieme di training set rappresentato dal nodo di split continuo.
 	 * @param attribute Attributo continuo indipendente su cui viene effettuato lo split.
+	 * 
+	 * @see ContinuousAttribute
 	 */
 	public ContinuousNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, ContinuousAttribute attribute) {
 		
