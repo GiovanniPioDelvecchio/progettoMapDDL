@@ -8,6 +8,8 @@ package data;
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
  *
  */
+
+@SuppressWarnings("serial")
 public class TrainingDataException extends Exception {
 
 	/**

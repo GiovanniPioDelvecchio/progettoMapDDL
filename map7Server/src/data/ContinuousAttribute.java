@@ -10,6 +10,7 @@ import data.Attribute;
  *
  */
 
+@SuppressWarnings("serial")
 public class ContinuousAttribute extends Attribute {
 	
 	/**

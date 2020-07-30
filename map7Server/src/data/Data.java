@@ -185,9 +185,9 @@ public class Data {
 		
 		String value = "";
 
-		for (int i = 0; i < numberOfExamples; i ++) {
+		for (int i = 0; i < numberOfExamples; i++) {
 			
-			for (int j = 0; j < explanatorySet.size(); j ++) {
+			for (int j = 0; j < explanatorySet.size(); j++) {
 	
 				value += data.get(i).get(j) + ",";
 			}
@@ -211,7 +211,7 @@ public class Data {
 	 */
 	public Double getClassValue(int exampleIndex) {
 		
-			return (double)data.get(exampleIndex).get(classAttribute.getIndex());
+			return (double) data.get(exampleIndex).get(classAttribute.getIndex());
 	}
 
 	/**
@@ -287,7 +287,8 @@ public class Data {
 	 * @throws IndexOutOfBoundsException Lancia un'eccezione se uno dei due indici è 
 	 *		   oppure l'attributo ha un indice fuori range.
 	 */
-	public void sort(Attribute attribute, int beginExampleIndex, int endExampleIndex){
+	public void sort(Attribute attribute, int beginExampleIndex, int endExampleIndex) {
+		
 		quicksort(attribute, beginExampleIndex, endExampleIndex);
 	}
 	
@@ -298,7 +299,7 @@ public class Data {
 	 * @param i indice del primo elemento da scambiare.
 	 * @param j indice del secondo elemento da scambiare.
 	 */
-	private void swap(int i,int j){
+	private void swap(int i,int j) {
 
 		Example temp = data.get(i);
 		data.set(i, data.get(j));
@@ -328,12 +329,12 @@ public class Data {
 			
 			while (i <= sup && ((String)getExplanatoryValue(i, attribute.getIndex())).compareTo(x) <= 0) { 
 				
-				i ++;
+				i++;
 			}
 		
 			while (((String)getExplanatoryValue(j, attribute.getIndex())).compareTo(x) > 0) {
 				
-				j --;
+				j--;
 			}
 			
 			if (i < j) { 
@@ -373,12 +374,12 @@ public class Data {
 			
 			while (i <= sup && ((Double)getExplanatoryValue(i, attribute.getIndex())).compareTo(x) <= 0) { 
 				
-				i ++; 
+				i++; 
 			}
 		
 			while (((Double)getExplanatoryValue(j, attribute.getIndex())).compareTo(x) > 0) {
 				
-				j --;
+				j--;
 			}
 			
 			if(i < j) {
@@ -402,7 +403,7 @@ public class Data {
 	 * @param inf indice inferiore della porzione di esempi da ordinare.
 	 * @param sup indice Superiore della porzione di esempi da ordinare.
 	 */
-	private void quicksort(Attribute attribute, int inf, int sup){
+	private void quicksort(Attribute attribute, int inf, int sup) {
 		
 		if (sup >= inf) {
 			

@@ -14,6 +14,7 @@ import java.util.TreeSet;
  *
  */
 
+@SuppressWarnings("serial")
 public class DiscreteAttribute extends Attribute implements Iterable<String> {
 	
 	/**
