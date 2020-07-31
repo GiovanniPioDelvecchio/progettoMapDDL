@@ -147,8 +147,43 @@ public class TableData {
 		// Si esegue la query per ottenere tutti gli elementi
 		ResultSet r = s.executeQuery(
 		"SELECT DISTINCT " + colName + " " +
-		"FROM " + table + " " +
-		"ORDER BY " + colName);
+		"FROM " + table);
+	
+		if (numFlag) { // Si controlla se la colonna è numerica e si leggono i valori di conseguenza 
+			
+			while (r.next()) {
+				
+				queryResult.add(r.getDouble(colName));
+			}
+		} else {
+			
+			while (r.next()) {
+				
+				queryResult.add(r.getString(colName));
+			}
+		}
+		
+		// Chiude Statement e ResultSet una volta terminata la lettura
+		r.close();
+		s.close();
+	
+		return queryResult;
+
+	}
+	
+	public Set<Object> getDistinctColumnValues2(String table, Column column) throws SQLException {
+		
+		TreeSet<Object> queryResult = new TreeSet<>();
+		// Al fine di ottenere un set ordinato, si fa uso di un TreeSet.
+		
+		Statement s = db.getConnection().createStatement();
+		boolean numFlag = column.isNumber();
+		String colName = column.getColumnName();
+
+		// Si esegue la query per ottenere tutti gli elementi
+		ResultSet r = s.executeQuery(
+		"SELECT DISTINCT " + colName + " " +
+		"FROM " + table);
 	
 		if (numFlag) { // Si controlla se la colonna è numerica e si leggono i valori di conseguenza 
 			
