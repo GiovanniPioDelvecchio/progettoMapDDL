@@ -73,7 +73,7 @@ public class DbAccess {
 			/**
 			 * In caso la classe del driver non sia disponibile, oppure vengano
 			 * generati errori durante la sua istanziazione, tali eccezioni vengono
-			 * "rimbalzate" come DbCException.
+			 * propagate come DbCException.
 			 * Il messaggio di errore viene però stampato nella console e non inserito nell'eccezione
 			 * poichè non è necessario notificare al Client la natura dell'errore durante la connessione.
 			 */
@@ -101,7 +101,7 @@ public class DbAccess {
 			// Si tenta la connessione al database...
 			conn = DriverManager.getConnection(connectionString);
 			
-		} catch(SQLException e) {
+		} catch (SQLException e) {
 			
 			// ...e in caso di errore, si stampa un messaggio lato server e 
 			// si rilancia una DbCException per notificare il client.
@@ -130,7 +130,7 @@ public class DbAccess {
 	public void closeConnection() throws DatabaseConnectionException {
 		
 		try {
-			if (conn!=null) {
+			if (conn != null) {
 				
 				conn.close();
 			}

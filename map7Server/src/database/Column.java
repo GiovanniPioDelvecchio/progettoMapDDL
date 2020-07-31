@@ -23,7 +23,7 @@ public class Column {
 	 * Costruttore di <code>Column</code>. Inizializza i campi di nome e tipo con quelli passati in input.
 	 * 
 	 * @param name Stringa contenente il nome da assegnare all'istanza di <code>Column</code>.
-	 * @param type Stringa contenente il tipo della colonan da assegnare all'istanza di <code>Column</code>.
+	 * @param type Stringa contenente il tipo della colonna da assegnare all'istanza di <code>Column</code>.
 	 */
 	Column(String name, String type) {
 		

@@ -47,10 +47,10 @@ public class Example implements Comparable<Example>, Iterable<Object> {
 	 * Implementazione del metodo compareTo per l'interfaccia <code>Comparable</code>
 	 * Tutti gli oggetti all'interno della tupla devono implementare l'interfaccia comparable.
 	 * 
-	 * @param ex Istanza da confrontare con <code>this</code>
+	 * @param ex Istanza da confrontare con l'istanza corrente di Example
 	 * 
 	 * @return 0 se le tuple contengono gli stessi elementi nello stesso ordine, -1 se l'i-esimo
-	 *         elemento di <code>this</code> è minore (secondo il compareTo dell'oggetto) dell'i-esimo
+	 *         elemento dell'istanza corrente di Example è minore (secondo il compareTo dell'oggetto) dell'i-esimo
 	 *         elemento di ex, 1 altrimenti.
 	 *         
 	 * @throws ClassCastException Lancia un'eccezione se uno degli oggetti della tupla non implementa l'interfaccia
