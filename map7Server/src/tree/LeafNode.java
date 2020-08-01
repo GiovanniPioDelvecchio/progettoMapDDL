@@ -5,8 +5,8 @@ import data.Data;
 /**
  * Classe che rappresenta un nodo foglia di un albero di regressione.
  * 
- * Oltre alle informazioni contenute dalla superclasse Node, LeafNode contiene
- * una predizione sul valore dell'attributo target in relazione alla porzione di dataset
+ * Oltre alle informazioni contenute dalla superclasse <code>Node</code>, <code>LeafNode</code>
+ * contiene una predizione sul valore dell'attributo target in relazione alla porzione di dataset
  * rappresentata.
  * 
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
@@ -48,9 +48,9 @@ public class LeafNode extends Node {
 	}
 	
 	/**
-	 * Getter per l'attributo predictedClassValue.
+	 * Getter per il valore predetto dell'attributo target.
 	 * 
-	 * @return Il valore di predictedClassValue.
+	 * @return Il valore predetto dell'attributo target relativo al nodo foglia corrente.
 	 */
 	public double getPredictedClassValue() {
 		
@@ -68,10 +68,9 @@ public class LeafNode extends Node {
 	}
 	
 	/**
-	 * Sovrascrittura del metodo toString per LeafNode.
+	 * Sovrascrittura del metodo <code>toString</code> di <code>Object</code>.
 	 * 
-	 * @return Una stringa contenente informazioni sulla foglia e sul valore predetto
-	 * del class attribute.
+	 * @return lo stato dell'oggetto sotto forma di stringa.
 	 */
 	@Override
 	public String toString() {

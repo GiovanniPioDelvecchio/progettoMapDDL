@@ -90,7 +90,8 @@ public abstract class Node implements Serializable {
 	}
 	
 	/**
-	 * Getter per l'attributo beginExampleIndex
+	 * Getter per l'indice iniziale nella tabella della porzione di trainig set
+	 * rappresentata dal nodo.
 	 * 
 	 * @return Il valore di beginExampleIndex
 	 */
@@ -100,7 +101,8 @@ public abstract class Node implements Serializable {
 	}
 	
 	/**
-	 * Getter per l'attributo endExampleIndex.
+	 * Getter per l'indice finale nella tabella della porzione di training set
+	 * rappresentata dal nodo.
 	 * 
 	 * @return Il valore di endExampleIndex
 	 */
@@ -110,9 +112,10 @@ public abstract class Node implements Serializable {
 	}
 	
 	/**
-	 * Getter per l'attributo variance.
+	 * Getter per la varianza dell'attributo target calcolata nel sottoinsieme
+	 * del training set rappresentato dal nodo..
 	 * 
-	 * @return Il valore dell'attributo variance
+	 * @return Varianza dell'attributo target associata al nodo corrente.
 	 */
 	public double getVariance() {
 		
@@ -127,9 +130,9 @@ public abstract class Node implements Serializable {
 	public abstract int getNumberOfChildren();
 	
 	/**
-	 * Override del metodo <code>toString</code> per la classe Node.
+	 * Sovrascrittura del metodo <code>toString</code> di <code>Object</code>.
 	 * 
-	 * @return Una stringa contenente informazioni sul nodo
+	 * @return lo stato dell'oggetto sotto forma di stringa.
 	 */
 	@Override
 	public String toString() {

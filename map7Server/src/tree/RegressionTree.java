@@ -18,17 +18,24 @@ import data.ContinuousAttribute;
 /**
  * Classe utilizzata per modellare un albero di regressione.
  * 
- * La creazione di un albero di regressione puo' essere effettuata utilizzando un'istanza di Data.
+ * La creazione di un albero di regressione puo' essere effettuata utilizzando un'istanza di <code>Data</code>.
  * Fornisce dei metodi di salvataggio e di caricamento tramite serializzazione di un oggetto.
  * 
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
  *
  */
 @SuppressWarnings("serial")
-public class RegressionTree  implements Serializable {
+public class RegressionTree implements Serializable {
 	
-	Node root;						// radice del sotto albero corrente
-	RegressionTree childTree[];		// array di sottoalberi originati da root
+	/**
+	 * Nodo radice del (sotto)albero rappresentato da RegressionTree.
+	 */
+	Node root;
+	
+	/**
+	 * Array di figli (rappresentabili come sottoalberi) originati da root.
+	 */
+	RegressionTree childTree[];
 	
 	// Costruttore a zero argomenti. Viene utilizzato per la costruzione di sottoalberi in learnTree
 	RegressionTree() {}
@@ -36,7 +43,7 @@ public class RegressionTree  implements Serializable {
 	/**
 	 * Verifica se il sottoinsieme puo' essere rappresentato come nodo foglia all'interno dell'albero di regressione.
 	 * 
-	 * @param trainingSet Istanza di Data contenente il training set
+	 * @param trainingSet Istanza di <code>Data</code> contenente il training set
 	 * @param begin Indice di inizio del sottoinsieme nella tabella contenente il training set.
 	 * @param end Indice di fine del sottoinsieme nella tabella contenente il training set.
 	 * @param numberOfExamplesPerLeaf Valore numerico che rappresenta il numero massimo di esempi rappresentabili da un nodo foglia.
@@ -54,7 +61,7 @@ public class RegressionTree  implements Serializable {
 	/**
 	 * Dato un sottoinsieme del training set, determina il miglior attributo su cui eseguire uno split.
 	 * 	
-	 * @param trainingSet Istanza di Data contenente il training set.
+	 * @param trainingSet Istanza di <code>Data</code> contenente il training set.
 	 * @param begin Indice di inizio del sottoinsieme nella tabella contenente il training set.
 	 * @param end Indice di fine del sottoinsieme nella tabella contenente il training set.
 	 * 
@@ -93,7 +100,7 @@ public class RegressionTree  implements Serializable {
 	/**
 	 * Costruttore pubblico di RegressionTree.
 	 * 
-	 * @param trainingSet Istanza di Data contenente il training set da cui creare un albero di regressione.
+	 * @param trainingSet Istanza di <code>Data</code> contenente il training set da cui creare un albero di regressione.
 	 */
 	public RegressionTree(Data trainingSet) {
 		
@@ -103,10 +110,10 @@ public class RegressionTree  implements Serializable {
 	/**
 	 * Metodo utilizzato per la costruzione di un albero di regressione.
 	 * 
-	 * Data una porzione di training set, determina se effettuare uno split o rappresentarla tramite un
+	 * <code>Data</code> una porzione di training set, determina se effettuare uno split o rappresentarla tramite un
 	 * nodo foglia.
 	 * 
-	 * @param trainingSet Istanza di Data contenente il training set da cui creare un albero di regressione.
+	 * @param trainingSet Istanza di <code>Data</code> contenente il training set da cui creare un albero di regressione.
 	 * @param begin Indice di inizio del sottoinsieme nella tabella contenente il training set.
 	 * @param end Indice di fine del sottoinsieme nella tabella contenente il training set.
 	 * @param numberOfExamplesPerLeaf Numero che rappresenta la soglia secondo quale una porzione di training set puo' 
@@ -235,7 +242,8 @@ public class RegressionTree  implements Serializable {
 	}
 	
 	/**
-	 * Metodo di stampa delle predizioni generate dall'albero generato.
+	 * Metodo di stampa delle regole che descrivono in quale maniera e' stato generato e puo' essere
+	 * esplorato l'albero.
 	 */
 	public void printRules() {
 		
@@ -300,20 +308,20 @@ public class RegressionTree  implements Serializable {
 	}
 	
 	/**
-	 * Sovrascrittura del metodo toString per RegressionTree.
+	 * Sovrascrittura del metodo <code>toString</code> di <code>Object</code>.
 	 * 
-	 * @return Una stringa rappresentante l'albero di regressione radicato in root.
+	 * @return lo stato dell'oggetto sotto forma di stringa.
 	 */
 	@Override
 	public String toString() {
 
 		String tree = root.toString() + "\n";
 		
-		if(root instanceof LeafNode) {
+		if (root instanceof LeafNode) {
 		
 		} else {
 
-			for(int i = 0; i < childTree.length; i++) {
+			for (int i = 0; i < childTree.length; i++) {
 
 				tree += childTree[i];	
 			}
@@ -327,7 +335,7 @@ public class RegressionTree  implements Serializable {
 	 * 
 	 * @param nomeFile Nome del file in cui si vuole salvare l'albero di regressione.
 	 * @throws FileNotFoundException Lanciata nel caso in cui e' impossibile la creazione o la scrittura del file specificato
-	 * @throws IOException Lancia nel caso in cui si verifichino errori nella serializzazione dell'albero.
+	 * @throws IOException Lanciata nel caso in cui si verifichino errori nella serializzazione dell'albero.
 	 */
 	public void salva(String nomeFile) throws FileNotFoundException, IOException {
 
@@ -351,7 +359,7 @@ public class RegressionTree  implements Serializable {
 		
 		FileInputStream whereLoad = new FileInputStream(nomeFile);
 		ObjectInputStream whereLoadStream = new ObjectInputStream(whereLoad);
-		RegressionTree toReturn =  (RegressionTree)whereLoadStream.readObject();
+		RegressionTree toReturn =  (RegressionTree) whereLoadStream.readObject();
 		whereLoadStream.close();
 		whereLoad.close();
 		return toReturn;

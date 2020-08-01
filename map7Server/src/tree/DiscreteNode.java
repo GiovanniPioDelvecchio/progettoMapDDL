@@ -9,7 +9,7 @@ import server.UnknownValueException;
 
 
 /**
- * Classe usata per rappresentare un nodo di split su di un attributo continuo.
+ * Classe usata per rappresentare un nodo di split su di un attributo discreto.
  * 
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
  *
@@ -22,7 +22,7 @@ public class DiscreteNode extends SplitNode {
 	 * 
 	 * Richiama il costruttore della superclasse SplitNode.
 	 * 
-	 * @param trainingSet Istanza di Data contenente gli esempi del training set da cui costruire un albero di regressinoe.
+	 * @param trainingSet Istanza di <code>Data</code> contenente gli esempi del training set da cui costruire un albero di regressinoe.
 	 * @param beginExampleIndex Indice di inizio nella tabella contenente il sottoinsieme di esempi rappresentato dal nodo di split.
 	 * @param endExampleIndex Indice di fine nella tabella contenente il sottoinsieme di esempi rappresentato dal nodo di split.
 	 * @param attribute Attributo discreto su cui si sta effettuando uno split in un albero di regressione.
@@ -39,7 +39,7 @@ public class DiscreteNode extends SplitNode {
 	 * 
 	 * Il metodo si occupa di popolare l'attributo mapSplit che contiene informazioni sui figli del nodo di split discreto.
 	 * 
-	 * @param trainingSet Istanza di Data contenente gli esempi del training set da cui costruire un albero di regressinoe.
+	 * @param trainingSet Istanza di <code>Data</code> contenente gli esempi del training set da cui costruire un albero di regressinoe.
 	 * @param beginExampleIndex Indice di inizio nella tabella contenente il sottoinsieme di esempi rappresentato dal nodo di split.
 	 * @param endExampleIndex Indice di fine nella tabella contenente il sottoinsieme di esempi rappresentato dal nodo di split.
 	 * @param attribute Attributo discreto su cui si sta effettuando uno split in un albero di regressione.
@@ -83,10 +83,10 @@ public class DiscreteNode extends SplitNode {
 	}
 	 
 	/**
-	 * Dato un valore, controlla se esiste un figlio del nodo con attributo di split pari al valore passato.
+	 * Implementazione del metodo astratto testCondition ereditato da SplitNode.
 	 *
-	 * @param value Valore su cui effettuare il test.
-	 * @return L'indice dell'istanza di SplitInfo appartenente a mapSplit con split value pari all'argomento.
+	 * @param value Valore di split di un figlio del nodo di cui cercare l'identificativo numerico.
+	 * @return Un intero che indica quale nodo possiede come valore di split quello passato in input.
 	 * @throws UnknownValueException Nel caso in cui nessun figlio del nodo ha split value pari all'argomento.
 	 */
 	int testCondition(Object value) throws UnknownValueException {
@@ -98,13 +98,13 @@ public class DiscreteNode extends SplitNode {
 			}
 		}
 
-		throw new UnknownValueException("testCondition failure");
+		throw new UnknownValueException("Tried to test the split node to a non existant split value");
 	} 
 	
 	/**
-	 * Specializzazione del metodo toString per DiscreteNode.
+	 * Sovrascrittura del metodo <code>toString</code> di <code>Object</code>.
 	 * 
-	 * @return Una stringa contenente informazioni sul nodo di split discreto.
+	 * @return lo stato dell'oggetto sotto forma di stringa.
 	 */
 	@Override
 	public String toString() {
