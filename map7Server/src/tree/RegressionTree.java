@@ -206,7 +206,7 @@ public class RegressionTree implements Serializable {
 				
 				/*
 				 * L'utente scegliera' un nodo figlio su cui prosegurie l'esplorazione. Questa scelta e' rappresentata
-				 * tramite l'indica del figlio del nodo di split.
+				 * tramite l'indice del figlio del nodo di split.
 				 */
 				risp = (Integer) in.readObject(); 
 
