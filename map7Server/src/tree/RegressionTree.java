@@ -174,70 +174,50 @@ public class RegressionTree implements Serializable {
 	 * @return Il valore dell'attributo target predetto per il nodo foglia su cui l'utente e' arrivato.
 	 * @throws UnknownValueException Lanciata nel caso in cui l'utente abbia effettuato una scelta non valida
 	 * 			durante l'esplorazione dell'albero.
+	 * @throws IOException Nel caso di errore di comunicazione con il client.
+	 * @throws ClassNotFoundException Nel caso non sia stata correttamente caricato il classfile associato ad un
+	 * 			oggetto letto dallo stream.
 	 */
-	public Double predictClass(ObjectOutputStream out, ObjectInputStream in) throws UnknownValueException {
+	public Double predictClass(ObjectOutputStream out, ObjectInputStream in) throws UnknownValueException, IOException, ClassNotFoundException {
 		
 		if (root instanceof LeafNode) {
 
-			try {
-
-				/*
-				 * Viene notificato all'utente che e' stato raggiunto un nodo foglia.
-				 */
-				out.writeObject("OK");
-			} catch (IOException e) {
-
-				// In caso di errore di comunicazione si stampa il nome dell'eccezione e la causa dell'errore
-				System.out.println("Error during communication with client: " + e.getClass() + " : " + e.getMessage());
-			}
+			/*
+			 * Viene notificato all'utente che e' stato raggiunto un nodo foglia.
+			 */
+			out.writeObject("OK");
 
 			// Viene ritornato il valore dell'attributo target predetto
 		    return ((LeafNode) root).getPredictedClassValue(); 
-		} else { 
-
-			try {
-
-				/*
-				 * La stringa "QUERY" serve a notificare l'utente che si e' arrivati ad un nodo di split.
-				 */
-				out.writeObject("QUERY");
-				out.writeObject(((SplitNode) root).formulateQuery());
-				int risp;
-				
-				/*
-				 * L'utente scegliera' un nodo figlio su cui prosegurie l'esplorazione. Questa scelta e' rappresentata
-				 * tramite l'indice del figlio del nodo di split.
-				 */
-				risp = (Integer) in.readObject(); 
-
-				if (risp == -1 || risp >= root.getNumberOfChildren()) {
-
-					/*
-					 * In caso di scelta errata viene sollevata una UnknownValueException. 
-					 */
-					throw new UnknownValueException("The answer should be an integer between 0 and " + (root.getNumberOfChildren() - 1) + "!");  
-				} else {
-
-					/*
-					 * Se il figlio selezionato e' sempre un nodo di split, viene chiamata ricorsivamente predictClass (dall'istanza di RegressionTree
-					 * che ha come radice il figlio selezionato).
-					 */
-					return childTree[risp].predictClass(out, in);  
-				}
-			} catch (IOException e) {
-				
-				System.out.println("Error during communication with client: " + e.getClass() + " : " + e.getMessage());
-			} catch (ClassNotFoundException e) {
-
-				System.out.println("Error during the value prediction: " + e.getClass() + " : " + e.getMessage());
-			}
+		} else {
 
 			/*
-			 * Per costruzione del metodo questo return non viene mai raggiunto (in quanto viene restituita la predizione in caso
-			 * di funzionamento corretto, mentre la gestione delle possibili eccezioni sollevate dai metodi chiamati risultano nell'uscita dal
-			 * metodo.
+			 * La stringa "QUERY" serve a notificare l'utente che si e' arrivati ad un nodo di split.
 			 */
-			return null;
+			out.writeObject("QUERY");
+			out.writeObject(((SplitNode) root).formulateQuery());
+			int risp;
+			
+			/*
+			 * L'utente scegliera' un nodo figlio su cui prosegurie l'esplorazione. Questa scelta e' rappresentata
+			 * tramite l'indice del figlio del nodo di split.
+			 */
+			risp = (Integer) in.readObject(); 
+
+			if (risp == -1 || risp >= root.getNumberOfChildren()) {
+
+				/*
+				 * In caso di scelta errata viene sollevata una UnknownValueException. 
+				 */
+				throw new UnknownValueException("The answer should be an integer between 0 and " + (root.getNumberOfChildren() - 1) + "!");  
+			} else {
+
+				/*
+				 * Se il figlio selezionato e' sempre un nodo di split, viene chiamata ricorsivamente predictClass (dall'istanza di RegressionTree
+				 * che ha come radice il figlio selezionato).
+				 */
+				return childTree[risp].predictClass(out, in);  
+			}
 		}
 	}
 	

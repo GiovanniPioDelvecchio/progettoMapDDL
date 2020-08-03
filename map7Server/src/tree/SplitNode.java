@@ -200,7 +200,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 						
 			// calcolo della varianza
 			splitVariance = 0;
-			for(SplitInfo si : mapSplit) {
+			for (SplitInfo si : mapSplit) {
 
 				double localVariance = new LeafNode(trainingSet, si.getBeginindex(), si.getEndIndex()).getVariance();
 				splitVariance += (localVariance);
@@ -220,7 +220,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	/**
 	 * Getter per la varianza dell'attributo target nel nodo di split.
 	 * 
-	 * @return Il valore del parametro splitVariance.
+	 * @return La varianza dell'attributo target nel nodo di split.
 	 */
 	public double getVariance() {
 		

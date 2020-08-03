@@ -69,12 +69,12 @@ public abstract class Node implements Serializable {
 		
 		// algoritmo proposto da Knuth in Art of Computer Programming per il calcolo della varianza
 		// in un solo ciclo
-		for (int i = beginExampleIndex; i <= endExampleIndex; i++ ) {
+		for (int i = beginExampleIndex; i <= endExampleIndex; i++) {
 
 			n += 1;
 			delta = trainingSet.getClassValue(i) - mean;
-			mean += delta/(n);
-			variance += delta*(trainingSet.getClassValue(i) - mean);
+			mean += delta / n;
+			variance += delta * (trainingSet.getClassValue(i) - mean);
 		}
 		
 	}
@@ -82,7 +82,7 @@ public abstract class Node implements Serializable {
 	/**
 	 * Getter per l'intero identificativo del nodo.
 	 * 
-	 * @return Il valore dell'attributo idNode
+	 * @return L'intero identificativo del nodo.
 	 */
 	public int getIdNode() {
 		
@@ -93,7 +93,7 @@ public abstract class Node implements Serializable {
 	 * Getter per l'indice iniziale nella tabella della porzione di trainig set
 	 * rappresentata dal nodo.
 	 * 
-	 * @return Il valore di beginExampleIndex
+	 * @return L'indice iniziale nella tabella del sottoinsieme rappresentato dal nodo.
 	 */
 	public int getBeginExampleIndex() {
 		
@@ -104,7 +104,7 @@ public abstract class Node implements Serializable {
 	 * Getter per l'indice finale nella tabella della porzione di training set
 	 * rappresentata dal nodo.
 	 * 
-	 * @return Il valore di endExampleIndex
+	 * @return L'indice finale nella tabella del sottoinsieme rappresentato dal nodo.
 	 */
 	public int getEndExampleIndex() {
 		
@@ -113,7 +113,7 @@ public abstract class Node implements Serializable {
 	
 	/**
 	 * Getter per la varianza dell'attributo target calcolata nel sottoinsieme
-	 * del training set rappresentato dal nodo..
+	 * del training set rappresentato dal nodo.
 	 * 
 	 * @return Varianza dell'attributo target associata al nodo corrente.
 	 */

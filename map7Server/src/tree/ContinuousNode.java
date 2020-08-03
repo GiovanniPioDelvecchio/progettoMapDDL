@@ -20,7 +20,7 @@ public class ContinuousNode extends SplitNode {
 	/**
 	 * Costruttore di ContinuousNode.
 	 * 
-	 * Richiama semplicemente il costruttore della superclasse SplitNode.
+	 * Richiama semplicemente il costruttore della superclasse <code>SplitNode</code>.
 	 * 
 	 * @param trainingSet Istanza di <code>Data</code> contenente informazioni sul training set.
 	 * @param beginExampleIndex Indice di inizio nella tabella contenente il sottoinsieme di training set rappresentato dal nodo di split continuo.
@@ -35,9 +35,9 @@ public class ContinuousNode extends SplitNode {
 	}
 
 	/**
-	 * Implementazione del metodo astratto setSplitInfo ereditato da SplitInfo.
+	 * Implementazione del metodo astratto setSplitInfo ereditato da <code>SplitNode</code>.
 	 * 
-	 * Il metodo si occupa di popolare l'attributo mapSplit che contiene informazioni sui figli del nodo di split continuo.
+	 * Il metodo si occupa di trascrivere le informazioni relative al modo in cui si e' effettuato lo split sull'attributo continuo.
 	 * 
 	 * @param trainingSet Istanza di <code>Data</code> contenente il training set su cui costrutire l'albero di regressione
 	 * @param beginExampleIndex Indice di inizio nella tabella contenente il sottoinsieme di training set rappresentato dal nodo di split continuo. 
@@ -55,7 +55,7 @@ public class ContinuousNode extends SplitNode {
 		double bestInfoVariance = 0;
 		List <SplitInfo> bestMapSplit = null;
 		
-		for (int i = beginExampleIndex + 1; i <= endExampleIndex; i++){
+		for (int i = beginExampleIndex + 1; i <= endExampleIndex; i++) {
 			
 			Double value = (Double) trainingSet.getExplanatoryValue(i, attribute.getIndex());
 			
@@ -67,7 +67,7 @@ public class ContinuousNode extends SplitNode {
 			 * Si utilizza l'operatore != poiche' si assume che il sottoinsieme in trainingSet sia gia' stato ordinato relativamente
 			 * all'attributo di split in precedenza. 
 			 */
-			if (value.doubleValue() != currentSplitValue.doubleValue()){
+			if (value.doubleValue() != currentSplitValue.doubleValue()) {
 
 				/*
 				 * Viene calcolata la varianza dell'attributo target in un eventuale split
@@ -119,7 +119,7 @@ public class ContinuousNode extends SplitNode {
 	}
 
 	/**
-	 * Implementazione del metodo astratto testCondition ereditato da SplitNode.
+	 * Implementazione del metodo astratto testCondition ereditato da <code>SplitNode</code>.
 	 * 
 	 * @param value Valore di split di un figlio del nodo di cui cercare l'identificativo numerico.
 	 * @return Un intero che indica quale nodo possiede come valore di split quello passato in input.

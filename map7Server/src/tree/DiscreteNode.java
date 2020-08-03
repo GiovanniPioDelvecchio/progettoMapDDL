@@ -18,7 +18,7 @@ import server.UnknownValueException;
 public class DiscreteNode extends SplitNode {
 
 	/**
-	 * Costruttore di DiscreteNode.
+	 * Costruttore di <code>DiscreteNode</code>.
 	 * 
 	 * Richiama il costruttore della superclasse SplitNode.
 	 * 
@@ -35,9 +35,9 @@ public class DiscreteNode extends SplitNode {
 	}
 	
 	/**
-	 * Implementazione del metodo astratto setSplitInfo ereditato da SplitInfo.
+	 * Implementazione del metodo astratto setSplitInfo ereditato da <code>SplitNode</code>.
 	 * 
-	 * Il metodo si occupa di popolare l'attributo mapSplit che contiene informazioni sui figli del nodo di split discreto.
+	 * Il metodo si occupa di trascrivere le informazioni relative al modo in cui si e' effettuato lo split sull'attributo discreto.
 	 * 
 	 * @param trainingSet Istanza di <code>Data</code> contenente gli esempi del training set da cui costruire un albero di regressinoe.
 	 * @param beginExampleIndex Indice di inizio nella tabella contenente il sottoinsieme di esempi rappresentato dal nodo di split.
@@ -47,7 +47,7 @@ public class DiscreteNode extends SplitNode {
 	public void setSplitInfo(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
 
 		int mapSplitIndex = 0;
-		int attributeIndex = ((DiscreteAttribute)attribute).getIndex();
+		int attributeIndex = ((DiscreteAttribute) attribute).getIndex();
 		
 		// Utilizzo due indici per tenere traccia degli estremi di ogni sottoinsieme generato dallo split sull'attributo discreto
 		int beginSplitIndex = beginExampleIndex;
@@ -83,7 +83,7 @@ public class DiscreteNode extends SplitNode {
 	}
 	 
 	/**
-	 * Implementazione del metodo astratto testCondition ereditato da SplitNode.
+	 * Implementazione del metodo astratto testCondition ereditato da <code>SplitNode</code>.
 	 *
 	 * @param value Valore di split di un figlio del nodo di cui cercare l'identificativo numerico.
 	 * @return Un intero che indica quale nodo possiede come valore di split quello passato in input.
