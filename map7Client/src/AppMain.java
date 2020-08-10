@@ -44,8 +44,25 @@ public class AppMain extends Application {
 		Label ipLabel = new Label("Indirizzo IP");
 		Label portLabel = new Label("Porta");
 		
-		TextField ipField = new TextField();
-		ipField.setPromptText(ip);
+		/*
+		 * TextField ipField = new TextField();
+		 * ipField.setPromptText(ip);
+		 */
+		HBox ipLayout = new HBox();
+		TextField ipAdd[] = {
+				
+				new TextField(),
+				new TextField(),
+				new TextField(),
+				new TextField()
+		};
+		for (int i = 0; i < 3; i++) {
+
+			ipLayout.getChildren().add(ipAdd[i]);
+			ipLayout.getChildren().add(new Label("."));
+		}
+		ipLayout.getChildren().add(ipAdd[3]);
+		
 		TextField portField = new TextField();
 		portField.setPromptText(new Integer(PORT).toString());
 		
@@ -57,20 +74,49 @@ public class AppMain extends Application {
 		confirmButtonSettings.setOnAction( e -> {
 			
 			/*
-			 * Controllo se l'ip inserito e' un indirizzo ip valido tramite un'espressione regolare
+			 * Controllo se l'ip inserito e' un indirizzo ip valido tramite un'espressione regolare.
+			 * Se il field e' vuoto (o e' "localhost") si lascia il valore di default dell'indirizzo invariato.
+			 * Se l'indirizzo ip inserito e' mal formattato, viene visualizzato un errore.
 			 */
-			String readIp = ipField.getText();
-			String readPort = portField.getText();
-			if (Pattern.matches("^(\\d{1,3}\\.){3}\\d{1,3}", readIp)) {
+			boolean isValid = true;
+			for (TextField i : ipAdd) {
+				
+				int readInteger = -1;
+				try {
 
-				ip = readIp;
-			} else if (!(readIp.equals("localhost") || readIp.equals(""))) {
+					readInteger = Integer.parseInt(i.getText());
+				} catch (NumberFormatException err) {
+					
+					Alert badIpFormat = new Alert(Alert.AlertType.ERROR);
+					badIpFormat.setContentText("L'indirizzo IP inserito non è valido.");
+					badIpFormat.show();
+				}
+				if(readInteger < 0 || readInteger > 255) {
+					
+					isValid = false;
+					break;
+				}
+			}
+			if (isValid) {
+
+				ip = "";
+				for (TextField i : ipAdd) {
+					
+					ip.concat(i.getText());
+				}
+			} else {
 				
 				Alert badIpFormat = new Alert(Alert.AlertType.ERROR);
 				badIpFormat.setContentText("L'indirizzo IP inserito non è valido.");
 				badIpFormat.show();
 			}
 			
+			/*
+			 * Si parsifica il numero di porta inserito nel field associato. Se il numero di porta
+			 * e' valido, si aggiorna l'attributo PORT, altrimenti viene lasciato invariato (e si visualizza
+			 * un errore).
+			 */
+			String readPort = portField.getText();
 			int intPort;
 			try {
 
@@ -92,8 +138,11 @@ public class AppMain extends Application {
 			}
 		});
 		
+		/*
+		 * Aggiungo i nodi alla griglia di layout.
+		 */
 		settingsPane.add(ipLabel, 1, 1);
-		settingsPane.add(ipField, 2, 1);
+		settingsPane.add(ipLayout, 2, 1);
 		settingsPane.add(portLabel, 1, 2);
 		settingsPane.add(portField, 2, 2);
 		settingsPane.add(confirmButtonSettings, 1, 3);
