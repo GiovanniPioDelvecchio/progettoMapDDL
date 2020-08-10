@@ -284,8 +284,8 @@ public class Data {
 	 * @param beginExampleIndex Indice dell'esempio da cui comincia la porzione del set da ordinare.
 	 * @param endExampleIndex Indice dell'esempio in cui finisce (compreso) la porzione del set da ordinare.
 	 * 
-	 * @throws IndexOutOfBoundsException Lancia un'eccezione se uno dei due indici è 
-	 *		   oppure l'attributo ha un indice fuori range.
+	 * @throws IndexOutOfBoundsException Lancia un'eccezione se uno dei due indici è fuori range oppure
+	 *		   l'indice dell'attributo lo è.
 	 */
 	public void sort(Attribute attribute, int beginExampleIndex, int endExampleIndex) {
 		
