@@ -36,7 +36,9 @@ public class AppMain extends Application {
 		BorderPane pane = new BorderPane();
 		
 		
-		//inizio descrizione componenti per la barra degli strumenti superiore
+		/*
+		 * descrizione componenti per la barra degli strumenti superiore
+		 */
 		
 		ToolBar tools = new ToolBar();
 		Image gear = new Image("gear.png", 30, 30, true, true);
@@ -50,8 +52,11 @@ public class AppMain extends Application {
 		help.setGraphic(questionMarkV);
 		
 		tools.getItems().addAll(opt, new Separator(), help);
-		pane.setTop(tools);			
-		//inizio descrizione componenti per la vbox centrale
+		pane.setTop(tools);		
+		
+		/*
+		 * descrizione componenti per la vbox centrale
+		 */
 		
 		VBox centralPanel = new VBox(50);
 		centralPanel.setAlignment(Pos.CENTER);
@@ -64,7 +69,9 @@ public class AppMain extends Application {
 		
 		pane.setCenter(centralPanel);
 		
-		//fine aggiunta componenti
+		/*
+		 * chiamata ai metodi per mostrare la scena principale
+		 */
 		
 		Scene homeScene = new Scene(pane, 400, 400);
 		mainStage.setScene(homeScene);
