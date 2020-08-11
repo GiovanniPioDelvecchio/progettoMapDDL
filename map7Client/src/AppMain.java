@@ -1,6 +1,7 @@
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import javafx.application.Application;
@@ -20,12 +21,13 @@ public class AppMain extends Application {
 	private Socket clientSocket;
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
-	private String ip = "localhost";
+	
+	// L'indirizzo ip di default e' quello di loopback, che porta al localhost
+	private String ip = "127.0.0.1";
 	private int PORT = 8080;
 	
 	private Scene settingsScene;
-	
-	
+
 	public static void main(String[] args) {
 		
 		launch(args);
@@ -33,7 +35,9 @@ public class AppMain extends Application {
 	
 	public void start(Stage mainStage) {
 		
-		
+		/*
+		 * Finestra delle impostazioni
+		 */
 		GridPane settingsPane = new GridPane();
 		settingsScene = new Scene(settingsPane);
 		settingsPane.setAlignment(Pos.CENTER);
@@ -48,7 +52,14 @@ public class AppMain extends Application {
 		 * TextField ipField = new TextField();
 		 * ipField.setPromptText(ip);
 		 */
+		
+		/*
+		 * Per limitare il margine di errore nell'inserimento dell'indirizzo IP,
+		 * vengono utilizzati quattro TextField, ognuno rappresentante una porzione
+		 * dell'indirizzo.
+		 */
 		HBox ipLayout = new HBox();
+		ipLayout.setAlignment(Pos.BOTTOM_CENTER);
 		TextField ipAdd[] = {
 				
 				new TextField(),
@@ -56,16 +67,36 @@ public class AppMain extends Application {
 				new TextField(),
 				new TextField()
 		};
+		
+		/*
+		 * Imposto a 3 il numero di cifre inseribili in ogni textfield dell'indirizzo ip.
+		 * Vengono aggiunti dei punti per migliorare la resa grafica dell'indirizzo.
+		 * Ogni TextField viene aggiunto al layout.
+		 */
 		for (int i = 0; i < 3; i++) {
 
+			ipAdd[i].setPrefColumnCount(3);
 			ipLayout.getChildren().add(ipAdd[i]);
 			ipLayout.getChildren().add(new Label("."));
 		}
+		ipAdd[3].setPrefColumnCount(3);
 		ipLayout.getChildren().add(ipAdd[3]);
 		
+		/*
+		 * Come per l'indirizzo IP, la porta sara' inserita tramite un TextField.
+		 */
 		TextField portField = new TextField();
-		portField.setPromptText(new Integer(PORT).toString());
-		
+		portField.setPrefColumnCount(5);
+
+		/*
+		 * Con questa chiamata a funzione aggiorno i testi di prompt dei campi testuali
+		 * con i valori correnti dell'indirizzo ip e della porta.
+		 */
+		updateSettingsPromptText(ipAdd, portField);
+
+		/*
+		 * Infine si utilizzano due bottoni, uno di conferma e uno per tornare alla home del programma.
+		 */
 		Button confirmButtonSettings = new Button("Conferma");
 		HBox backLayoutSettings = new HBox();
 		backLayoutSettings.setAlignment(Pos.CENTER_LEFT);
@@ -74,41 +105,55 @@ public class AppMain extends Application {
 		confirmButtonSettings.setOnAction( e -> {
 			
 			/*
-			 * Controllo se l'ip inserito e' un indirizzo ip valido tramite un'espressione regolare.
-			 * Se il field e' vuoto (o e' "localhost") si lascia il valore di default dell'indirizzo invariato.
-			 * Se l'indirizzo ip inserito e' mal formattato, viene visualizzato un errore.
+			 * Controllo se l'ip inserito e' un indirizzo ip valido.
+			 * Se i field sono vuoti, si lascia il valore dell'ultimo indirizzo ip utilizzato.
+			 * Se l'indirizzo ip inserito e' mal formattato, viene visualizzato un errore, e non
+			 * si modifica l'indirizzo ip corrente.
 			 */
-			boolean isValid = true;
-			for (TextField i : ipAdd) {
-				
-				int readInteger = -1;
-				try {
+			Alert confirmationError = new Alert(Alert.AlertType.ERROR);
+			
+			// Se nessun campo di testo e' riempito, allora l'indirizzo ip utilizzato e' l'ultimo selezionato.
+			boolean isDefault = Arrays.asList(ipAdd).stream().filter(i -> ((TextField) i).getText().equals("")).count() == 4;
+			
+			if (!isDefault) {
 
-					readInteger = Integer.parseInt(i.getText());
-				} catch (NumberFormatException err) {
-					
-					Alert badIpFormat = new Alert(Alert.AlertType.ERROR);
-					badIpFormat.setContentText("L'indirizzo IP inserito non è valido.");
-					badIpFormat.show();
-				}
-				if(readInteger < 0 || readInteger > 255) {
-					
-					isValid = false;
-					break;
-				}
-			}
-			if (isValid) {
-
-				ip = "";
+				boolean isValid = true;
 				for (TextField i : ipAdd) {
 					
-					ip.concat(i.getText());
+					int readInteger = -1;
+					try {
+	
+						readInteger = Integer.parseInt(i.getText());
+					} catch (NumberFormatException err) {
+						
+						isValid = false;
+						break;
+					}
+					if (readInteger < 0 || readInteger > 255) {
+						
+						isValid = false;
+						break;
+					}
 				}
-			} else {
-				
-				Alert badIpFormat = new Alert(Alert.AlertType.ERROR);
-				badIpFormat.setContentText("L'indirizzo IP inserito non è valido.");
-				badIpFormat.show();
+				if (isValid) {
+	
+					/*
+					 * Viene utilizzato un oggetto StringBuffer in maniera da non creare un nuovo oggetto di classe
+					 * String per ogni iterazione del ciclo.
+					 */
+					StringBuffer newIp = new StringBuffer("");
+					for (int i = 0; i < 3; i++) {
+						
+						newIp.append(ipAdd[i].getText());
+						newIp.append(".");
+					}
+					newIp.append(ipAdd[3].getText());
+					ip = new String(newIp);
+				} else {
+	
+					confirmationError.setContentText("L'indirizzo IP inserito non è valido.");
+					confirmationError.show();
+				}
 			}
 			
 			/*
@@ -117,25 +162,33 @@ public class AppMain extends Application {
 			 * un errore).
 			 */
 			String readPort = portField.getText();
-			int intPort;
-			try {
+			
+			if(!readPort.equals("")) {
+			
+				int intPort;
+				try {
 
-				intPort = Integer.parseInt(readPort);
-				if (intPort > 0 && intPort < 65535) {
+					intPort = Integer.parseInt(readPort);
+					if (intPort > 0 && intPort <= 65535) {
+
+						PORT = intPort;
+					} else {
+
+						confirmationError.setContentText("Il numero di porta inserito non è valido.");
+						confirmationError.show();
+					}
+				} catch(NumberFormatException f) {
 					
-					PORT = intPort;
-				} else {
-
-					Alert invalidPort = new Alert(Alert.AlertType.ERROR);
-					invalidPort.setContentText("Il numero di porta inserito non è valido.");
-					invalidPort.show();
+					confirmationError.setContentText("Il numero di porta deve essere un intero fra 1 e 65535.");
+					confirmationError.show();
 				}
-			} catch(NumberFormatException f) {
-				
-				Alert badPortFormat = new Alert(Alert.AlertType.ERROR);
-				badPortFormat.setContentText("La porta inserita non è valida.");
-				badPortFormat.show();
 			}
+			
+			// Infine aggiorno i prompt dei campi testuali con i valori correnti di indirizzo ip e porta
+			updateSettingsPromptText(ipAdd, portField);
+			
+			// test
+			System.out.println(ip + "\n" + PORT);
 		});
 		
 		/*
@@ -152,6 +205,17 @@ public class AppMain extends Application {
 		// Test
 		mainStage.setScene(settingsScene);
 		mainStage.show();
+	}
+	
+	private void updateSettingsPromptText(TextField[] ipAdd, TextField portField) {
+		
+		String[] currIpString = ip.split("\\.");
+		ipAdd[0].setPromptText(currIpString[0]);
+		ipAdd[1].setPromptText(currIpString[1]);
+		ipAdd[2].setPromptText(currIpString[2]);
+		ipAdd[3].setPromptText(currIpString[3]);
+		
+		portField.setPromptText(new Integer(PORT).toString());
 	}
 
 }
