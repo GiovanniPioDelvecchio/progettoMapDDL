@@ -84,12 +84,10 @@ public class AppMain extends Application {
 		for (int i = 0; i < 3; i++) {
 
 			ipAdd[i].setMaxWidth(35d);
-			ipAdd[i].setPrefColumnCount(3);
 			ipLayout.getChildren().add(ipAdd[i]);
 			ipLayout.getChildren().add(new Label("."));
 		}
 		ipAdd[3].setMaxWidth(35d);
-		ipAdd[3].setPrefColumnCount(3);
 		ipLayout.getChildren().add(ipAdd[3]);
 		
 		/*
