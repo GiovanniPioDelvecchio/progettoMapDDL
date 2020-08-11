@@ -59,17 +59,22 @@ public class AppMain extends Application {
 		confirm.setDisable(true);
 		confirm.setOnAction(e -> {
 			try {
+				
 				// Alla pressione si tenta di mandare il nome della tabella al server
 				out.writeObject(tableName.getText());
 				String ans = (String) in.readObject();
+				
 				if (!ans.equals("OK")) {
+					
 					Alert missingTable = new Alert(Alert.AlertType.ERROR);
 					missingTable.setContentText(ans);
 					missingTable.show();
 				} else {
+					
 					// mainStage.setScene(predictScene);
 				}
 			} catch (ClassNotFoundException | IOException e1) {
+				
 				/* si presuppone che la connessione sia già stata stabilita
 				 * e pertanto non si prevede di gestire una NullPointerException
 				 */
@@ -81,9 +86,11 @@ public class AppMain extends Application {
 		// si crea anche un bottone per tornare indietro alla home
 		Button back = new Button("Indietro");
 		back.setOnAction(e -> { 
+			
 			if (clientSocket != null) {
 				
 				try {
+					
 					// se è in corso una comunicazione col server, si notifica che si sta tornando alla home
 					out.writeObject("ABORT");
 				} catch (IOException e1) {
@@ -99,18 +106,21 @@ public class AppMain extends Application {
 		// Si imposta il campo testuale in maniera che se risulta essere vuoto, il tasto di conferma viene disabilitato
 		tableName.setOnKeyReleased(e -> {
 			if (tableName.getText().equals("")) {
+				
 				confirm.setDisable(true);
 			} else {
+				
 				confirm.setDisable(false);
 				if(e.getCode().equals(KeyCode.ENTER)) {
+					
 					confirm.getOnAction().handle(new ActionEvent());
 				}
 			}
 		});
 
 		selectionScene = new Scene(selectionPane);
-		mainStage.setScene(selectionScene);
-		mainStage.show();
+
+
 	}
 
 }
