@@ -1,11 +1,7 @@
-import java.io.ObjectInputStream;
+	import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Arrays;
-import java.util.regex.Pattern;
-
-import com.sun.corba.se.impl.encoding.CodeSetComponentInfo.CodeSetComponent;
-import com.sun.org.apache.bcel.internal.classfile.Code;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -55,11 +51,6 @@ public class AppMain extends Application {
 		Label portLabel = new Label("Porta");
 		
 		/*
-		 * TextField ipField = new TextField();
-		 * ipField.setPromptText(ip);
-		 */
-		
-		/*
 		 * Per limitare il margine di errore nell'inserimento dell'indirizzo IP,
 		 * vengono utilizzati quattro TextField, ognuno rappresentante una porzione
 		 * dell'indirizzo.
@@ -96,7 +87,6 @@ public class AppMain extends Application {
 		 */
 		TextField portField = new TextField();
 		portField.setMaxWidth(45d);
-		portField.setPrefColumnCount(5);
 
 		/*
 		 * Con questa chiamata a funzione aggiorno i testi di prompt dei campi testuali
@@ -266,6 +256,4 @@ public class AppMain extends Application {
 		
 		portField.setPromptText(new Integer(PORT).toString());
 	}
-
-	
 }
