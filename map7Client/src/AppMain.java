@@ -4,7 +4,12 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+import com.sun.corba.se.impl.encoding.CodeSetComponentInfo.CodeSetComponent;
+import com.sun.org.apache.bcel.internal.classfile.Code;
+
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,6 +17,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -72,20 +78,26 @@ public class AppMain extends Application {
 		 * Imposto a 3 il numero di cifre inseribili in ogni textfield dell'indirizzo ip.
 		 * Vengono aggiunti dei punti per migliorare la resa grafica dell'indirizzo.
 		 * Ogni TextField viene aggiunto al layout.
+		 * 
+		 * Per ogni TextField viene impostata una larghezza massima di 35.
 		 */
 		for (int i = 0; i < 3; i++) {
 
+			ipAdd[i].setMaxWidth(35d);
 			ipAdd[i].setPrefColumnCount(3);
 			ipLayout.getChildren().add(ipAdd[i]);
 			ipLayout.getChildren().add(new Label("."));
 		}
+		ipAdd[3].setMaxWidth(35d);
 		ipAdd[3].setPrefColumnCount(3);
 		ipLayout.getChildren().add(ipAdd[3]);
 		
 		/*
 		 * Come per l'indirizzo IP, la porta sara' inserita tramite un TextField.
+		 * La larghezza massima del campo testuale e' 45.
 		 */
 		TextField portField = new TextField();
+		portField.setMaxWidth(45d);
 		portField.setPrefColumnCount(5);
 
 		/*
@@ -102,92 +114,125 @@ public class AppMain extends Application {
 		backLayoutSettings.setAlignment(Pos.CENTER_LEFT);
 		// backLayoutSettings.getChildren().add(back);
 
-		confirmButtonSettings.setOnAction( e -> {
-			
-			/*
-			 * Controllo se l'ip inserito e' un indirizzo ip valido.
-			 * Se i field sono vuoti, si lascia il valore dell'ultimo indirizzo ip utilizzato.
-			 * Se l'indirizzo ip inserito e' mal formattato, viene visualizzato un errore, e non
-			 * si modifica l'indirizzo ip corrente.
-			 */
-			Alert confirmationError = new Alert(Alert.AlertType.ERROR);
-			
-			// Se nessun campo di testo e' riempito, allora l'indirizzo ip utilizzato e' l'ultimo selezionato.
-			boolean isDefault = Arrays.asList(ipAdd).stream().filter(i -> ((TextField) i).getText().equals("")).count() == 4;
-			
-			if (!isDefault) {
+		/*
+		 * Dichiaro un oggetto di tipo EventHandler<ActionEvent>, il cui metodo handle descrive il comportamento
+		 * di conferma alla pressione del bottone confirmButtonSettings (o alla pressione del tasto enter).
+		 */
+		EventHandler<ActionEvent> confirmEvent = new EventHandler<ActionEvent>() {
 
-				boolean isValid = true;
-				for (TextField i : ipAdd) {
-					
-					int readInteger = -1;
-					try {
-	
-						readInteger = Integer.parseInt(i.getText());
-					} catch (NumberFormatException err) {
-						
-						isValid = false;
-						break;
-					}
-					if (readInteger < 0 || readInteger > 255) {
-						
-						isValid = false;
-						break;
-					}
-				}
-				if (isValid) {
-	
-					/*
-					 * Viene utilizzato un oggetto StringBuffer in maniera da non creare un nuovo oggetto di classe
-					 * String per ogni iterazione del ciclo.
-					 */
-					StringBuffer newIp = new StringBuffer("");
-					for (int i = 0; i < 3; i++) {
-						
-						newIp.append(ipAdd[i].getText());
-						newIp.append(".");
-					}
-					newIp.append(ipAdd[3].getText());
-					ip = new String(newIp);
-				} else {
-	
-					confirmationError.setContentText("L'indirizzo IP inserito non è valido.");
-					confirmationError.show();
-				}
-			}
-			
-			/*
-			 * Si parsifica il numero di porta inserito nel field associato. Se il numero di porta
-			 * e' valido, si aggiorna l'attributo PORT, altrimenti viene lasciato invariato (e si visualizza
-			 * un errore).
-			 */
-			String readPort = portField.getText();
-			
-			if (!readPort.equals("")) {
-			
-				int intPort;
-				try {
+			public void handle(ActionEvent e) {
+				
+				/*
+				 * Controllo se l'ip inserito e' un indirizzo ip valido.
+				 * Se i field sono vuoti, si lascia il valore dell'ultimo indirizzo ip utilizzato.
+				 * Se l'indirizzo ip inserito e' mal formattato, viene visualizzato un errore, e non
+				 * si modifica l'indirizzo ip corrente.
+				 */
+				Alert confirmationError = new Alert(Alert.AlertType.ERROR);
+				
+				// Se nessun campo di testo e' riempito, allora l'indirizzo ip utilizzato e' l'ultimo selezionato.
+				boolean isDefault = Arrays.asList(ipAdd).stream().filter(i -> ((TextField) i).getText().equals("")).count() == 4;
+				
+				if (!isDefault) {
 
-					intPort = Integer.parseInt(readPort);
-					if (intPort > 0 && intPort <= 65535) {
-
-						PORT = intPort;
+					boolean isValid = true;
+					for (TextField i : ipAdd) {
+						
+						int readInteger = -1;
+						try {
+		
+							readInteger = Integer.parseInt(i.getText());
+						} catch (NumberFormatException err) {
+							
+							isValid = false;
+							break;
+						}
+						if (readInteger < 0 || readInteger > 255) {
+							
+							isValid = false;
+							break;
+						}
+					}
+					if (isValid) {
+		
+						/*
+						 * Viene utilizzato un oggetto StringBuffer in maniera da non creare un nuovo oggetto di classe
+						 * String per ogni iterazione del ciclo.
+						 */
+						StringBuffer newIp = new StringBuffer("");
+						for (int i = 0; i < 3; i++) {
+							
+							newIp.append(ipAdd[i].getText());
+							newIp.append(".");
+						}
+						newIp.append(ipAdd[3].getText());
+						ip = new String(newIp);
 					} else {
-
-						confirmationError.setContentText("Il numero di porta inserito non è valido.");
+		
+						confirmationError.setContentText("L'indirizzo IP inserito non è valido.\n"
+								+ "I valori che compongono l'indirizzo devono essere interi da 0 a 255.");
 						confirmationError.show();
 					}
-				} catch(NumberFormatException f) {
-					
-					confirmationError.setContentText("Il numero di porta deve essere un intero fra 1 e 65535.");
-					confirmationError.show();
 				}
+				
+				/*
+				 * Si parsifica il numero di porta inserito nel field associato. Se il numero di porta
+				 * e' valido, si aggiorna l'attributo PORT, altrimenti viene lasciato invariato (e si visualizza
+				 * un errore).
+				 */
+				String readPort = portField.getText();
+				
+				if (!readPort.equals("")) {
+				
+					final String errorMessage = "Il numero di porta inserito non è valido.\n"
+							+ "Il numero di porta deve essere un intero fra 1 e 65535.";
+					int intPort;
+					try {
+
+						intPort = Integer.parseInt(readPort);
+						if (intPort > 0 && intPort <= 65535) {
+
+							PORT = intPort;
+						} else {
+
+							confirmationError.setContentText(errorMessage);
+							confirmationError.show();
+						}
+					} catch (NumberFormatException f) {
+
+						confirmationError.setContentText(errorMessage);
+						confirmationError.show();
+					}
+				}
+				
+				// Infine si aggiornano le stringhe di prompt dei campi testuali con i valori correnti di indirizzo ip e porta
+				updateSettingsPromptText(ipAdd, portField);
 			}
+		};
+
+		/*
+		 * Imposto l'EventHandler confirmEvent come comportamento da assumere in caso di pressione di confirmButtonSettings
+		 * o di Enter in qualsiasi campo testuale.
+		 */
+		confirmButtonSettings.setOnAction(confirmEvent);
+		for (TextField i : ipAdd) {
 			
-			// Infine aggiorno i prompt dei campi testuali con i valori correnti di indirizzo ip e porta
-			updateSettingsPromptText(ipAdd, portField);
+			i.setOnKeyReleased(e -> {
+
+				if (e.getCode().equals(KeyCode.ENTER)) {
+					
+					confirmEvent.handle(new ActionEvent());
+				}
+			});
+		}
+		portField.setOnKeyReleased(e -> {
+
+			if (e.getCode().equals(KeyCode.ENTER)) {
+
+				confirmEvent.handle(new ActionEvent());
+			}
 		});
-		
+
 		/*
 		 * Aggiungo i nodi alla griglia di layout.
 		 */
@@ -204,6 +249,15 @@ public class AppMain extends Application {
 		mainStage.show();
 	}
 	
+	/**
+	 * Metodo utilizzato per tenere aggiornati le stringhe di prompt nei campi
+	 * dove inserire indirizzo Ip e Porta del server a cui collegarsi.
+	 * Le stringhe utilizzate come testo di prompt sono i valori correnti dell'Ip
+	 * e della Porta.
+	 * 
+	 * @param ipAdd Array di <code>TextField</code> che compongono un indirizzo Ip.
+	 * @param portField <code>TextField</code> dove verra' inserito il numero di porta.
+	 */
 	private void updateSettingsPromptText(TextField[] ipAdd, TextField portField) {
 		
 		String[] currIpString = ip.split("\\.");
@@ -215,4 +269,5 @@ public class AppMain extends Application {
 		portField.setPromptText(new Integer(PORT).toString());
 	}
 
+	
 }
