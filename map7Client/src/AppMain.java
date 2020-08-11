@@ -5,7 +5,6 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import javafx.application.Application;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -79,7 +78,18 @@ public class AppMain extends Application {
 		load.setOnAction(e->{
 			
 			tryConnection();
-			loadFromFile();
+			try {
+				
+				out.writeObject(2);
+				
+			} catch(IOException e1) {
+				
+				/*
+				 * Se qualcosa va storto con l'invio dei messaggi al server si mostra un alert
+				 */
+
+				showAlert("Non è stato possibile comunicare l'operazione al server selezionato");
+			}	
 		
 		});
 		/*
@@ -89,7 +99,18 @@ public class AppMain extends Application {
 		create.setOnAction(e->{
 				
 			tryConnection();
-			createFromDB();
+			try {
+				
+				out.writeObject(0);
+				
+			} catch(IOException e1) {
+				
+				/*
+				 * Se qualcosa va storto con l'invio dei messaggi al server si mostra un alert
+				 */
+				
+				showAlert("Non è stato possibile comunicare l'operazione al server selezionato");
+			}
 		});
 		
 		/*
@@ -103,7 +124,7 @@ public class AppMain extends Application {
 	}
 
 	
-	void tryConnection() {
+	private void tryConnection() {
 		
 		try {
 			clientSocket = new Socket(ip, port);
@@ -120,43 +141,7 @@ public class AppMain extends Application {
 		}
 	}
 	
-	void loadFromFile() {
-		
-		try {
-			
-			out.writeObject(2);
-			out.writeObject(dataName);
-			
-		} catch(IOException e) {
-			
-			/*
-			 * Se qualcosa va storto con l'invio dei messaggi al server si mostra un alert
-			 */
-
-			showAlert("Non è stato possibile comunicare l'operazione al server selezionato");
-		}	
-		
-	}
-	
-	void createFromDB() {
-		
-		try {
-			
-			out.writeObject(0);
-			out.writeObject(dataName);
-			
-		} catch(IOException e) {
-			
-			/*
-			 * Se qualcosa va storto con l'invio dei messaggi al server si mostra un alert
-			 */
-			
-			showAlert("Non è stato possibile comunicare l'operazione al server selezionato");
-		}
-		
-	}
-	
-	void showAlert(String message) {
+	private void showAlert(String message) {
 		
 		
 		/*
