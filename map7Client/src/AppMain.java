@@ -230,11 +230,6 @@ public class AppMain extends Application {
 		settingsPane.add(portField, 2, 2);
 		settingsPane.add(confirmButtonSettings, 1, 3);
 		settingsPane.add(backLayoutSettings, 2, 3);
-		
-		
-		// Test
-		mainStage.setScene(settingsScene);
-		mainStage.show();
 	}
 	
 	/**
@@ -249,10 +244,10 @@ public class AppMain extends Application {
 	private void updateSettingsPromptText(TextField[] ipAdd, TextField portField) {
 		
 		String[] currIpString = ip.split("\\.");
-		ipAdd[0].setPromptText(currIpString[0]);
-		ipAdd[1].setPromptText(currIpString[1]);
-		ipAdd[2].setPromptText(currIpString[2]);
-		ipAdd[3].setPromptText(currIpString[3]);
+		for(int i = 0; i < 4; i++) {
+			
+			ipAdd[i].setPromptText(currIpString[i]);
+		}
 		
 		portField.setPromptText(new Integer(PORT).toString());
 	}
