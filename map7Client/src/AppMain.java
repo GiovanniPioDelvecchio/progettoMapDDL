@@ -163,7 +163,7 @@ public class AppMain extends Application {
 			 */
 			String readPort = portField.getText();
 			
-			if(!readPort.equals("")) {
+			if (!readPort.equals("")) {
 			
 				int intPort;
 				try {
@@ -186,9 +186,6 @@ public class AppMain extends Application {
 			
 			// Infine aggiorno i prompt dei campi testuali con i valori correnti di indirizzo ip e porta
 			updateSettingsPromptText(ipAdd, portField);
-			
-			// test
-			System.out.println(ip + "\n" + PORT);
 		});
 		
 		/*
