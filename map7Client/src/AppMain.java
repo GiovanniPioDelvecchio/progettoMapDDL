@@ -4,6 +4,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -11,6 +12,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
@@ -68,6 +70,9 @@ public class AppMain extends Application {
 					// mainStage.setScene(predictScene);
 				}
 			} catch (ClassNotFoundException | IOException e1) {
+				/* si presuppone che la connessione sia già stata stabilita
+				 * e pertanto non si prevede di gestire una NullPointerException
+				 */
 				connErr.show();
 			} 
 		});
@@ -93,10 +98,13 @@ public class AppMain extends Application {
 		
 		// Si imposta il campo testuale in maniera che se risulta essere vuoto, il tasto di conferma viene disabilitato
 		tableName.setOnKeyReleased(e -> {
-			if (tableName.getText().equals("") && !confirm.isDisable()) {
+			if (tableName.getText().equals("")) {
 				confirm.setDisable(true);
 			} else {
 				confirm.setDisable(false);
+				if(e.getCode().equals(KeyCode.ENTER)) {
+					confirm.getOnAction().handle(new ActionEvent());
+				}
 			}
 		});
 
