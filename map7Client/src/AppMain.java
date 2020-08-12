@@ -172,19 +172,21 @@ public class AppMain extends Application {
 		Button back = new Button("Indietro");
 		back.setOnAction(e -> { 
 			
-			if (clientSocket != null || clientSocket.isConnected()) {
-				
-				try {
-
-					// se è in corso una comunicazione col server, si notifica che si sta tornando alla home
-					out.writeObject("ABORT");
-					clientSocket.close();
-				} catch (IOException e1) {
-
-					showAlert("Errore durante la connessione al server");
+			if (clientSocket != null) {
+				if (clientSocket.isConnected()) {
+					try {
+	
+						// se è in corso una comunicazione col server, si notifica che si sta tornando alla home
+						out.writeObject("ABORT");
+						clientSocket.close();
+					} catch (IOException e1) {
+	
+						showAlert("Errore durante la connessione al server");
+					}
 				}
-				mainStage.setScene(homeScene);
+				
 			}
+			mainStage.setScene(homeScene);
 		});
 		selectionPane.add(back, 1, 2);
 		
