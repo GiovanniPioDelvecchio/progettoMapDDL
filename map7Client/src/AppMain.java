@@ -95,7 +95,7 @@ public class AppMain extends Application {
 		updateSettingsPromptText(ipAdd, portField);
 
 		/*
-		 * Infine si utilizzano due bottoni, uno di conferma e uno per tornare alla home del programma.
+		 * Infine si utilizzano due pulsanti, uno di conferma e uno per tornare alla home del programma.
 		 */
 		Button confirmButtonSettings = new Button("Conferma");
 		HBox backLayoutSettings = new HBox();
@@ -104,7 +104,7 @@ public class AppMain extends Application {
 
 		/*
 		 * Dichiaro un oggetto di tipo EventHandler<ActionEvent>, il cui metodo handle descrive il comportamento
-		 * di conferma alla pressione del bottone confirmButtonSettings (o alla pressione del tasto enter).
+		 * di conferma alla pressione del pulsante confirmButtonSettings (o alla pressione del tasto enter).
 		 */
 		EventHandler<ActionEvent> confirmEvent = new EventHandler<ActionEvent>() {
 
