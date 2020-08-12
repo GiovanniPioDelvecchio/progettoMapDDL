@@ -85,12 +85,12 @@ public class AppMain extends Application {
 		
 		load.setOnAction(e -> {
 			
-			tryConnection();
 			try {
 
+				connectToServer();
 				out.writeObject(2);
 				mainStage.setScene(selectionScene);
-			} catch(IOException e1) {
+			} catch(IOException | NullPointerException e1) {
 				
 				/*
 				 * Se qualcosa va storto con l'invio dei messaggi al server si mostra un alert
@@ -104,14 +104,14 @@ public class AppMain extends Application {
 		 * Se il tasto "Crea" viene premuto, ci si connette al server e si comunica di caricare
 		 * da un database la tabella da cui verrà ricavato l'albero di regressione
 		 */
-		create.setOnAction(e->{
-				
-			tryConnection();
+		create.setOnAction(e -> {
+
 			try {
 
+				connectToServer();
 				out.writeObject(0);
 				mainStage.setScene(selectionScene);
-			} catch(IOException e1) {
+			} catch(IOException | NullPointerException e1) {
 				
 				/*
 				 * Se qualcosa va storto con l'invio dei messaggi al server si mostra un alert
@@ -150,9 +150,7 @@ public class AppMain extends Application {
 				
 				if (!ans.equals("OK")) {
 					
-					Alert missingTable = new Alert(Alert.AlertType.ERROR);
-					missingTable.setContentText(ans);
-					missingTable.show();
+					showAlert(ans);
 				} else {
 					
 					// mainStage.setScene(predictScene);
@@ -190,6 +188,7 @@ public class AppMain extends Application {
 		
 		// Si imposta il campo testuale in maniera che se risulta essere vuoto, il tasto di conferma viene disabilitato
 		tableName.setOnKeyReleased(e -> {
+
 			if (tableName.getText().equals("")) {
 				
 				confirm.setDisable(true);
@@ -202,36 +201,22 @@ public class AppMain extends Application {
 				}
 			}
 		});
-
-		selectionScene = new Scene(selectionPane);
-
+		
 		/*
 		 * Chiamata ai metodi per mostrare la scena principale
 		 */
-		
-		
 		homeScene = new Scene(pane, 400, 400);
+		selectionScene = new Scene(selectionPane, 400, 400);
 		mainStage.setScene(homeScene);
 		mainStage.show();
 	}
 
 	
-	private void tryConnection() {
+	private void connectToServer() throws IOException {
 		
-		try {
-
 			clientSocket = new Socket(ip, port);
-			System.out.println(clientSocket);		
 			out = new ObjectOutputStream(clientSocket.getOutputStream());
 			in = new ObjectInputStream(clientSocket.getInputStream());
-			
-		} catch(IOException e) {
-			
-			/*
-			 * Se qualcosa va storto con la creazione del collegamento si mostra un alert
-			 */
-			showAlert("Non e' stato possibile connettersi al server selezionato");
-		}
 	}
 	
 	private void showAlert(String message) {
