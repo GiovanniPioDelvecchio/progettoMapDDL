@@ -5,8 +5,10 @@ import java.net.Socket;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -14,6 +16,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
+import javafx.scene.control.Separator;
+import javafx.scene.control.ToolBar;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+
 import javafx.stage.Stage;
 
 public class AppMain extends Application {
@@ -22,9 +31,9 @@ public class AppMain extends Application {
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
 	private String ip = "localhost";
-	private int PORT = 8080;
-	
-	private Scene selectionScene;
+	private int port = 8080;
+
+	private Scene selectionScene, homeScene;
 	
 	public static void main(String[] args) {
 		
@@ -33,11 +42,85 @@ public class AppMain extends Application {
 	
 	public void start(Stage mainStage) {
 		
-		// Finestra di notifica in caso di errore di connessione al server.
-		Alert connErr = new Alert(Alert.AlertType.ERROR);
-		connErr.setContentText("Errore durante la connessione al server");
+		/** HOME **/
+
+		mainStage.setTitle("Client");
+		BorderPane pane = new BorderPane();
+
+		/*
+		 * descrizione componenti per la barra degli strumenti superiore
+		 */
+
+		ToolBar tools = new ToolBar();
+		Image gear = new Image("gear.png", 30, 30, true, true);
+		ImageView gearV = new ImageView(gear);
+		Image questionMark = new Image("questionMark.png", 30, 30, true, true);
+		ImageView questionMarkV = new ImageView(questionMark);
 		
-		// Finestra di selezione della tabella //
+		Button opt = new Button("Opzioni");
+		Button help = new Button("Aiuto");
+		opt.setGraphic(gearV);
+		help.setGraphic(questionMarkV);
+		
+		tools.getItems().addAll(opt, new Separator(), help);
+		pane.setTop(tools);		
+		
+		/*
+		 * Descrizione componenti per la vbox centrale
+		 */
+		VBox centralPanel = new VBox(50);
+		centralPanel.setAlignment(Pos.CENTER);
+		Label sel = new Label("Seleziona un'operazione");
+		Button load = new Button("Carica");
+		load.setMinSize(130, 20);
+		Button create = new Button("Crea");
+		create.setMinSize(130, 20);
+		centralPanel.getChildren().addAll(sel, load,create);
+		pane.setCenter(centralPanel);
+		
+		/*
+		 * Se il tasto "Carica" viene premuto, ci si connette al server e si comunica di caricare
+		 * dal file l'albero corrispondente al nome del file scelto
+		 */
+		
+		load.setOnAction(e -> {
+			
+			try {
+
+				connectToServer();
+				out.writeObject(2);
+				mainStage.setScene(selectionScene);
+			} catch(IOException | NullPointerException e1) {
+				
+				/*
+				 * Se qualcosa va storto con l'invio dei messaggi al server si mostra un alert
+				 */
+				showAlert("Non e' stato possibile comunicare l'operazione al server selezionato");
+			}
+		
+		});
+		
+		/*
+		 * Se il tasto "Crea" viene premuto, ci si connette al server e si comunica di caricare
+		 * da un database la tabella da cui verrÃ  ricavato l'albero di regressione
+		 */
+		create.setOnAction(e -> {
+
+			try {
+
+				connectToServer();
+				out.writeObject(0);
+				mainStage.setScene(selectionScene);
+			} catch(IOException | NullPointerException e1) {
+				
+				/*
+				 * Se qualcosa va storto con l'invio dei messaggi al server si mostra un alert
+				 */
+				showAlert("Non e' stato possibile comunicare l'operazione al server selezionato");
+			}
+		});
+
+		/** INSERIMENTO TABELLA **/
 
 		// Si viene a creare un layout a griglia
 		GridPane selectionPane = new GridPane();
@@ -46,11 +129,11 @@ public class AppMain extends Application {
 		selectionPane.setVgap(30);
 		selectionPane.setPadding(new Insets(30,30,30,30));
 		
-		//Sulla prima riga, per due colonne, si estende il label di richiesta.
+		// Sulla prima riga, per due colonne, si estende il label di richiesta.
 		Label selLabel = new Label("Inserisci il nome della tabella");
 		selectionPane.add(selLabel, 0, 0, 2, 1);
 		
-		//Sulla seconda riga, per due colonne, si estende il campo per inserire il testo contenente il nome della tabella
+		// Sulla seconda riga, per due colonne, si estende il campo per inserire il testo contenente il nome della tabella
 		TextField tableName = new TextField();
 		selectionPane.add(tableName, 0, 1, 2, 1);
 		
@@ -58,6 +141,7 @@ public class AppMain extends Application {
 		Button confirm = new Button("Conferma");
 		confirm.setDisable(true);
 		confirm.setOnAction(e -> {
+
 			try {
 				
 				// Alla pressione si tenta di mandare il nome della tabella al server
@@ -66,19 +150,18 @@ public class AppMain extends Application {
 				
 				if (!ans.equals("OK")) {
 					
-					Alert missingTable = new Alert(Alert.AlertType.ERROR);
-					missingTable.setContentText(ans);
-					missingTable.show();
+					showAlert(ans);
 				} else {
 					
 					// mainStage.setScene(predictScene);
 				}
 			} catch (ClassNotFoundException | IOException e1) {
 				
-				/* si presuppone che la connessione sia già stata stabilita
+				/* 
+				 * si presuppone che la connessione sia già stata stabilita
 				 * e pertanto non si prevede di gestire una NullPointerException
 				 */
-				connErr.show();
+				showAlert("Errore durante la connessione al server");
 			} 
 		});
 		selectionPane.add(confirm, 0, 2);
@@ -87,24 +170,25 @@ public class AppMain extends Application {
 		Button back = new Button("Indietro");
 		back.setOnAction(e -> { 
 			
-			if (clientSocket != null) {
+			if (clientSocket != null || clientSocket.isConnected()) {
 				
 				try {
-					
+
 					// se è in corso una comunicazione col server, si notifica che si sta tornando alla home
 					out.writeObject("ABORT");
+					clientSocket.close();
 				} catch (IOException e1) {
-					
-					connErr.show();
+
+					showAlert("Errore durante la connessione al server");
 				}
-		//		mainStage.setScene(homeScene);
-				
+				mainStage.setScene(homeScene);
 			}
 		});
 		selectionPane.add(back, 1, 2);
 		
 		// Si imposta il campo testuale in maniera che se risulta essere vuoto, il tasto di conferma viene disabilitato
 		tableName.setOnKeyReleased(e -> {
+
 			if (tableName.getText().equals("")) {
 				
 				confirm.setDisable(true);
@@ -117,10 +201,32 @@ public class AppMain extends Application {
 				}
 			}
 		});
-
-		selectionScene = new Scene(selectionPane);
-
-
+		
+		/*
+		 * Chiamata ai metodi per mostrare la scena principale
+		 */
+		homeScene = new Scene(pane, 400, 400);
+		selectionScene = new Scene(selectionPane, 400, 400);
+		mainStage.setScene(homeScene);
+		mainStage.show();
 	}
 
+	
+	private void connectToServer() throws IOException {
+		
+			clientSocket = new Socket(ip, port);
+			out = new ObjectOutputStream(clientSocket.getOutputStream());
+			in = new ObjectInputStream(clientSocket.getInputStream());
+	}
+	
+	private void showAlert(String message) {
+
+		/*
+		 * Se qualcosa va storto e' possibile mostrare una finestra di dialogo con un messaggio
+		 */
+		
+		Alert toShow = new Alert(Alert.AlertType.ERROR);
+		toShow.setContentText(message);
+		toShow.show();
+	}
 }
