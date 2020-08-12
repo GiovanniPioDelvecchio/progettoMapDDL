@@ -54,9 +54,9 @@ public class AppMain extends Application {
 		 */
 
 		ToolBar tools = new ToolBar();
-		Image gear = new Image("gear.png", 30, 30, true, true);
+		Image gear = new Image("file:res/gear.png", 30, 30, true, true);
 		ImageView gearV = new ImageView(gear);
-		Image questionMark = new Image("questionMark.png", 30, 30, true, true);
+		Image questionMark = new Image("file:res/questionMark.png", 30, 30, true, true);
 		ImageView questionMarkV = new ImageView(questionMark);
 		
 		Button opt = new Button("Opzioni");
