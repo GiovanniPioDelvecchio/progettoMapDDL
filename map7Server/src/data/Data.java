@@ -17,7 +17,7 @@ import database.Column;
 
 /**
  * Classe creata per modellare un insieme di esempi per l'addestramento di un albero di regressione.<br>
- * Una sua istanza può essere inizializzata a partire da una tabella MySQL di un database attraverso i metodi 
+ * Una sua istanza puï¿½ essere inizializzata a partire da una tabella MySQL di un database attraverso i metodi 
  * e le classi esposte dal package database.
  * 
  * @see database
@@ -51,14 +51,14 @@ public class Data {
 	
 	/**
 	 * Costruttore di <code>Data</code>.
-	 * Inizializza il training set a partire da una tabella di un database, il cui nome è fornito in 
+	 * Inizializza il training set a partire da una tabella di un database, il cui nome ï¿½ fornito in 
 	 * input. Tale tabella deve essere non vuota, con almeno due attributi di cui l'ultimo deve sempre essere l'attributo target.
 	 * In caso vi siano errori nella inizializzazione del set viene lanciata <code>TrainingDataException</code>.
 	 * 
 	 * @param tableName Stringa contenente il nome della tabella da cui inizializzare il training set.
 	 * 
-	 * @throws TrainingDataException viene lanciata se nella connessione alla base di dati, l'attributo target non è dichiarato
-	 * come numerico o ha valori non accettabili, vi sono meno di due attributi o la tabella è vuota o non presente.
+	 * @throws TrainingDataException viene lanciata se nella connessione alla base di dati, l'attributo target non ï¿½ dichiarato
+	 * come numerico o ha valori non accettabili, vi sono meno di due attributi o la tabella ï¿½ vuota o non presente.
 	 */
 	public Data(String tableName) throws TrainingDataException {
 		
@@ -71,7 +71,7 @@ public class Data {
 			/* si rilancia l'eccezione ottenuta in caso di errore di connessione
 			 * sottoforma di TrainingDataException.
 			 */
-			throw new TrainingDataException(e.getMessage());
+			throw new TrainingDataException("Unable to connect to the database");
 		}
 		
 		TableSchema schema;
@@ -88,7 +88,7 @@ public class Data {
 			
 			if (schema.getNumberOfAttributes() == 0) {
 				
-				//schema è restituito senza attributi se la tabella non esiste.
+				//schema ï¿½ restituito senza attributi se la tabella non esiste.
 				throw new TrainingDataException("Table not found");
 			}
 			
@@ -100,7 +100,7 @@ public class Data {
 			
 			if (!schema.getColumn(schema.getNumberOfAttributes() - 1).isNumber()) {
 				
-				//Si lancia un'eccezione se l'ultimo attributo (target) della tabella non è numerico.
+				//Si lancia un'eccezione se l'ultimo attributo (target) della tabella non ï¿½ numerico.
 				throw new TrainingDataException("Missing class attribute");
 			}
 			
@@ -112,7 +112,7 @@ public class Data {
 					
 					if (index == schema.getNumberOfAttributes() - 1) {
 						
-						//se l'attributo è l'ultimo, allora è l'attributo di classe
+						//se l'attributo ï¿½ l'ultimo, allora ï¿½ l'attributo di classe
 						classAttribute = new ContinuousAttribute(c.getColumnName(), index);
 					} else {
 						
@@ -121,7 +121,7 @@ public class Data {
 					
 				} else {
 					/*
-					 * Poichè getDistinctColumnValues restituisce un set di object, ed esso non può essere
+					 * Poichï¿½ getDistinctColumnValues restituisce un set di object, ed esso non puï¿½ essere
 					 * direttamente castato in un set di stringhe (utile ad inizializzare l'attributo discreto)
 					 * si esegue un "travaso" con cast esplicito.
 					 * In caso di errore durante il cast viene sollevata un'eccezione gestita in seguito.
@@ -161,7 +161,7 @@ public class Data {
 		} finally {
 			/* Qualsiasi cosa accada nel blocco precedente, si chiude la connessione al database
 			 * Ricordiamo che se la connessione rimane aperta, potrebbero essere generati ulteriori errori
-			 * poichè il database ha un massimale di connessioni aperte che può mantenere	.
+			 * poichï¿½ il database ha un massimale di connessioni aperte che puï¿½ mantenere	.
 			 */ 
 			try {
 				
@@ -207,7 +207,7 @@ public class Data {
 	 * 
 	 * @return un oggetto di tipo Double contenente il valore dell'attributo target dell'esempio.
 	 * 
-	 * @throws IndexOutOfBoundsException Lancia un'eccezione se l'indice è fuori range.
+	 * @throws IndexOutOfBoundsException Lancia un'eccezione se l'indice ï¿½ fuori range.
 	 */
 	public Double getClassValue(int exampleIndex) {
 		
@@ -233,7 +233,7 @@ public class Data {
 	 * 
 	 * @return un oggetto di tipo <code>Object</code> contenente il valore dell'attributo indicato, dell'esempio indicato.
 	 * 
-	 * @throws IndexOutOfBoundsException Lancia un'eccezione se uno dei due indici è fuori range.
+	 * @throws IndexOutOfBoundsException Lancia un'eccezione se uno dei due indici ï¿½ fuori range.
 	 */
 	public Object getExplanatoryValue(int exampleIndex, int attributeIndex) {
 		
@@ -249,7 +249,7 @@ public class Data {
 	 * 
 	 * @return L'attributo rinvenuto al corrispondente indice.
 	 * 
-	 * @throws IndexOutOfBoundsException Lancia un'eccezione se l'indice è fuori range.
+	 * @throws IndexOutOfBoundsException Lancia un'eccezione se l'indice ï¿½ fuori range.
 	 */
 	public Attribute getExplanatoryAttribute(int index) {
 
@@ -284,8 +284,8 @@ public class Data {
 	 * @param beginExampleIndex Indice dell'esempio da cui comincia la porzione del set da ordinare.
 	 * @param endExampleIndex Indice dell'esempio in cui finisce (compreso) la porzione del set da ordinare.
 	 * 
-	 * @throws IndexOutOfBoundsException Lancia un'eccezione se uno dei due indici è fuori range oppure
-	 *		   l'indice dell'attributo lo è.
+	 * @throws IndexOutOfBoundsException Lancia un'eccezione se uno dei due indici ï¿½ fuori range oppure
+	 *		   l'indice dell'attributo lo ï¿½.
 	 */
 	public void sort(Attribute attribute, int beginExampleIndex, int endExampleIndex) {
 		
