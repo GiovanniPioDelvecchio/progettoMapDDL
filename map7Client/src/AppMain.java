@@ -5,6 +5,8 @@ import java.net.Socket;
 import java.util.Arrays;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -17,7 +19,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableFocusModel;
+import javafx.scene.control.TableView;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -31,10 +37,20 @@ public class AppMain extends Application {
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
 	// L'indirizzo ip di default e' quello di loopback, che porta al localhost
-	private String ip = "127.0.0.1";
-	private int port = 8080;
+	
+	/*
+	 * Viene creata una ObservableList di istanze di ServerInformation contenente le informazioni sulle possibili connessioni ai server effettuabili.
+	 * La lista viene inizializzata con un server di default, che rappresenta il localhost
+	 */
+	private ObservableList<ServerInformation> servers = FXCollections.observableArrayList(new ServerInformation("127.0.0.1", 8080, "default"));
+	
+	// Il server a cui viene inizializzato il programma e' quello di default
+	private ServerInformation currServer = servers.get(0);
+	
+//	private String ip = "127.0.0.1";
+//	private int port = 8080;
 
-	private Scene selectionScene, homeScene, settingsScene;
+	private Scene selectionScene, homeScene, settingsScene, newServerScene;
 
 	public static void main(String[] args) {
 		
@@ -209,11 +225,74 @@ public class AppMain extends Application {
 		
 		/** FINESTRA DELLE IMPOSTAZIONI **/
 		
-		GridPane settingsPane = new GridPane();
-		settingsPane.setAlignment(Pos.CENTER);
-		settingsPane.setHgap(10);
-		settingsPane.setVgap(10);
-		settingsPane.setPadding(new Insets(25, 50, 25, 25));
+		BorderPane serversPane = new BorderPane();
+
+		/* 
+		 * Dichiaro un TableView per la visione dei server conosciuti, e utilizzo i dati
+		 * di servers per tenerea aggiornata la tabella
+		 */
+		TableView<ServerInformation> serverTable = new TableView<ServerInformation>(servers);
+		
+		/*
+		 * Dichiaro le colonne che compongono la tabella. Oltre ad assegnare il nome della tabella,
+		 * lego ogni colonna all'attributo Property relativo in ServerInformation, tramite il metodo
+		 * setCellValueFactory 
+		 */
+		TableColumn<ServerInformation, String> idCol = new TableColumn<ServerInformation, String>("ID");
+		idCol.setCellValueFactory(new PropertyValueFactory<ServerInformation, String>("id"));
+		
+		TableColumn<ServerInformation, String> ipCol = new TableColumn<ServerInformation, String>("Indirizzo Ip");
+		ipCol.setCellValueFactory(new PropertyValueFactory<ServerInformation, String>("ip"));
+		
+		TableColumn<ServerInformation, Integer> portCol = new TableColumn<ServerInformation, Integer>("Porta");
+		portCol.setCellValueFactory(new PropertyValueFactory<ServerInformation, Integer>("port"));
+		
+		// Infine imposto le colonne della tabella a quelle appena create
+		serverTable.getColumns().setAll(idCol, ipCol, portCol);
+		TableView.TableViewFocusModel<ServerInformation> userFocus = new TableView.TableViewFocusModel<ServerInformation>(serverTable);
+		serverTable.setFocusModel(userFocus);
+		
+		HBox settingsButtonsLayout = new HBox();
+		settingsButtonsLayout.setAlignment(Pos.CENTER);
+		settingsButtonsLayout.setPadding(new Insets(25, 25, 25, 25));
+		
+		
+		Button addServer = new Button("Aggiungi");
+		Button removeServer = new Button("Elimina");
+		Button confirmServer = new Button("Conferma");
+		Button backSettings = new Button("Indietro");
+		backSettings.setOnAction(back.getOnAction());
+		settingsButtonsLayout.getChildren().addAll(addServer, removeServer, confirmServer, backSettings);
+		
+		addServer.setOnAction(e -> {
+			
+			mainStage.setScene(newServerScene);
+		});
+		
+		removeServer.setOnAction(e -> {
+			
+			/*
+			 * TODO: implementare la rimozione del server selezionato dalla lista di server memorizzati
+			 */
+		});
+		
+		confirmServer.setOnAction(e -> {
+			
+			currServer = userFocus.getFocusedItem();
+			mainStage.setScene(homeScene);
+		});
+		
+		
+		serversPane.setCenter(serverTable);
+		serversPane.setBottom(settingsButtonsLayout);
+		
+		/** AGGIUNTA NUOVO SERVER **/
+		
+		GridPane newServerPane = new GridPane();
+		newServerPane.setAlignment(Pos.CENTER);
+		newServerPane.setHgap(10);
+		newServerPane.setVgap(10);
+		newServerPane.setPadding(new Insets(25, 50, 25, 25));
 		
 		Label ipLabel = new Label("Indirizzo IP");
 		Label portLabel = new Label("Porta");
@@ -287,6 +366,10 @@ public class AppMain extends Application {
 				 * si modifica l'indirizzo ip corrente.
 				 */
 				
+				StringBuffer newIp = null;
+				int intPort = -1;
+				String newId = null;
+				
 				// Se nessun campo di testo e' riempito, allora l'indirizzo ip utilizzato e' l'ultimo selezionato.
 				boolean isDefault = Arrays.asList(ipAdd).stream().filter(i -> ((TextField) i).getText().equals("")).count() == 4;
 				
@@ -316,14 +399,14 @@ public class AppMain extends Application {
 						 * Viene utilizzato un oggetto StringBuffer in maniera da non creare un nuovo oggetto di classe
 						 * String per ogni iterazione del ciclo.
 						 */
-						StringBuffer newIp = new StringBuffer("");
+						newIp = new StringBuffer("");
 						for (int i = 0; i < 3; i++) {
 							
 							newIp.append(ipAdd[i].getText());
 							newIp.append(".");
 						}
 						newIp.append(ipAdd[3].getText());
-						ip = new String(newIp);
+//						ip = new String(newIp);
 					} else {
 		
 						showAlert("L'indirizzo IP inserito non è valido.\n"
@@ -342,14 +425,11 @@ public class AppMain extends Application {
 				
 					final String errorMessage = "Il numero di porta inserito non è valido.\n"
 							+ "Il numero di porta deve essere un intero fra 1 e 65535.";
-					int intPort;
+
 					try {
 
 						intPort = Integer.parseInt(readPort);
-						if (intPort > 0 && intPort <= 65535) {
-
-							port = intPort;
-						} else {
+						if (!(intPort > 0 && intPort <= 65535)) {
 
 							showAlert(errorMessage);
 						}
@@ -359,6 +439,8 @@ public class AppMain extends Application {
 					}
 				}
 				
+				servers.add(new ServerInformation(newIp.toString(), intPort, newId));
+				currServer = servers.get(servers.size() - 1);
 				// Infine si aggiornano le stringhe di prompt dei campi testuali con i valori correnti di indirizzo ip e porta
 				updateSettingsPromptText(ipAdd, portField);
 			}
@@ -390,19 +472,20 @@ public class AppMain extends Application {
 		/*
 		 * Si aggiungono i nodi alla griglia di layout.
 		 */
-		settingsPane.add(ipLabel, 1, 1);
-		settingsPane.add(ipLayout, 2, 1);
-		settingsPane.add(portLabel, 1, 2);
-		settingsPane.add(portField, 2, 2);
-		settingsPane.add(confirmButtonSettings, 1, 3);
-		settingsPane.add(backLayoutSettings, 2, 3);
+		newServerPane.add(ipLabel, 1, 1);
+		newServerPane.add(ipLayout, 2, 1);
+		newServerPane.add(portLabel, 1, 2);
+		newServerPane.add(portField, 2, 2);
+		newServerPane.add(confirmButtonSettings, 1, 3);
+		newServerPane.add(backLayoutSettings, 2, 3);
 		
 		/*
 		 * Chiamata ai metodi per mostrare la scena principale
 		 */
 		homeScene = new Scene(homePane, 400, 400);
 		selectionScene = new Scene(selectionPane, 400, 400);
-		settingsScene = new Scene(settingsPane, 400,400);
+		settingsScene = new Scene(serversPane, 400, 400);
+		newServerScene = new Scene(newServerPane, 400,400);
 		mainStage.setScene(homeScene);
 		mainStage.show();
 	}
@@ -410,7 +493,7 @@ public class AppMain extends Application {
 	
 	private void connectToServer() throws IOException {
 		
-			clientSocket = new Socket(ip, port);
+			clientSocket = new Socket(currServer.getIp(), currServer.getPort());
 			out = new ObjectOutputStream(clientSocket.getOutputStream());
 			in = new ObjectInputStream(clientSocket.getInputStream());
 	}
@@ -438,13 +521,13 @@ public class AppMain extends Application {
 	 */
 	private void updateSettingsPromptText(TextField[] ipAdd, TextField portField) {
 		
-		String[] currIpString = ip.split("\\.");
+		String[] currIpString = currServer.getIp().split("\\.");
 		for (int i = 0; i < 4; i++) {
 			
 			ipAdd[i].setPromptText(currIpString[i]);
 		}
 		
-		portField.setPromptText(new Integer(port).toString());
+		portField.setPromptText(new Integer(currServer.getPort()).toString());
 
 	}
 }
