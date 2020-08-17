@@ -20,7 +20,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableFocusModel;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -41,14 +40,13 @@ public class AppMain extends Application {
 	/*
 	 * Viene creata una ObservableList di istanze di ServerInformation contenente le informazioni sulle possibili connessioni ai server effettuabili.
 	 * La lista viene inizializzata con un server di default, che rappresenta il localhost
+	 * 
+	 * TODO: implementare serializzazione
 	 */
 	private ObservableList<ServerInformation> servers = FXCollections.observableArrayList(new ServerInformation("127.0.0.1", 8080, "default"));
 	
 	// Il server a cui viene inizializzato il programma e' quello di default
 	private ServerInformation currServer = servers.get(0);
-	
-//	private String ip = "127.0.0.1";
-//	private int port = 8080;
 
 	private Scene selectionScene, homeScene, settingsScene, newServerScene;
 
@@ -249,6 +247,8 @@ public class AppMain extends Application {
 		
 		// Infine imposto le colonne della tabella a quelle appena create
 		serverTable.getColumns().setAll(idCol, ipCol, portCol);
+		
+		// Creo un'istanza di TableViewFocusModel per gestire le celle evidenziate dall'utente
 		TableView.TableViewFocusModel<ServerInformation> userFocus = new TableView.TableViewFocusModel<ServerInformation>(serverTable);
 		serverTable.setFocusModel(userFocus);
 		
@@ -276,13 +276,6 @@ public class AppMain extends Application {
 			 */
 		});
 		
-		confirmServer.setOnAction(e -> {
-			
-			currServer = userFocus.getFocusedItem();
-			mainStage.setScene(homeScene);
-		});
-		
-		
 		serversPane.setCenter(serverTable);
 		serversPane.setBottom(settingsButtonsLayout);
 		
@@ -296,6 +289,7 @@ public class AppMain extends Application {
 		
 		Label ipLabel = new Label("Indirizzo IP");
 		Label portLabel = new Label("Porta");
+		Label idLabel = new Label("Server ID");
 		
 		/*
 		 * Per limitare il margine di errore nell'inserimento dell'indirizzo IP,
@@ -334,12 +328,14 @@ public class AppMain extends Application {
 		 */
 		TextField portField = new TextField();
 		portField.setMaxWidth(45d);
+		
+		TextField idField = new TextField();
 
 		/*
 		 * Con questa chiamata a funzione si aggiornano i testi di prompt dei campi testuali
 		 * con i valori correnti dell'indirizzo ip e della porta.
 		 */
-		updateSettingsPromptText(ipAdd, portField);
+		updateSettingsPromptText(ipAdd, portField, idField);
 
 		/*
 		 * Infine si utilizzano due pulsanti, uno di conferma e uno per tornare alla home del programma.
@@ -368,7 +364,6 @@ public class AppMain extends Application {
 				
 				StringBuffer newIp = null;
 				int intPort = -1;
-				String newId = null;
 				
 				// Se nessun campo di testo e' riempito, allora l'indirizzo ip utilizzato e' l'ultimo selezionato.
 				boolean isDefault = Arrays.asList(ipAdd).stream().filter(i -> ((TextField) i).getText().equals("")).count() == 4;
@@ -406,7 +401,6 @@ public class AppMain extends Application {
 							newIp.append(".");
 						}
 						newIp.append(ipAdd[3].getText());
-//						ip = new String(newIp);
 					} else {
 		
 						showAlert("L'indirizzo IP inserito non è valido.\n"
@@ -439,10 +433,29 @@ public class AppMain extends Application {
 					}
 				}
 				
-				servers.add(new ServerInformation(newIp.toString(), intPort, newId));
+				String readId = idField.getText();
+				
+				/*
+				 * L'ID dovra' essere un campo compilato, e non devono essere gia' presenti in memoria
+				 * server con lo stesso id impostato
+				 */
+				if(readId.equals("")) {
+					
+					showAlert("Il server deve avere un identificatore");
+				}
+				
+				// TODO: capire perche' non funziona
+				if (servers.contains(new ServerInformation("", 0, readId))) {
+					
+					showAlert("Un server dall'ID " + readId + " e' gia' esistente.");
+				}
+				
+				// TODO: nullpointerexception in caso di campo errato
+				servers.add(new ServerInformation(newIp.toString(), intPort, readId));
 				currServer = servers.get(servers.size() - 1);
 				// Infine si aggiornano le stringhe di prompt dei campi testuali con i valori correnti di indirizzo ip e porta
-				updateSettingsPromptText(ipAdd, portField);
+				updateSettingsPromptText(ipAdd, portField, idField);
+				mainStage.setScene(newServerScene);
 			}
 		};
 
@@ -461,6 +474,7 @@ public class AppMain extends Application {
 				}
 			});
 		}
+		
 		portField.setOnKeyReleased(e -> {
 
 			if (e.getCode().equals(KeyCode.ENTER)) {
@@ -470,14 +484,27 @@ public class AppMain extends Application {
 		});
 
 		/*
+		 * Questo bottone appartiene alla schermata di visione dei server, ma la dichiarazione del comportamento
+		 * e' effettuata qua, poiche' deve richiamare updateSettingsPromptText
+		 */
+		confirmServer.setOnAction(e -> {
+			
+			currServer = userFocus.getFocusedItem();
+			updateSettingsPromptText(ipAdd, portField, idField);
+			mainStage.setScene(homeScene);
+		});
+		
+		/*
 		 * Si aggiungono i nodi alla griglia di layout.
 		 */
-		newServerPane.add(ipLabel, 1, 1);
-		newServerPane.add(ipLayout, 2, 1);
-		newServerPane.add(portLabel, 1, 2);
-		newServerPane.add(portField, 2, 2);
-		newServerPane.add(confirmButtonSettings, 1, 3);
-		newServerPane.add(backLayoutSettings, 2, 3);
+		newServerPane.add(idLabel, 1, 1);
+		newServerPane.add(idField, 2, 1);
+		newServerPane.add(ipLabel, 1, 2);
+		newServerPane.add(ipLayout, 2, 2);
+		newServerPane.add(portLabel, 1, 3);
+		newServerPane.add(portField, 2, 3);
+		newServerPane.add(confirmButtonSettings, 1, 4);
+		newServerPane.add(backLayoutSettings, 2, 4);
 		
 		/*
 		 * Chiamata ai metodi per mostrare la scena principale
@@ -519,15 +546,18 @@ public class AppMain extends Application {
 	 * @param ipAdd Array di <code>TextField</code> che compongono un indirizzo Ip.
 	 * @param portField <code>TextField</code> dove verra' inserito il numero di porta.
 	 */
-	private void updateSettingsPromptText(TextField[] ipAdd, TextField portField) {
+	private void updateSettingsPromptText(TextField[] ipAdd, TextField portField, TextField idField) {
 		
 		String[] currIpString = currServer.getIp().split("\\.");
 		for (int i = 0; i < 4; i++) {
 			
 			ipAdd[i].setPromptText(currIpString[i]);
+			ipAdd[i].setText("");
 		}
 		
 		portField.setPromptText(new Integer(currServer.getPort()).toString());
-
+		portField.setText("");
+		idField.setPromptText(currServer.getId());
+		idField.setText("");
 	}
 }
