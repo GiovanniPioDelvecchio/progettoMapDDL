@@ -3,6 +3,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -134,13 +135,17 @@ public class AppMain extends Application {
 		 *	deve precedere la predizione stessa (handlePredict)
 		 */
 		BorderPane predictPane = new BorderPane();
-		VBox predictBox = new VBox();
-		Label predictMessage = new Label();
+		VBox predictBox = new VBox(50);
+		//Label predictMessage = new Label();
+		HBox userChoices = new HBox(50);
 		Label predictedValue = new Label();
-		TextField userChoice = new TextField();
-		HBox predictButtons = new HBox();
-		Button confirmChoice = new Button("Conferma");
-		
+		//TextField userChoice = new TextField();
+		HBox predictButtons = new HBox(50);
+		//Button confirmChoice = new Button("Conferma");
+		predictBox.setAlignment(Pos.CENTER);
+		userChoices.setAlignment(Pos.CENTER);
+		predictedValue.setAlignment(Pos.CENTER);
+		predictButtons.setAlignment(Pos.CENTER);
 		
 		Button redo = new Button("Ricomincia");
 		redo.setDisable(true);
@@ -170,7 +175,7 @@ public class AppMain extends Application {
 				out.writeObject(3);
 				predictedValue.setText("");
 				redo.setDisable(true);
-				handlePredict(predictMessage, predictedValue, redo);
+				handlePredict(userChoices, predictedValue, redo);
 			} catch (IOException e1) {
 				
 				showAlert("Non è stato possibile raggiungere il server");
@@ -178,6 +183,7 @@ public class AppMain extends Application {
 			
 		});
 		
+		/* Il tasto di conferma non è più necessario
 		confirmChoice.setOnAction(e->{
 			
 			if (!predictMessage.getText().equals("")) {
@@ -202,17 +208,18 @@ public class AppMain extends Application {
 				}
 			}
 		});
+		*/
 		
 		
 		
-		
-		predictButtons.getChildren().add(confirmChoice);
+		//predictButtons.getChildren().add(confirmChoice);
 		predictButtons.getChildren().add(redo);
 		predictButtons.getChildren().add(backPredict);
-		predictBox.getChildren().add(predictMessage);
-		predictBox.getChildren().add(userChoice);
+		//predictBox.getChildren().add(predictMessage);
+		predictBox.getChildren().add(userChoices);
 		predictBox.getChildren().add(predictButtons);
 		predictBox.getChildren().add(predictedValue);
+		
 		predictPane.setCenter(predictBox);
 		
 		
@@ -270,7 +277,7 @@ public class AppMain extends Application {
 					out.writeObject(3);
 					//confirmChoice.setDisable(false);
 					
-					handlePredict(predictMessage, predictedValue, redo);
+					handlePredict(userChoices, predictedValue, redo);
 					
 					//confirmChoice.setDisable(true);
 
@@ -537,7 +544,7 @@ public class AppMain extends Application {
 		toShow.show();
 	}
 	
-	private void handlePredict(Label predictMessage, Label predictedValue, Button redo) {
+	private void handlePredict(HBox userChoices, Label predictedValue, Button redo) {
 		
 		try {
 			
@@ -548,7 +555,15 @@ public class AppMain extends Application {
 			
 			if(toCheck.equals("QUERY")) {
 				
-				predictMessage.setText((String)in.readObject());
+				//predictMessage.setText((String)in.readObject());
+				LinkedList<String> options = new LinkedList<String>((LinkedList<String>)in.readObject());
+				int i = 0;
+				for (String elem : options) {
+					
+					addSplitButton(userChoices, elem, i, predictedValue, redo);
+					i++;
+				}
+				
 			} else {
 				
 				predictedValue.setText(((Double)in.readObject()).toString());
@@ -556,7 +571,7 @@ public class AppMain extends Application {
 				//confirmation.setContentText("Vuoi ripetere?");
 				//confirmation.show();
 				
-				predictMessage.setText("Vuoi ricominciare?");
+				//predictMessage.setText("Vuoi ricominciare?");
 				redo.setDisable(false);
 				
 					
@@ -572,6 +587,26 @@ public class AppMain extends Application {
 		
 			e.printStackTrace();
 		}
+	}
+	
+	
+	public void addSplitButton(HBox userChoices, String toInsert, Integer toSend, Label predictedValue, Button redo) {
+		
+		Button toShow = new Button(toInsert);
+		toShow.setOnAction(e->{
+			
+			try {
+				
+				out.writeObject(toSend);
+				userChoices.getChildren().clear();
+				handlePredict(userChoices, predictedValue, redo);
+				
+			} catch (IOException e1) {
+				
+				showAlert("Impossibile inviare la risposta");
+			}
+		});
+		userChoices.getChildren().add(toShow);
 	}
 	
 	/**
