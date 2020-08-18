@@ -67,7 +67,7 @@ public class ServerInformation implements Serializable {
 		
 		if (other instanceof ServerInformation) {
 			
-			return id.equals(((ServerInformation) other).id);
+			return id.get().equals(((ServerInformation) other).id.get());
 		} else {
 			
 			return false;

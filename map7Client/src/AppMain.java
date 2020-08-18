@@ -261,7 +261,12 @@ public class AppMain extends Application {
 		Button removeServer = new Button("Elimina");
 		Button confirmServer = new Button("Conferma");
 		Button backSettings = new Button("Indietro");
-		backSettings.setOnAction(back.getOnAction());
+		
+		backSettings.setOnAction(e -> {
+			
+			mainStage.setScene(homeScene);
+		});
+
 		settingsButtonsLayout.getChildren().addAll(addServer, removeServer, confirmServer, backSettings);
 		
 		addServer.setOnAction(e -> {
@@ -271,9 +276,11 @@ public class AppMain extends Application {
 		
 		removeServer.setOnAction(e -> {
 			
-			/*
-			 * TODO: implementare la rimozione del server selezionato dalla lista di server memorizzati
-			 */
+			servers.remove(userFocus.getFocusedItem());
+			if (servers.size() == 0) {
+				
+				confirmServer.setDisable(true);
+			}
 		});
 		
 		serversPane.setCenter(serverTable);
@@ -357,55 +364,49 @@ public class AppMain extends Application {
 				
 				/*
 				 * Si controlla se l'ip inserito e' un indirizzo ip valido.
-				 * Se i field sono vuoti, si lascia il valore dell'ultimo indirizzo ip utilizzato.
-				 * Se l'indirizzo ip inserito e' mal formattato, viene visualizzato un errore, e non
-				 * si modifica l'indirizzo ip corrente.
+				 * Se l'indirizzo ip inserito e' mal formattato, viene visualizzato un errore, e non viene
+				 * inserito il nuovo server.
 				 */
 				
 				StringBuffer newIp = null;
 				int intPort = -1;
-				
-				// Se nessun campo di testo e' riempito, allora l'indirizzo ip utilizzato e' l'ultimo selezionato.
-				boolean isDefault = Arrays.asList(ipAdd).stream().filter(i -> ((TextField) i).getText().equals("")).count() == 4;
-				
-				if (!isDefault) {
 
-					boolean isValid = true;
-					for (TextField i : ipAdd) {
+				boolean isValid = true;
+				for (TextField i : ipAdd) {
+					
+					int readInteger = -1;
+					try {
+	
+						readInteger = Integer.parseInt(i.getText());
+					} catch (NumberFormatException err) {
 						
-						int readInteger = -1;
-						try {
-		
-							readInteger = Integer.parseInt(i.getText());
-						} catch (NumberFormatException err) {
-							
-							isValid = false;
-							break;
-						}
-						if (readInteger < 0 || readInteger > 255) {
-							
-							isValid = false;
-							break;
-						}
+						isValid = false;
+						break;
 					}
-					if (isValid) {
-		
-						/*
-						 * Viene utilizzato un oggetto StringBuffer in maniera da non creare un nuovo oggetto di classe
-						 * String per ogni iterazione del ciclo.
-						 */
-						newIp = new StringBuffer("");
-						for (int i = 0; i < 3; i++) {
-							
-							newIp.append(ipAdd[i].getText());
-							newIp.append(".");
-						}
-						newIp.append(ipAdd[3].getText());
-					} else {
-		
-						showAlert("L'indirizzo IP inserito non è valido.\n"
-								+ "I valori che compongono l'indirizzo devono essere interi da 0 a 255.");
+					if (readInteger < 0 || readInteger > 255) {
+						
+						isValid = false;
+						break;
 					}
+				}
+				if (isValid) {
+	
+					/*
+					 * Viene utilizzato un oggetto StringBuffer in maniera da non creare un nuovo oggetto di classe
+					 * String per ogni iterazione del ciclo.
+					 */
+					newIp = new StringBuffer("");
+					for (int i = 0; i < 3; i++) {
+						
+						newIp.append(ipAdd[i].getText());
+						newIp.append(".");
+					}
+					newIp.append(ipAdd[3].getText());
+				} else {
+	
+					showAlert("L'indirizzo IP inserito non è valido.\n"
+							+ "I valori che compongono l'indirizzo devono essere interi da 0 a 255.");
+					return;
 				}
 				
 				/*
@@ -426,10 +427,12 @@ public class AppMain extends Application {
 						if (!(intPort > 0 && intPort <= 65535)) {
 
 							showAlert(errorMessage);
+							return;
 						}
 					} catch (NumberFormatException f) {
 
 						showAlert(errorMessage);
+						return;
 					}
 				}
 				
@@ -442,20 +445,25 @@ public class AppMain extends Application {
 				if(readId.equals("")) {
 					
 					showAlert("Il server deve avere un identificatore");
+					return;
 				}
 				
 				// TODO: capire perche' non funziona
 				if (servers.contains(new ServerInformation("", 0, readId))) {
-					
-					showAlert("Un server dall'ID " + readId + " e' gia' esistente.");
+
+					showAlert("Un server dall'ID \"" + readId + "\" e' gia' esistente.");
+					return;
 				}
 				
-				// TODO: nullpointerexception in caso di campo errato
 				servers.add(new ServerInformation(newIp.toString(), intPort, readId));
 				currServer = servers.get(servers.size() - 1);
 				// Infine si aggiornano le stringhe di prompt dei campi testuali con i valori correnti di indirizzo ip e porta
 				updateSettingsPromptText(ipAdd, portField, idField);
-				mainStage.setScene(newServerScene);
+				
+				// Si sblocca il pulsante per confermare l'aggiunta di un server
+				confirmServer.setDisable(false);
+				
+				mainStage.setScene(settingsScene);
 			}
 		};
 
@@ -488,7 +496,7 @@ public class AppMain extends Application {
 		 * e' effettuata qua, poiche' deve richiamare updateSettingsPromptText
 		 */
 		confirmServer.setOnAction(e -> {
-			
+
 			currServer = userFocus.getFocusedItem();
 			updateSettingsPromptText(ipAdd, portField, idField);
 			mainStage.setScene(homeScene);
