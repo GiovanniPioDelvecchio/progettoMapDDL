@@ -1,8 +1,13 @@
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -40,8 +45,6 @@ public class AppMain extends Application {
 	/*
 	 * Viene creata una ObservableList di istanze di ServerInformation contenente le informazioni sulle possibili connessioni ai server effettuabili.
 	 * La lista viene inizializzata con un server di default, che rappresenta il localhost
-	 * 
-	 * TODO: implementare serializzazione
 	 */
 	private ObservableList<ServerInformation> servers = FXCollections.observableArrayList(new ServerInformation("127.0.0.1", 8080, "default"));
 	
@@ -222,6 +225,51 @@ public class AppMain extends Application {
 		
 		
 		/** FINESTRA DELLE IMPOSTAZIONI **/
+		
+		/*
+		 * Caricamento delle informazioni sui server precedentemente serializzate.
+		 * In caso di caricamento non andato a buon fine, viene lasciata la lista dei server
+		 * di default.
+		 * 
+		 * TODO: gli attributi di ServerInformation non sono serializzabili
+		 */
+		try {
+
+			FileInputStream serversInFile = new FileInputStream("servers.info");
+			ObjectInputStream serversIn = new ObjectInputStream(serversInFile);
+			
+			List<ServerInformation> serversList = (List<ServerInformation>) serversIn.readObject();
+			servers = FXCollections.observableArrayList(serversList);
+			
+			serversIn.close();
+			serversInFile.close();
+		} catch (IOException | ClassNotFoundException e1) {
+
+			// test
+			e1.printStackTrace();
+		}
+		
+		/*
+		 * Viene impostata la serializzazione della lista di server conosciuti alla chiusura
+		 * del programma.
+		 */
+		mainStage.setOnCloseRequest(e -> {
+			
+			try {
+				
+				FileOutputStream serverOutFile = new FileOutputStream("servers.info");
+				ObjectOutputStream serverOut = new ObjectOutputStream(serverOutFile);
+				
+				serverOut.writeObject(new ArrayList<ServerInformation>(servers));
+				
+				serverOut.close();
+				serverOutFile.close();
+			} catch (IOException e1) {
+
+				// test
+				e1.printStackTrace();
+			}
+		});
 		
 		BorderPane serversPane = new BorderPane();
 
