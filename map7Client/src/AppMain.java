@@ -40,14 +40,13 @@ public class AppMain extends Application {
 	private Socket clientSocket;
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
-	// L'indirizzo ip di default e' quello di loopback, che porta al localhost
-	
+
 	/*
 	 * Viene creata una ObservableList di istanze di ServerInformation contenente le informazioni sulle possibili connessioni ai server effettuabili.
 	 * La lista viene inizializzata con un server di default, che rappresenta il localhost
 	 */
 	private ObservableList<ServerInformation> servers = FXCollections.observableArrayList(new ServerInformation("127.0.0.1", 8080, "default"));
-	
+
 	// Il server a cui viene inizializzato il programma e' quello di default
 	private ServerInformation currServer = servers.get(0);
 
@@ -226,27 +225,35 @@ public class AppMain extends Application {
 		
 		/** FINESTRA DELLE IMPOSTAZIONI **/
 		
+		/* Logica di serializzazione dei server conosciuti */
+		
 		/*
 		 * Caricamento delle informazioni sui server precedentemente serializzate.
 		 * In caso di caricamento non andato a buon fine, viene lasciata la lista dei server
 		 * di default.
-		 * 
-		 * TODO: gli attributi di ServerInformation non sono serializzabili
 		 */
 		try {
 
 			FileInputStream serversInFile = new FileInputStream("servers.info");
 			ObjectInputStream serversIn = new ObjectInputStream(serversInFile);
-			
-			List<ServerInformation> serversList = (List<ServerInformation>) serversIn.readObject();
-			servers = FXCollections.observableArrayList(serversList);
-			
+
+			/*
+			 * La lista letta dal file e' una lista di MutableServerInformation, ovvero informazioni sui server
+			 * modificabili. Dopo la lettura della lista, i suoi contenuti vengono inseriti nell'attributo
+			 * servers, sotto forma di ServerInformation (quindi oggetti read-only).
+			 */
+			ArrayList<MutableServerInformation> serializedServerList = (ArrayList<MutableServerInformation>) serversIn.readObject();
+
+			servers.clear();
+			for (MutableServerInformation s : serializedServerList) {
+				
+				servers.add(s.toServerInformation());
+			}
+
 			serversIn.close();
 			serversInFile.close();
 		} catch (IOException | ClassNotFoundException e1) {
 
-			// test
-			e1.printStackTrace();
 		}
 		
 		/*
@@ -259,30 +266,41 @@ public class AppMain extends Application {
 				
 				FileOutputStream serverOutFile = new FileOutputStream("servers.info");
 				ObjectOutputStream serverOut = new ObjectOutputStream(serverOutFile);
-				
-				serverOut.writeObject(new ArrayList<ServerInformation>(servers));
-				
+
+				/*
+				 * Al posto di servers, viene serializzato un ArrayList di MutableServerInformation, ovvero la controparte
+				 * mutabile di ServerInformation. Questa scelta e' stata fatta poiche' gli attributi di ServerInformation
+				 * non sono serializzabili.
+				 */
+				ArrayList<MutableServerInformation> toSerialize = new ArrayList<MutableServerInformation>(servers.size());
+				for (ServerInformation s : servers) {
+					
+					toSerialize.add(s.toMutableServerInformation());
+				}
+				serverOut.writeObject(toSerialize);
+
 				serverOut.close();
 				serverOutFile.close();
 			} catch (IOException e1) {
 
-				// test
-				e1.printStackTrace();
+				showAlert("Errore durante la memorizzazione dei server conosciuti.");
 			}
 		});
+		
+		/* Definizione della schermata delle impostazioni */
 		
 		BorderPane serversPane = new BorderPane();
 
 		/* 
-		 * Dichiaro un TableView per la visione dei server conosciuti, e utilizzo i dati
-		 * di servers per tenerea aggiornata la tabella
+		 * Viene dichiarata un TableView per la visione dei server conosciuti, si utilizzano i dati
+		 * dell'attributo servers per tenere aggiornata la tabella.
 		 */
 		TableView<ServerInformation> serverTable = new TableView<ServerInformation>(servers);
 		
 		/*
-		 * Dichiaro le colonne che compongono la tabella. Oltre ad assegnare il nome della tabella,
-		 * lego ogni colonna all'attributo Property relativo in ServerInformation, tramite il metodo
-		 * setCellValueFactory 
+		 * Vengono dichiarate le colonne che compongono la tabella. Oltre ad assegnare il nome della tabella,
+		 * viene associata ogni colonna all'attributo Property relativo in ServerInformation, tramite il metodo
+		 * setCellValueFactory.
 		 */
 		TableColumn<ServerInformation, String> idCol = new TableColumn<ServerInformation, String>("ID");
 		idCol.setCellValueFactory(new PropertyValueFactory<ServerInformation, String>("id"));
@@ -293,18 +311,23 @@ public class AppMain extends Application {
 		TableColumn<ServerInformation, Integer> portCol = new TableColumn<ServerInformation, Integer>("Porta");
 		portCol.setCellValueFactory(new PropertyValueFactory<ServerInformation, Integer>("port"));
 		
-		// Infine imposto le colonne della tabella a quelle appena create
+		// Infine vengono aggiunte le tabelle appena create alla TableView serverTable.
 		serverTable.getColumns().setAll(idCol, ipCol, portCol);
 		
-		// Creo un'istanza di TableViewFocusModel per gestire le celle evidenziate dall'utente
+		/*
+		 * Viene creato un oggetto TableViewFocusModel per poter gestire l'interazione fra l'utente e la tabella.
+		 * L'oggetto viene associato alla tabella serverTable.
+		 */
 		TableView.TableViewFocusModel<ServerInformation> userFocus = new TableView.TableViewFocusModel<ServerInformation>(serverTable);
 		serverTable.setFocusModel(userFocus);
 		
+		/*
+		 * Infine vengono dichiarati i bottoni per interagire con gli elementi della tabella.
+		 */
 		HBox settingsButtonsLayout = new HBox();
 		settingsButtonsLayout.setAlignment(Pos.CENTER);
 		settingsButtonsLayout.setPadding(new Insets(25, 25, 25, 25));
-		
-		
+
 		Button addServer = new Button("Aggiungi");
 		Button removeServer = new Button("Elimina");
 		Button confirmServer = new Button("Conferma");
@@ -314,8 +337,6 @@ public class AppMain extends Application {
 			
 			mainStage.setScene(homeScene);
 		});
-
-		settingsButtonsLayout.getChildren().addAll(addServer, removeServer, confirmServer, backSettings);
 		
 		addServer.setOnAction(e -> {
 			
@@ -331,6 +352,8 @@ public class AppMain extends Application {
 			}
 		});
 		
+		settingsButtonsLayout.getChildren().addAll(addServer, removeServer, confirmServer, backSettings);
+
 		serversPane.setCenter(serverTable);
 		serversPane.setBottom(settingsButtonsLayout);
 		
@@ -402,23 +425,27 @@ public class AppMain extends Application {
 
 		/*
 		 * Si dichiara un oggetto di tipo EventHandler<ActionEvent>, il cui metodo handle descrive il comportamento
-		 * di conferma alla pressione del pulsante confirmButtonSettings (o alla pressione del tasto enter).
-		 * Si e' scelta un oggetto di classe anonima al posto di una lambda-espressione poichè il corpo
-		 * della funzione handle è molto esteso ed è pertanto più facilmente leggibile
+		 * di conferma alla pressione del pulsante confirmButtonSettings (o alla pressione del tasto enter all'interno
+		 * di un qualsiasi TextField della schermata).
+		 * Si e' scelta un oggetto di classe anonima al posto di una lambda-espressione poiche' il corpo
+		 * della funzione handle è molto esteso ed è pertanto più facilmente leggibile.
 		 */
 		EventHandler<ActionEvent> confirmEvent = new EventHandler<ActionEvent>() {
 
 			public void handle(ActionEvent e) {
 				
 				/*
+				 * Viene usato uno StringBuffer per la concatenzione del nuovo indirizzo Ip per evitare
+				 * la creazione ripetuta di nuovi oggetti String.
+				 */
+				StringBuffer newIp = null;
+				int intPort = -1;
+
+				/*
 				 * Si controlla se l'ip inserito e' un indirizzo ip valido.
 				 * Se l'indirizzo ip inserito e' mal formattato, viene visualizzato un errore, e non viene
 				 * inserito il nuovo server.
 				 */
-				
-				StringBuffer newIp = null;
-				int intPort = -1;
-
 				boolean isValid = true;
 				for (TextField i : ipAdd) {
 					
@@ -439,10 +466,6 @@ public class AppMain extends Application {
 				}
 				if (isValid) {
 	
-					/*
-					 * Viene utilizzato un oggetto StringBuffer in maniera da non creare un nuovo oggetto di classe
-					 * String per ogni iterazione del ciclo.
-					 */
 					newIp = new StringBuffer("");
 					for (int i = 0; i < 3; i++) {
 						
@@ -451,7 +474,7 @@ public class AppMain extends Application {
 					}
 					newIp.append(ipAdd[3].getText());
 				} else {
-	
+
 					showAlert("L'indirizzo IP inserito non è valido.\n"
 							+ "I valori che compongono l'indirizzo devono essere interi da 0 a 255.");
 					return;
@@ -459,8 +482,7 @@ public class AppMain extends Application {
 				
 				/*
 				 * Si parsifica il numero di porta inserito nel field associato. Se il numero di porta
-				 * e' valido, si aggiorna l'attributo port, altrimenti viene lasciato invariato (e si visualizza
-				 * un errore).
+				 * non e' valido, viene visualizzato un errore.
 				 */
 				String readPort = portField.getText();
 				
@@ -488,23 +510,23 @@ public class AppMain extends Application {
 				
 				/*
 				 * L'ID dovra' essere un campo compilato, e non devono essere gia' presenti in memoria
-				 * server con lo stesso id impostato
+				 * server dallo stesso identificatore.
 				 */
 				if(readId.equals("")) {
 					
 					showAlert("Il server deve avere un identificatore");
 					return;
 				}
-				
-				// TODO: capire perche' non funziona
-				if (servers.contains(new ServerInformation("", 0, readId))) {
+
+				ServerInformation toAdd = new ServerInformation(newIp.toString(), intPort, readId);
+				if (servers.contains(toAdd)) {
 
 					showAlert("Un server dall'ID \"" + readId + "\" e' gia' esistente.");
 					return;
 				}
 				
-				servers.add(new ServerInformation(newIp.toString(), intPort, readId));
-				currServer = servers.get(servers.size() - 1);
+				servers.add(toAdd);
+
 				// Infine si aggiornano le stringhe di prompt dei campi testuali con i valori correnti di indirizzo ip e porta
 				updateSettingsPromptText(ipAdd, portField, idField);
 				
@@ -561,7 +583,7 @@ public class AppMain extends Application {
 		newServerPane.add(portField, 2, 3);
 		newServerPane.add(confirmButtonSettings, 1, 4);
 		newServerPane.add(backLayoutSettings, 2, 4);
-		
+
 		/*
 		 * Chiamata ai metodi per mostrare la scena principale
 		 */

@@ -13,11 +13,13 @@ import javafx.beans.property.StringProperty;
  * e' richiesto per creare strutture dati a partire da sue istanze tali che alla loro
  * modifica, vengano modificati anche elementi della GUI.
  * 
+ * La classe e' di sola lettura, e la sua controparte modificabile e' <code>MutableServerInformation</code>.
+ * 
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
  *
  */
 @SuppressWarnings("serial")
-public class ServerInformation implements Serializable {
+public class ServerInformation {
 
 	/*
 	 * Gli attributi sono trattati come implementazioni Property, dato che tale interfaccia
@@ -124,5 +126,17 @@ public class ServerInformation implements Serializable {
 			
 			return false;
 		}
+	}
+	
+	/**
+	 * Metodo utilizzato per convertire l'istanza corrente di <code>ServerInformation</code> in
+	 * un oggetto modificabile istanza di <code>MutableServerinformation</code>.
+	 * 
+	 * @return Un oggetto di classe <code>MutableServerInformation</code> contenente le informazioni
+	 * analoghe a quelle memorizzate nell'oggetto corrente.
+	 */
+	MutableServerInformation toMutableServerInformation() {
+		
+		return new MutableServerInformation(ip.get(), port.get(), id.get());
 	}
 }
