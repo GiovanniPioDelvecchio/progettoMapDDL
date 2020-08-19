@@ -26,6 +26,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 
 public class AppMain extends Application {
@@ -137,7 +138,7 @@ public class AppMain extends Application {
 		BorderPane predictPane = new BorderPane();
 		VBox predictBox = new VBox(50);
 		//Label predictMessage = new Label();
-		HBox userChoices = new HBox(50);
+		TilePane userChoices = new TilePane();
 		Label predictedValue = new Label();
 		//TextField userChoice = new TextField();
 		HBox predictButtons = new HBox(50);
@@ -159,6 +160,7 @@ public class AppMain extends Application {
 						// se � in corso una comunicazione col server, si notifica che si sta tornando alla home
 						out.writeObject(-1);
 						clientSocket.close();
+						userChoices.getChildren().clear();
 					} catch (IOException e1) {
 	
 						showAlert("Errore durante la connessione al server");
@@ -544,7 +546,7 @@ public class AppMain extends Application {
 		toShow.show();
 	}
 	
-	private void handlePredict(HBox userChoices, Label predictedValue, Button redo) {
+	private void handlePredict(TilePane userChoices, Label predictedValue, Button redo) {
 		
 		try {
 			
@@ -590,7 +592,7 @@ public class AppMain extends Application {
 	}
 	
 	
-	public void addSplitButton(HBox userChoices, String toInsert, Integer toSend, Label predictedValue, Button redo) {
+	public void addSplitButton(TilePane userChoices, String toInsert, Integer toSend, Label predictedValue, Button redo) {
 		
 		Button toShow = new Button(toInsert);
 		toShow.setOnAction(e->{
