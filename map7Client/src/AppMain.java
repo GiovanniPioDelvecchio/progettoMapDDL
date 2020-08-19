@@ -527,7 +527,10 @@ public class AppMain extends Application {
 		mainStage.show();
 	}
 
-	
+	/*
+	 * Metodo necessario per connettersi al server
+	 * 
+	 */
 	private void connectToServer() throws IOException {
 		
 			clientSocket = new Socket(ip, port);
@@ -535,17 +538,29 @@ public class AppMain extends Application {
 			in = new ObjectInputStream(clientSocket.getInputStream());
 	}
 	
+	/*
+	 * Se qualcosa va storto e' possibile mostrare una finestra di dialogo con un messaggio,
+	 * tramite questo metodo.
+	 */
 	private void showAlert(String message) {
 
-		/*
-		 * Se qualcosa va storto e' possibile mostrare una finestra di dialogo con un messaggio
-		 */
+
 		
 		Alert toShow = new Alert(Alert.AlertType.ERROR);
 		toShow.setContentText(message);
 		toShow.show();
 	}
 	
+	/*
+	 * Metodo necessario per poter gestire la predizione attraverso il server
+	 * 
+	 * @param userChoices <code>TilePane</code> su cui inserire i tasti, corrispondenti alle possibili scelte 
+	 * (quando, esplorando l'albero di regressione, si arriva ad un nodo di split)
+	 * @param predictedValue <code>Label</code> su cui scrivere il risultato della predizione
+	 * @param redo <code>Button</code> necessario per poter effettuare una nuova predizione una volta finita
+	 * quella precedente. E' necessario avere questo parametro per poter gestire quando è attivato e quando no.
+	 * 
+	 */
 	private void handlePredict(TilePane userChoices, Label predictedValue, Button redo) {
 		
 		try {
@@ -591,8 +606,18 @@ public class AppMain extends Application {
 		}
 	}
 	
-	
-	public void addSplitButton(TilePane userChoices, String toInsert, Integer toSend, Label predictedValue, Button redo) {
+	/* Metodo necessario per aggiungere dei pulsanti alla finestra di predizione. 
+	 * Tali pulsanti serviranno a scegliere le alternative possibili durante la predizione.
+	 * Dato che viene descritta la caratteristica di ogni tasto, sono necessari anche i parametri 
+	 * di handlePredict, che viene richiamata ogni volta che viene premuto un tasto.
+	 * 
+	 * @param userChoices <code>TilePane</code> in cui vanno inseriti i tasti.
+	 * @param toInsert <code>Stringa</code> contenente l'etichetta del nuovo tasto da aggiungere.
+	 * @param toSend <code>Integer</code> da inviare al server, corrispondente alla scelta desiderata.
+	 * @param predictedValue riferimento al <code>Label</code> su cui scrivere il risultato (necessario per richiamare handlePredict).
+	 * @param redo riferimento al <code>Button</code> per ricominciare la predizione (necessario per richiamare handlePredict).
+	 */
+	private void addSplitButton(TilePane userChoices, String toInsert, Integer toSend, Label predictedValue, Button redo) {
 		
 		Button toShow = new Button(toInsert);
 		toShow.setOnAction(e->{
