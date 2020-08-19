@@ -188,8 +188,9 @@ public class AppMain extends Application {
 			}
 			mainStage.setScene(homeScene);
 		});
-		selectionPane.add(back, 1, 2);
 		
+
+
 		// Si imposta il campo testuale in maniera che se risulta essere vuoto, il tasto di conferma viene disabilitato
 		tableName.setOnKeyReleased(e -> {
 
@@ -205,7 +206,7 @@ public class AppMain extends Application {
 				}
 			}
 		});
-		
+
 		
 		/** FINESTRA DELLE IMPOSTAZIONI **/
 		
@@ -396,7 +397,8 @@ public class AppMain extends Application {
 		settingsPane.add(portField, 2, 2);
 		settingsPane.add(confirmButtonSettings, 1, 3);
 		settingsPane.add(backLayoutSettings, 2, 3);
-		
+		selectionPane.add(back, 1, 2);
+
 		/*
 		 * Chiamata ai metodi per mostrare la scena principale
 		 */
