@@ -28,6 +28,13 @@ public class ServerInformation implements Serializable {
 	private SimpleIntegerProperty port;
 	private SimpleStringProperty id;
 	
+	/**
+	 * Costruttore di <code>ServerInformation</code>.
+	 * 
+	 * @param newIp Stringa contenente un indirizzo ip valido a cui il client puo' connettersi.
+	 * @param newPort Intero rappresentante la porta a cui il client dovra' connettersi.
+	 * @param newId Stringa identificatrice della coppia Indirizzo Ip, Porta
+	 */
 	ServerInformation(String newIp, int newPort, String newId) {
 		
 		ip = new SimpleStringProperty(newIp);
@@ -35,34 +42,79 @@ public class ServerInformation implements Serializable {
 		id = new SimpleStringProperty(newId);
 	}
 	
-	String getIp() { return ip.get(); }
-	int getPort() { return  port.get(); }
-	String getId() { return id.get(); }
+	/**
+	 * Getter per l'indirizzo Ip del server.
+	 * 
+	 * @return L'indirizzo Ip del server rappresentato dall'oggetto.
+	 */
+	String getIp() {
+
+		return ip.get();
+	}
+	
+	/**
+	 * Getter per la porta del server a cui connettersi.
+	 * 
+	 * @return Il numero di porta associato all'indirizzo Ip del server.
+	 */
+	int getPort() {
+		
+		return  port.get();
+	}
+	
+	/**
+	 * Getter per l'identificatore del server.
+	 * 
+	 * @return Una stringa contenente l'identificatore del server rappresentato dall'oggetto.
+	 */
+	String getId() {
+		
+		return id.get();
+	}
 	
 	
-	/*
-	 * Dichiaro i metodi relativi agli attributi Property che ne permettono il recupero dall'esterno 
+	/**
+	 * Metodo che permette l'accesso in tempo reale da parte degli elementi di interfaccia
+	 * grafica all'identificatore del server.
+	 * 
+	 * @return L'identificatore del server modellato dall'oggetto.
 	 */
 	public StringProperty idProperty() {
 		
 		return id;
 	}
 	
+	/**
+	 * Metodo che permette l'accesso in tempo reale all'attributo rappresentante
+	 * l'indirizzo ip del server.
+	 * 
+	 * @return L'indirizzo IP del server modellato dall'oggetto.
+	 */
 	public StringProperty ipProperty() {
 		
 		return ip;
 	}
 
+	/**
+	 * Metodo che permette l'accesso in tempo reale all'attributo rappresentante
+	 * la porta del server.
+	 * 
+	 * @return Il numero di porta associato al server modellato dall'oggetto.
+	 */
 	public IntegerProperty portProperty() {
 		
 		return port;
 	}
 	
-	public String toString() {
-		
-		return "Id: " + id + " Ip: " + ip + " Porta: " + port;
-	}
-	
+	/**
+	 * Sovrascrittura del metodo <code>equals</code>.
+	 * 
+	 * Due istanze di <code>ServerInformation</code> sono considerate uguali quando
+	 * sono identificate dalla stessa stringa.
+	 * 
+	 * @return Vero se l'istanza dell'oggetto e' uguale a <code>other</code>, falso altrimenti.
+	 */
+	@Override
 	public boolean equals(Object other) {
 		
 		if (other instanceof ServerInformation) {
