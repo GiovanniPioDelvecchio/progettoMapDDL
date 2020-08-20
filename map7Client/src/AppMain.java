@@ -45,7 +45,7 @@ public class AppMain extends Application {
 	 * Viene creata una ObservableList di istanze di ServerInformation contenente le informazioni sulle possibili connessioni ai server effettuabili.
 	 * La lista viene inizializzata con un server di default, che rappresenta il localhost
 	 */
-	private ObservableList<ServerInformation> servers = FXCollections.observableArrayList(new ServerInformation("127.0.0.1", 8080, "default"));
+	private ObservableList<ServerInformation> servers = FXCollections.observableArrayList(new ServerInformation("127.0.0.1", 8080, "(Default)"));
 
 	// Il server a cui viene inizializzato il programma e' quello di default
 	private ServerInformation currServer = servers.get(0);
@@ -253,7 +253,18 @@ public class AppMain extends Application {
 			serversIn.close();
 			serversInFile.close();
 		} catch (IOException | ClassNotFoundException e1) {
+			
+			if (e1 instanceof FileNotFoundException) {
+				
+				Alert serversNotFound = new Alert(Alert.AlertType.WARNING);
+				serversNotFound.setContentText("Non e' stato trovato il file \"servers.info\" contenente le informazioni sui server conosciuti.\n"
+						+ "Verra' caricata una lista di default.");
+				serversNotFound.show();
+			} else {
 
+				showAlert("Errore durante il caricamento della lista dei server conosciuti.\n"
+						+ "Verra' caricata una lista di default.");
+			}
 		}
 		
 		/*
@@ -526,13 +537,10 @@ public class AppMain extends Application {
 				}
 				
 				servers.add(toAdd);
-
-				// Infine si aggiornano le stringhe di prompt dei campi testuali con i valori correnti di indirizzo ip e porta
 				updateSettingsPromptText(ipAdd, portField, idField);
 				
 				// Si sblocca il pulsante per confermare l'aggiunta di un server
 				confirmServer.setDisable(false);
-				
 				mainStage.setScene(settingsScene);
 			}
 		};
