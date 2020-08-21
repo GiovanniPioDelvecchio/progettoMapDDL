@@ -162,11 +162,11 @@ public class AppMain extends Application {
 						// se e' in corso una comunicazione col server, si notifica che si sta tornando alla home
 						out.writeObject(-1);
 						clientSocket.close();
-						userChoices.getChildren().clear();
 					} catch (IOException e1) {
 	
 						showAlert("Errore durante la connessione al server");
 					}
+					userChoices.getChildren().clear();
 				}
 				
 			}
@@ -499,9 +499,11 @@ public class AppMain extends Application {
 		mainStage.show();
 	}
 
-	/*
+	/** 
 	 * Metodo necessario per connettersi al server
 	 * 
+	 * @throws IOException lanciata nel caso in cui ci siano errori nella costruzione
+	 * degli streams
 	 */
 	private void connectToServer() throws IOException {
 		
@@ -510,9 +512,11 @@ public class AppMain extends Application {
 			in = new ObjectInputStream(clientSocket.getInputStream());
 	}
 	
-	/*
+	/** 
 	 * Se qualcosa va storto e' possibile mostrare una finestra di dialogo con un messaggio,
 	 * tramite questo metodo.
+	 * 
+	 * @param message <code>String</code> da mostrare nella finestra di dialogo 
 	 */
 	private void showAlert(String message) {
 
@@ -523,7 +527,7 @@ public class AppMain extends Application {
 		toShow.show();
 	}
 	
-	/*
+	/**
 	 * Metodo necessario per poter gestire la predizione attraverso il server
 	 * 
 	 * @param userChoices <code>TilePane</code> su cui inserire i tasti, corrispondenti alle possibili scelte 
@@ -571,7 +575,8 @@ public class AppMain extends Application {
 		}
 	}
 	
-	/* Metodo necessario per aggiungere dei pulsanti alla finestra di predizione. 
+	/** 
+	 * Metodo necessario per aggiungere dei pulsanti alla finestra di predizione. 
 	 * Tali pulsanti serviranno a scegliere le alternative possibili durante la predizione.
 	 * Dato che viene descritta la caratteristica di ogni tasto, sono necessari anche i parametri 
 	 * di handlePredict, che viene richiamata ogni volta che viene premuto un tasto.
