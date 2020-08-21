@@ -2,8 +2,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -157,7 +159,7 @@ public class AppMain extends Application {
 				if (clientSocket.isConnected()) {
 					try {
 	
-						// se � in corso una comunicazione col server, si notifica che si sta tornando alla home
+						// se e' in corso una comunicazione col server, si notifica che si sta tornando alla home
 						out.writeObject(-1);
 						clientSocket.close();
 						userChoices.getChildren().clear();
@@ -185,39 +187,9 @@ public class AppMain extends Application {
 			
 		});
 		
-		/* Il tasto di conferma non è più necessario
-		confirmChoice.setOnAction(e->{
-			
-			if (!predictMessage.getText().equals("")) {
-				
-				
-				try {
-					
-					Integer toSend = Integer.parseInt(userChoice.getText());
-					userChoice.clear();
-					//System.out.println(toSend);
-					out.writeObject(toSend);
-					
-					handlePredict(predictMessage, predictedValue, redo);
-					
-				} catch (IOException e1) {
-					
-					showAlert("Errore nella comunicazione con il server");
-					
-				} catch (NumberFormatException e2) {
-					
-					showAlert("Inserire un numero intero");
-				}
-			}
-		});
-		*/
 		
-		
-		
-		//predictButtons.getChildren().add(confirmChoice);
 		predictButtons.getChildren().add(redo);
 		predictButtons.getChildren().add(backPredict);
-		//predictBox.getChildren().add(predictMessage);
 		predictBox.getChildren().add(userChoices);
 		predictBox.getChildren().add(predictButtons);
 		predictBox.getChildren().add(predictedValue);
@@ -573,7 +545,7 @@ public class AppMain extends Application {
 			if(toCheck.equals("QUERY")) {
 				
 				//predictMessage.setText((String)in.readObject());
-				LinkedList<String> options = new LinkedList<String>((LinkedList<String>)in.readObject());
+				List<String> options = new ArrayList<String>((ArrayList<String>)in.readObject());
 				int i = 0;
 				for (String elem : options) {
 					
@@ -584,15 +556,8 @@ public class AppMain extends Application {
 			} else {
 				
 				predictedValue.setText(((Double)in.readObject()).toString());
-				//Alert confirmation = new Alert(AlertType.CONFIRMATION);
-				//confirmation.setContentText("Vuoi ripetere?");
-				//confirmation.show();
-				
-				//predictMessage.setText("Vuoi ricominciare?");
 				redo.setDisable(false);
 				
-					
-				//out.writeObject(-1);
 				
 			}
 				

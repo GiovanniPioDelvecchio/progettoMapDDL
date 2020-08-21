@@ -3,6 +3,7 @@ package tree;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import data.Attribute;
 import data.Data;
@@ -248,31 +249,15 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		
 		return mapSplit.get(child);
 	}
-
-	
-	/**
-	 * Metodo per formulare una stringa che descrive un nodo di split ed enumera i suoi figli.
-	 * 
-	 * @return Una stringa contenente informazioni sullo split e i suoi figli.
-	 */
-	String formulateQuery() {
-		
-		String query = "";
-		for (int i = 0; i < mapSplit.size(); i++) {
-
-			query += (i + ":" + attribute + mapSplit.get(i).getComparator() + mapSplit.get(i).getSplitValue()) + "\n";
-		}
-		return query;
-	}
 	
 	/**
 	 * Metodo per formulare una LinkedList di stringhe che descrive un nodo di split ed enumera i suoi figli.
 	 * 
 	 * @return Una LinkedList contenente informazioni sullo split e sui suoi figli.
 	 */
-	LinkedList<String> queryAsList() {
+	List<String> queryAsList() {
 		
-		LinkedList<String> toReturn = new LinkedList<String>();
+		List<String> toReturn = new ArrayList<String>();
 		
 		for (int i = 0; i < mapSplit.size(); i++) {
 
