@@ -1,0 +1,42 @@
+.root {
+    -fx-background-color: #d9f0d8;
+
+}
+
+.label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #000000;
+    -fx-font-family: "Consolas";
+}
+
+.button {
+    -fx-background-color: linear-gradient(#AABDAA,#93A393);
+    -fx-background-insets: 0,1,2,3;
+    -fx-background-radius: 3,2,2,2;
+    -fx-padding: 12 30 12 30;
+    -fx-text-fill: black;
+    -fx-font-size: 14px;
+	-fx-font-family: "Consolas";
+
+}
+
+.button:hover {
+	
+    -fx-background-color: linear-gradient(#93A393,#AABDAA);
+}
+
+.tool-bar {
+	
+    -fx-background-color: #CFE6CF;
+}
+
+
+#toolButton {
+    -fx-font-size: 12px;
+}
+
+#welcomeLabel {
+	-fx-font-weight: bold;
+	-fx-font-size: 18px;
+	-fx-text-fill : #373D37;
+}

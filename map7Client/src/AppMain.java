@@ -48,23 +48,26 @@ public class AppMain extends Application {
 
 		mainStage.setTitle("Client");
 		BorderPane homePane = new BorderPane();
+		mainStage.getIcons().add(new Image("file:res/icon.png"));
 
 		/*
 		 * descrizione componenti per la barra degli strumenti superiore
 		 */
 
 		ToolBar tools = new ToolBar();
-		Image gear = new Image("file:res/gear.png", 30, 30, true, true);
+		Image gear = new Image("file:res/gear.png", 20, 20, true, true);
 		ImageView gearV = new ImageView(gear);
-		Image questionMark = new Image("file:res/questionMark.png", 30, 30, true, true);
+		Image questionMark = new Image("file:res/questionMark.png", 20, 20, true, true);
 		ImageView questionMarkV = new ImageView(questionMark);
 		
 		Button opt = new Button("Opzioni");
 		Button help = new Button("Aiuto");
+		opt.setId("toolButton");
+		help.setId("toolButton");
 		opt.setGraphic(gearV);
 		help.setGraphic(questionMarkV);
 		opt.setOnAction(e -> mainStage.setScene(settingsScene));
-		tools.getItems().addAll(opt, new Separator(), help);
+		tools.getItems().addAll(opt, help);
 		homePane.setTop(tools);		
 		
 		/*
@@ -73,6 +76,7 @@ public class AppMain extends Application {
 		VBox centralPanel = new VBox(50);
 		centralPanel.setAlignment(Pos.CENTER);
 		Label sel = new Label("Seleziona un'operazione");
+		sel.setId("welcomeLabel");
 		Button load = new Button("Carica");
 		load.setMinSize(130, 20);
 		Button create = new Button("Crea");
@@ -421,6 +425,7 @@ public class AppMain extends Application {
 		homeScene = new Scene(homePane, 400, 400);
 		selectionScene = new Scene(selectionPane, 400, 400);
 		settingsScene = new Scene(settingsPane, 400,400);
+		homeScene.getStylesheets().add("file:res/bright.css");
 		mainStage.setScene(homeScene);
 		mainStage.show();
 	}
