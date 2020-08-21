@@ -600,7 +600,7 @@ public class AppMain extends Application {
 				
 			} catch (IOException e1) {
 				
-				showAlert("Impossibile inviare la risposta");
+				showAlert("Impossibile inviare la scelta selezionata al server (errore di comunicazione)");
 			}
 		});
 		userChoices.getChildren().add(toShow);
