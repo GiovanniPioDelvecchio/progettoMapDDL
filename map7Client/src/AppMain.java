@@ -22,7 +22,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
-import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToolBar;
@@ -224,6 +223,8 @@ public class AppMain extends Application {
 									+ "Per selezionare il dataset, e' necessario inserire il nome della tabella in cui e' memorizzato nel Database del server.\n"
 									+ "Una volta inserito il nome della tabella, si potra' esplorare l'albero tramite una serie di query a cui rispondere.\n\n"
 									+ "Autori: Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea");
+			helpScreen.getDialogPane().getStylesheets().add("file:res/bright.css");
+			((Stage) helpScreen.getDialogPane().getScene().getWindow()).getIcons().add(new Image("file:res/icon.png"));
 			helpScreen.show();
 		});
 
@@ -361,6 +362,8 @@ public class AppMain extends Application {
 				Alert serversNotFound = new Alert(Alert.AlertType.WARNING);
 				serversNotFound.setContentText("Non e' stato trovato il file \"servers.info\" contenente le informazioni sui server conosciuti.\n"
 						+ "Verra' caricata una lista di default.");
+				serversNotFound.getDialogPane().getStylesheets().add("file:res/bright.css");
+				((Stage) serversNotFound.getDialogPane().getScene().getWindow()).getIcons().add(new Image("file:res/warning.png"));
 				serversNotFound.show();
 			} else {
 
@@ -703,10 +706,15 @@ public class AppMain extends Application {
 		 */
 		homeScene = new Scene(homePane, 400, 400);
 		selectionScene = new Scene(selectionPane, 400, 400);
-		homeScene.getStylesheets().add("file:res/bright.css");
 		settingsScene = new Scene(serversPane, 400, 400);
 		newServerScene = new Scene(newServerPane, 400,400);
 		predictScene = new Scene(predictPane, 400, 400);
+
+		homeScene.getStylesheets().add("file:res/bright.css");
+		selectionScene.getStylesheets().add("file:res/bright.css");
+		settingsScene.getStylesheets().add("file:res/bright.css");
+		newServerScene.getStylesheets().add("file:res/bright.css");
+		predictScene.getStylesheets().add("file:res/bright.css");
 
 		mainStage.setScene(homeScene);
 		mainStage.show();
@@ -737,6 +745,8 @@ public class AppMain extends Application {
 		
 		Alert toShow = new Alert(Alert.AlertType.ERROR);
 		toShow.setContentText(message);
+		toShow.getDialogPane().getStylesheets().add("file:res/bright.css");
+		((Stage) toShow.getDialogPane().getScene().getWindow()).getIcons().add(new Image("file:res/error.png"));
 		toShow.show();
 	}
 	
