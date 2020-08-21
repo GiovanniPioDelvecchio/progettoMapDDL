@@ -265,7 +265,7 @@ public class AppMain extends Application {
 		selectionPane.add(confirm, 0, 2);
 		
 		// si crea anche un bottone per tornare indietro alla home
-		Button backSelection= new Button("Indietro");
+		Button backSelection = new Button("Indietro");
 		backSelection.setOnAction(backPredict.getOnAction());
 		
 		selectionPane.add(backSelection, 1, 2);
