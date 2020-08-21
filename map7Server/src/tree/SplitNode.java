@@ -2,7 +2,6 @@ package tree;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import data.Attribute;
@@ -251,9 +250,9 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	}
 	
 	/**
-	 * Metodo per formulare una LinkedList di stringhe che descrive un nodo di split ed enumera i suoi figli.
+	 * Metodo per formulare una List di stringhe che descrive un nodo di split ed enumera i suoi figli.
 	 * 
-	 * @return Una LinkedList contenente informazioni sullo split e sui suoi figli.
+	 * @return Una List contenente informazioni sullo split e sui suoi figli.
 	 */
 	List<String> queryAsList() {
 		
