@@ -2,7 +2,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -11,7 +14,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -23,6 +28,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 
 public class AppMain extends Application {
@@ -34,7 +40,9 @@ public class AppMain extends Application {
 	private String ip = "127.0.0.1";
 	private int port = 8080;
 
-	private Scene selectionScene, homeScene, settingsScene;
+	private Scene selectionScene, homeScene, settingsScene, predictScene;
+	
+	private boolean loadFlag = false;
 
 	public static void main(String[] args) {
 		
@@ -80,6 +88,7 @@ public class AppMain extends Application {
 		centralPanel.getChildren().addAll(sel, load,create);
 		homePane.setCenter(centralPanel);
 		
+		
 		/*
 		 * Se il tasto "Carica" viene premuto, ci si connette al server e si comunica di caricare
 		 * dal file l'albero corrispondente al nome del file scelto
@@ -88,7 +97,7 @@ public class AppMain extends Application {
 		load.setOnAction(e -> {
 			
 			try {
-
+				loadFlag = true;
 				connectToServer();
 				out.writeObject(2);
 				mainStage.setScene(selectionScene);
@@ -109,7 +118,7 @@ public class AppMain extends Application {
 		create.setOnAction(e -> {
 
 			try {
-
+				loadFlag = false;
 				connectToServer();
 				out.writeObject(0);
 				mainStage.setScene(selectionScene);
@@ -122,6 +131,71 @@ public class AppMain extends Application {
 			}
 		});
 		
+
+		/** FINESTRA DI PREDIZIONE **/
+		
+		/*	
+		 * Si trova in questo punto perchÃ© la descrizione della scena di predizione
+		 *	deve precedere la predizione stessa (handlePredict)
+		 */
+		BorderPane predictPane = new BorderPane();
+		VBox predictBox = new VBox(50);
+		TilePane userChoices = new TilePane();
+		Label predictedValue = new Label();
+		HBox predictButtons = new HBox(50);
+		predictBox.setAlignment(Pos.CENTER);
+		userChoices.setAlignment(Pos.CENTER);
+		predictedValue.setAlignment(Pos.CENTER);
+		predictButtons.setAlignment(Pos.CENTER);
+		
+		Button redo = new Button("Ricomincia");
+		redo.setDisable(true);
+		Button backPredict = new Button("Indietro");
+		backPredict.setOnAction(e -> { 
+			
+			if (clientSocket != null) {
+				if (clientSocket.isConnected()) {
+					try {
+	
+						// se e' in corso una comunicazione col server, si notifica che si sta tornando alla home
+						out.writeObject(-1);
+						clientSocket.close();
+					} catch (IOException e1) {
+	
+						showAlert("Errore durante la connessione al server");
+					}
+					userChoices.getChildren().clear();
+				}
+				
+			}
+			mainStage.setScene(homeScene);
+		});
+		
+		redo.setOnAction(e->{
+			
+			try {
+				out.writeObject(3);
+				predictedValue.setText("");
+				redo.setDisable(true);
+				handlePredict(userChoices, predictedValue, redo);
+			} catch (IOException e1) {
+				
+				showAlert("Non Ã¨ stato possibile raggiungere il server");
+			}
+			
+		});
+		
+		
+		predictButtons.getChildren().add(redo);
+		predictButtons.getChildren().add(backPredict);
+		predictBox.getChildren().add(userChoices);
+		predictBox.getChildren().add(predictButtons);
+		predictBox.getChildren().add(predictedValue);
+		
+		predictPane.setCenter(predictBox);
+		
+		
+
 		/** HELP **/
 		
 		help.setOnAction(e -> {
@@ -139,6 +213,7 @@ public class AppMain extends Application {
 									+ "Autori: Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea");
 			helpScreen.show();
 		});
+
 
 		/** INSERIMENTO TABELLA **/
 
@@ -159,6 +234,8 @@ public class AppMain extends Application {
 		
 		// Si inserisce un bottone di conferma che rimane disattivato se non viene inserito del testo
 		Button confirm = new Button("Conferma");
+		
+		
 		confirm.setDisable(true);
 		confirm.setOnAction(e -> {
 
@@ -166,6 +243,7 @@ public class AppMain extends Application {
 				
 				// Alla pressione si tenta di mandare il nome della tabella al server
 				out.writeObject(tableName.getText());
+
 				String ans = (String) in.readObject();
 				
 				if (!ans.equals("OK")) {
@@ -173,12 +251,33 @@ public class AppMain extends Application {
 					showAlert(ans);
 				} else {
 					
-					// mainStage.setScene(predictScene);
+					
+					
+					if (loadFlag == false) {
+						
+						out.writeObject(1);
+						if (!((String) in.readObject()).equals("OK")) {
+						
+							showAlert("Errore nel salvataggio dei dati");
+						}
+					}
+					
+					
+					
+					mainStage.setScene(predictScene);
+					
+					out.writeObject(3);
+					//confirmChoice.setDisable(false);
+					
+					handlePredict(userChoices, predictedValue, redo);
+					
+					//confirmChoice.setDisable(true);
+
 				}
 			} catch (ClassNotFoundException | IOException e1) {
 				
 				/* 
-				 * si presuppone che la connessione sia già stata stabilita
+				 * si presuppone che la connessione sia giï¿½ stata stabilita
 				 * e pertanto non si prevede di gestire una NullPointerException
 				 */
 				showAlert("Errore durante la connessione al server");
@@ -187,26 +286,10 @@ public class AppMain extends Application {
 		selectionPane.add(confirm, 0, 2);
 		
 		// si crea anche un bottone per tornare indietro alla home
-		Button back = new Button("Indietro");
-		back.setOnAction(e -> { 
-			
-			if (clientSocket != null) {
-				if (clientSocket.isConnected()) {
-					try {
-	
-						// se è in corso una comunicazione col server, si notifica che si sta tornando alla home
-						out.writeObject("ABORT");
-						clientSocket.close();
-					} catch (IOException e1) {
-	
-						showAlert("Errore durante la connessione al server");
-					}
-				}
-				
-			}
-			mainStage.setScene(homeScene);
-		});
-		selectionPane.add(back, 1, 2);
+		Button backSelection = new Button("Indietro");
+		backSelection.setOnAction(backPredict.getOnAction());
+		
+		selectionPane.add(backSelection, 1, 2);
 		
 		// Si imposta il campo testuale in maniera che se risulta essere vuoto, il tasto di conferma viene disabilitato
 		tableName.setOnKeyReleased(e -> {
@@ -225,6 +308,10 @@ public class AppMain extends Application {
 		});
 		
 		
+		
+		
+		
+		
 		/** FINESTRA DELLE IMPOSTAZIONI **/
 		
 		GridPane settingsPane = new GridPane();
@@ -235,6 +322,10 @@ public class AppMain extends Application {
 		
 		Label ipLabel = new Label("Indirizzo IP");
 		Label portLabel = new Label("Porta");
+		
+		Button backSetting = new Button("Indietro");
+		backSetting.setOnAction(e->mainStage.setScene(homeScene));
+		
 		
 		/*
 		 * Per limitare il margine di errore nell'inserimento dell'indirizzo IP,
@@ -286,13 +377,13 @@ public class AppMain extends Application {
 		Button confirmButtonSettings = new Button("Conferma");
 		HBox backLayoutSettings = new HBox();
 		backLayoutSettings.setAlignment(Pos.CENTER_LEFT);
-		backLayoutSettings.getChildren().add(back);
+		backLayoutSettings.getChildren().add(backSetting);
 
 		/*
 		 * Si dichiara un oggetto di tipo EventHandler<ActionEvent>, il cui metodo handle descrive il comportamento
 		 * di conferma alla pressione del pulsante confirmButtonSettings (o alla pressione del tasto enter).
-		 * Si e' scelta un oggetto di classe anonima al posto di una lambda-espressione poichè il corpo
-		 * della funzione handle è molto esteso ed è pertanto più facilmente leggibile
+		 * Si e' scelta un oggetto di classe anonima al posto di una lambda-espressione poichï¿½ il corpo
+		 * della funzione handle ï¿½ molto esteso ed ï¿½ pertanto piï¿½ facilmente leggibile
 		 */
 		EventHandler<ActionEvent> confirmEvent = new EventHandler<ActionEvent>() {
 
@@ -344,7 +435,7 @@ public class AppMain extends Application {
 						ip = new String(newIp);
 					} else {
 		
-						showAlert("L'indirizzo IP inserito non è valido.\n"
+						showAlert("L'indirizzo IP inserito non ï¿½ valido.\n"
 								+ "I valori che compongono l'indirizzo devono essere interi da 0 a 255.");
 					}
 				}
@@ -358,7 +449,7 @@ public class AppMain extends Application {
 				
 				if (!readPort.equals("")) {
 				
-					final String errorMessage = "Il numero di porta inserito non è valido.\n"
+					final String errorMessage = "Il numero di porta inserito non ï¿½ valido.\n"
 							+ "Il numero di porta deve essere un intero fra 1 e 65535.";
 					int intPort;
 					try {
@@ -420,12 +511,18 @@ public class AppMain extends Application {
 		 */
 		homeScene = new Scene(homePane, 400, 400);
 		selectionScene = new Scene(selectionPane, 400, 400);
-		settingsScene = new Scene(settingsPane, 400,400);
+		settingsScene = new Scene(settingsPane, 400, 400);
+		predictScene = new Scene(predictPane, 400, 400);
 		mainStage.setScene(homeScene);
 		mainStage.show();
 	}
 
-	
+	/** 
+	 * Metodo necessario per connettersi al server
+	 * 
+	 * @throws IOException lanciata nel caso in cui ci siano errori nella costruzione
+	 * degli streams
+	 */
 	private void connectToServer() throws IOException {
 		
 			clientSocket = new Socket(ip, port);
@@ -433,17 +530,98 @@ public class AppMain extends Application {
 			in = new ObjectInputStream(clientSocket.getInputStream());
 	}
 	
+	/** 
+	 * Se qualcosa va storto e' possibile mostrare una finestra di dialogo con un messaggio,
+	 * tramite questo metodo.
+	 * 
+	 * @param message <code>String</code> da mostrare nella finestra di dialogo 
+	 */
 	private void showAlert(String message) {
 
-		/*
-		 * Se qualcosa va storto e' possibile mostrare una finestra di dialogo con un messaggio
-		 */
+
 		
 		Alert toShow = new Alert(Alert.AlertType.ERROR);
 		toShow.setContentText(message);
 		toShow.show();
 	}
 	
+	/**
+	 * Metodo necessario per poter gestire la predizione attraverso il server
+	 * 
+	 * @param userChoices <code>TilePane</code> su cui inserire i tasti, corrispondenti alle possibili scelte 
+	 * (quando, esplorando l'albero di regressione, si arriva ad un nodo di split)
+	 * @param predictedValue <code>Label</code> su cui scrivere il risultato della predizione
+	 * @param redo <code>Button</code> necessario per poter effettuare una nuova predizione una volta finita
+	 * quella precedente. E' necessario avere questo parametro per poter gestire quando Ã¨ attivato e quando no.
+	 * 
+	 */
+	private void handlePredict(TilePane userChoices, Label predictedValue, Button redo) {
+		
+		try {
+			
+			String toCheck;
+			
+			toCheck = (String)in.readObject();
+			
+			
+			if(toCheck.equals("QUERY")) {
+				
+				List<String> options = new ArrayList<String>((ArrayList<String>)in.readObject());
+				int i = 0;
+				for (String elem : options) {
+					
+					addSplitButton(userChoices, elem, i, predictedValue, redo);
+					i++;
+				}
+				
+			} else {
+				
+				predictedValue.setText(((Double)in.readObject()).toString());
+				redo.setDisable(false);
+				
+				
+			}
+				
+			
+		} catch (ClassNotFoundException e) {
+			
+			e.printStackTrace();
+		} catch (IOException e) {
+		
+			e.printStackTrace();
+		}
+	}
+	
+	/** 
+	 * Metodo necessario per aggiungere dei pulsanti alla finestra di predizione. 
+	 * Tali pulsanti serviranno a scegliere le alternative possibili durante la predizione.
+	 * Dato che viene descritta la caratteristica di ogni tasto, sono necessari anche i parametri 
+	 * di handlePredict, che viene richiamata ogni volta che viene premuto un tasto.
+	 * 
+	 * @param userChoices <code>TilePane</code> in cui vanno inseriti i tasti.
+	 * @param toInsert <code>Stringa</code> contenente l'etichetta del nuovo tasto da aggiungere.
+	 * @param toSend <code>Integer</code> da inviare al server, corrispondente alla scelta desiderata.
+	 * @param predictedValue riferimento al <code>Label</code> su cui scrivere il risultato (necessario per richiamare handlePredict).
+	 * @param redo riferimento al <code>Button</code> per ricominciare la predizione (necessario per richiamare handlePredict).
+	 */
+	private void addSplitButton(TilePane userChoices, String toInsert, Integer toSend, Label predictedValue, Button redo) {
+		
+		Button toShow = new Button(toInsert);
+		toShow.setOnAction(e->{
+			
+			try {
+				
+				out.writeObject(toSend);
+				userChoices.getChildren().clear();
+				handlePredict(userChoices, predictedValue, redo);
+				
+			} catch (IOException e1) {
+				
+				showAlert("Impossibile inviare la scelta selezionata al server (errore di comunicazione)");
+			}
+		});
+		userChoices.getChildren().add(toShow);
+	}
 	
 	/**
 	 * Metodo utilizzato per tenere aggiornati le stringhe di prompt nei campi
