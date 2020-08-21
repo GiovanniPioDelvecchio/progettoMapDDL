@@ -1,10 +1,16 @@
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -17,12 +23,16 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 
 public class AppMain extends Application {
@@ -30,11 +40,18 @@ public class AppMain extends Application {
 	private Socket clientSocket;
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
-	// L'indirizzo ip di default e' quello di loopback, che porta al localhost
-	private String ip = "127.0.0.1";
-	private int port = 8080;
 
-	private Scene selectionScene, homeScene, settingsScene;
+	/*
+	 * Viene creata una ObservableList di istanze di ServerInformation contenente le informazioni sulle possibili connessioni ai server effettuabili.
+	 * La lista viene inizializzata con un server di default, che rappresenta il localhost
+	 */
+	private ObservableList<ServerInformation> servers = FXCollections.observableArrayList(new ServerInformation("127.0.0.1", 8080, "(Default)"));
+
+	// Il server a cui viene inizializzato il programma e' quello di default
+	private ServerInformation currServer = servers.get(0);
+
+	private Scene selectionScene, homeScene, settingsScene, newServerScene, predictScene;
+	private boolean loadFlag = false;
 
 	public static void main(String[] args) {
 		
@@ -84,6 +101,7 @@ public class AppMain extends Application {
 		centralPanel.getChildren().addAll(sel, load,create);
 		homePane.setCenter(centralPanel);
 		
+		
 		/*
 		 * Se il tasto "Carica" viene premuto, ci si connette al server e si comunica di caricare
 		 * dal file l'albero corrispondente al nome del file scelto
@@ -92,7 +110,7 @@ public class AppMain extends Application {
 		load.setOnAction(e -> {
 			
 			try {
-
+				loadFlag = true;
 				connectToServer();
 				out.writeObject(2);
 				mainStage.setScene(selectionScene);
@@ -113,7 +131,7 @@ public class AppMain extends Application {
 		create.setOnAction(e -> {
 
 			try {
-
+				loadFlag = false;
 				connectToServer();
 				out.writeObject(0);
 				mainStage.setScene(selectionScene);
@@ -126,6 +144,71 @@ public class AppMain extends Application {
 			}
 		});
 		
+
+		/** FINESTRA DI PREDIZIONE **/
+		
+		/*	
+		 * Si trova in questo punto perchÃ© la descrizione della scena di predizione
+		 *	deve precedere la predizione stessa (handlePredict)
+		 */
+		BorderPane predictPane = new BorderPane();
+		VBox predictBox = new VBox(50);
+		TilePane userChoices = new TilePane();
+		Label predictedValue = new Label();
+		HBox predictButtons = new HBox(50);
+		predictBox.setAlignment(Pos.CENTER);
+		userChoices.setAlignment(Pos.CENTER);
+		predictedValue.setAlignment(Pos.CENTER);
+		predictButtons.setAlignment(Pos.CENTER);
+		
+		Button redo = new Button("Ricomincia");
+		redo.setDisable(true);
+		Button backPredict = new Button("Indietro");
+		backPredict.setOnAction(e -> { 
+			
+			if (clientSocket != null) {
+				if (clientSocket.isConnected()) {
+					try {
+	
+						// se e' in corso una comunicazione col server, si notifica che si sta tornando alla home
+						out.writeObject(-1);
+						clientSocket.close();
+					} catch (IOException e1) {
+	
+						showAlert("Errore durante la connessione al server");
+					}
+					userChoices.getChildren().clear();
+				}
+				
+			}
+			mainStage.setScene(homeScene);
+		});
+		
+		redo.setOnAction(e->{
+			
+			try {
+				out.writeObject(3);
+				predictedValue.setText("");
+				redo.setDisable(true);
+				handlePredict(userChoices, predictedValue, redo);
+			} catch (IOException e1) {
+				
+				showAlert("Non Ã¨ stato possibile raggiungere il server");
+			}
+			
+		});
+		
+		
+		predictButtons.getChildren().add(redo);
+		predictButtons.getChildren().add(backPredict);
+		predictBox.getChildren().add(userChoices);
+		predictBox.getChildren().add(predictButtons);
+		predictBox.getChildren().add(predictedValue);
+		
+		predictPane.setCenter(predictBox);
+		
+		
+
 		/** HELP **/
 		
 		help.setOnAction(e -> {
@@ -143,6 +226,7 @@ public class AppMain extends Application {
 									+ "Autori: Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea");
 			helpScreen.show();
 		});
+
 
 		/** INSERIMENTO TABELLA **/
 
@@ -163,6 +247,8 @@ public class AppMain extends Application {
 		
 		// Si inserisce un bottone di conferma che rimane disattivato se non viene inserito del testo
 		Button confirm = new Button("Conferma");
+		
+		
 		confirm.setDisable(true);
 		confirm.setOnAction(e -> {
 
@@ -170,6 +256,7 @@ public class AppMain extends Application {
 				
 				// Alla pressione si tenta di mandare il nome della tabella al server
 				out.writeObject(tableName.getText());
+
 				String ans = (String) in.readObject();
 				
 				if (!ans.equals("OK")) {
@@ -177,12 +264,33 @@ public class AppMain extends Application {
 					showAlert(ans);
 				} else {
 					
-					// mainStage.setScene(predictScene);
+					
+					
+					if (loadFlag == false) {
+						
+						out.writeObject(1);
+						if (!((String) in.readObject()).equals("OK")) {
+						
+							showAlert("Errore nel salvataggio dei dati");
+						}
+					}
+					
+					
+					
+					mainStage.setScene(predictScene);
+					
+					out.writeObject(3);
+					//confirmChoice.setDisable(false);
+					
+					handlePredict(userChoices, predictedValue, redo);
+					
+					//confirmChoice.setDisable(true);
+
 				}
 			} catch (ClassNotFoundException | IOException e1) {
 				
 				/* 
-				 * si presuppone che la connessione sia già stata stabilita
+				 * si presuppone che la connessione sia giï¿½ stata stabilita
 				 * e pertanto non si prevede di gestire una NullPointerException
 				 */
 				showAlert("Errore durante la connessione al server");
@@ -191,26 +299,10 @@ public class AppMain extends Application {
 		selectionPane.add(confirm, 0, 2);
 		
 		// si crea anche un bottone per tornare indietro alla home
-		Button back = new Button("Indietro");
-		back.setOnAction(e -> { 
-			
-			if (clientSocket != null) {
-				if (clientSocket.isConnected()) {
-					try {
-	
-						// se è in corso una comunicazione col server, si notifica che si sta tornando alla home
-						out.writeObject("ABORT");
-						clientSocket.close();
-					} catch (IOException e1) {
-	
-						showAlert("Errore durante la connessione al server");
-					}
-				}
-				
-			}
-			mainStage.setScene(homeScene);
-		});
-		selectionPane.add(back, 1, 2);
+		Button backSelection = new Button("Indietro");
+		backSelection.setOnAction(backPredict.getOnAction());
+		
+		selectionPane.add(backSelection, 1, 2);
 		
 		// Si imposta il campo testuale in maniera che se risulta essere vuoto, il tasto di conferma viene disabilitato
 		tableName.setOnKeyReleased(e -> {
@@ -221,7 +313,7 @@ public class AppMain extends Application {
 			} else {
 				
 				confirm.setDisable(false);
-				if(e.getCode().equals(KeyCode.ENTER)) {
+				if (e.getCode().equals(KeyCode.ENTER)) {
 					
 					confirm.getOnAction().handle(new ActionEvent());
 				}
@@ -229,16 +321,170 @@ public class AppMain extends Application {
 		});
 		
 		
+		
+		
+		
+		
 		/** FINESTRA DELLE IMPOSTAZIONI **/
 		
-		GridPane settingsPane = new GridPane();
-		settingsPane.setAlignment(Pos.CENTER);
-		settingsPane.setHgap(10);
-		settingsPane.setVgap(10);
-		settingsPane.setPadding(new Insets(25, 50, 25, 25));
+		/* Logica di serializzazione dei server conosciuti */
+		
+		/*
+		 * Caricamento delle informazioni sui server precedentemente serializzate.
+		 * In caso di caricamento non andato a buon fine, viene lasciata la lista dei server
+		 * di default.
+		 */
+		try {
+
+			FileInputStream serversInFile = new FileInputStream("servers.info");
+			ObjectInputStream serversIn = new ObjectInputStream(serversInFile);
+
+			/*
+			 * La lista letta dal file e' una lista di MutableServerInformation, ovvero informazioni sui server
+			 * modificabili. Dopo la lettura della lista, i suoi contenuti vengono inseriti nell'attributo
+			 * servers, sotto forma di ServerInformation (quindi oggetti read-only).
+			 */
+			ArrayList<MutableServerInformation> serializedServerList = (ArrayList<MutableServerInformation>) serversIn.readObject();
+
+			servers.clear();
+			for (MutableServerInformation s : serializedServerList) {
+				
+				servers.add(s.toServerInformation());
+			}
+
+			serversIn.close();
+			serversInFile.close();
+		} catch (IOException | ClassNotFoundException e1) {
+			
+			if (e1 instanceof FileNotFoundException) {
+				
+				Alert serversNotFound = new Alert(Alert.AlertType.WARNING);
+				serversNotFound.setContentText("Non e' stato trovato il file \"servers.info\" contenente le informazioni sui server conosciuti.\n"
+						+ "Verra' caricata una lista di default.");
+				serversNotFound.show();
+			} else {
+
+				showAlert("Errore durante il caricamento della lista dei server conosciuti.\n"
+						+ "Verra' caricata una lista di default.");
+			}
+		}
+		
+		/*
+		 * Viene impostata la serializzazione della lista di server conosciuti alla chiusura
+		 * del programma.
+		 */
+		mainStage.setOnCloseRequest(e -> {
+			
+			try {
+				
+				FileOutputStream serverOutFile = new FileOutputStream("servers.info");
+				ObjectOutputStream serverOut = new ObjectOutputStream(serverOutFile);
+
+				/*
+				 * Al posto di servers, viene serializzato un ArrayList di MutableServerInformation, ovvero la controparte
+				 * mutabile di ServerInformation. Questa scelta e' stata fatta poiche' gli attributi di ServerInformation
+				 * non sono serializzabili.
+				 */
+				ArrayList<MutableServerInformation> toSerialize = new ArrayList<MutableServerInformation>(servers.size());
+				for (ServerInformation s : servers) {
+					
+					toSerialize.add(s.toMutableServerInformation());
+				}
+				serverOut.writeObject(toSerialize);
+
+				serverOut.close();
+				serverOutFile.close();
+			} catch (IOException e1) {
+
+				showAlert("Errore durante la memorizzazione dei server conosciuti.");
+			}
+		});
+		
+		/* Definizione della schermata delle impostazioni */
+		
+		BorderPane serversPane = new BorderPane();
+
+		/* 
+		 * Viene dichiarata un TableView per la visione dei server conosciuti, si utilizzano i dati
+		 * dell'attributo servers per tenere aggiornata la tabella.
+		 */
+		TableView<ServerInformation> serverTable = new TableView<ServerInformation>(servers);
+		
+		/*
+		 * Vengono dichiarate le colonne che compongono la tabella. Oltre ad assegnare il nome della tabella,
+		 * viene associata ogni colonna all'attributo Property relativo in ServerInformation, tramite il metodo
+		 * setCellValueFactory.
+		 */
+		TableColumn<ServerInformation, String> idCol = new TableColumn<ServerInformation, String>("ID");
+		idCol.setCellValueFactory(new PropertyValueFactory<ServerInformation, String>("id"));
+		
+		TableColumn<ServerInformation, String> ipCol = new TableColumn<ServerInformation, String>("Indirizzo Ip");
+		ipCol.setCellValueFactory(new PropertyValueFactory<ServerInformation, String>("ip"));
+		
+		TableColumn<ServerInformation, Integer> portCol = new TableColumn<ServerInformation, Integer>("Porta");
+		portCol.setCellValueFactory(new PropertyValueFactory<ServerInformation, Integer>("port"));
+		
+		// Infine vengono aggiunte le tabelle appena create alla TableView serverTable.
+		serverTable.getColumns().setAll(idCol, ipCol, portCol);
+		
+		/*
+		 * Viene creato un oggetto TableViewFocusModel per poter gestire l'interazione fra l'utente e la tabella.
+		 * L'oggetto viene associato alla tabella serverTable.
+		 */
+		TableView.TableViewFocusModel<ServerInformation> userFocus = new TableView.TableViewFocusModel<ServerInformation>(serverTable);
+		serverTable.setFocusModel(userFocus);
+		
+		/*
+		 * Infine vengono dichiarati i bottoni per interagire con gli elementi della tabella.
+		 */
+		HBox settingsButtonsLayout = new HBox();
+		settingsButtonsLayout.setAlignment(Pos.CENTER);
+		settingsButtonsLayout.setPadding(new Insets(25, 25, 25, 25));
+
+		Button addServer = new Button("Aggiungi");
+		Button removeServer = new Button("Elimina");
+		Button confirmServer = new Button("Conferma");
+		Button backSettings = new Button("Indietro");
+		
+		backSettings.setOnAction(e -> {
+			
+			mainStage.setScene(homeScene);
+		});
+		
+		addServer.setOnAction(e -> {
+			
+			mainStage.setScene(newServerScene);
+		});
+		
+		removeServer.setOnAction(e -> {
+			
+			servers.remove(userFocus.getFocusedItem());
+			if (servers.size() == 0) {
+				
+				confirmServer.setDisable(true);
+			}
+		});
+		
+		settingsButtonsLayout.getChildren().addAll(addServer, removeServer, confirmServer, backSettings);
+
+		serversPane.setCenter(serverTable);
+		serversPane.setBottom(settingsButtonsLayout);
+		
+		/** AGGIUNTA NUOVO SERVER **/
+		
+		GridPane newServerPane = new GridPane();
+		newServerPane.setAlignment(Pos.CENTER);
+		newServerPane.setHgap(10);
+		newServerPane.setVgap(10);
+		newServerPane.setPadding(new Insets(25, 50, 25, 25));
 		
 		Label ipLabel = new Label("Indirizzo IP");
 		Label portLabel = new Label("Porta");
+		Label idLabel = new Label("Server ID");
+		
+		Button backSetting = new Button("Indietro");
+		backSetting.setOnAction(e->mainStage.setScene(homeScene));
+		
 		
 		/*
 		 * Per limitare il margine di errore nell'inserimento dell'indirizzo IP,
@@ -277,12 +523,14 @@ public class AppMain extends Application {
 		 */
 		TextField portField = new TextField();
 		portField.setMaxWidth(45d);
+		
+		TextField idField = new TextField();
 
 		/*
 		 * Con questa chiamata a funzione si aggiornano i testi di prompt dei campi testuali
 		 * con i valori correnti dell'indirizzo ip e della porta.
 		 */
-		updateSettingsPromptText(ipAdd, portField);
+		updateSettingsPromptText(ipAdd, portField, idField);
 
 		/*
 		 * Infine si utilizzano due pulsanti, uno di conferma e uno per tornare alla home del programma.
@@ -290,99 +538,116 @@ public class AppMain extends Application {
 		Button confirmButtonSettings = new Button("Conferma");
 		HBox backLayoutSettings = new HBox();
 		backLayoutSettings.setAlignment(Pos.CENTER_LEFT);
-		backLayoutSettings.getChildren().add(back);
+		backLayoutSettings.getChildren().add(backSetting);
 
 		/*
 		 * Si dichiara un oggetto di tipo EventHandler<ActionEvent>, il cui metodo handle descrive il comportamento
-		 * di conferma alla pressione del pulsante confirmButtonSettings (o alla pressione del tasto enter).
-		 * Si e' scelta un oggetto di classe anonima al posto di una lambda-espressione poichè il corpo
-		 * della funzione handle è molto esteso ed è pertanto più facilmente leggibile
+		 * di conferma alla pressione del pulsante confirmButtonSettings (o alla pressione del tasto enter all'interno
+		 * di un qualsiasi TextField della schermata).
+		 * Si e' scelta un oggetto di classe anonima al posto di una lambda-espressione poiche' il corpo
+		 * della funzione handle è molto esteso ed è pertanto più facilmente leggibile.
 		 */
 		EventHandler<ActionEvent> confirmEvent = new EventHandler<ActionEvent>() {
 
 			public void handle(ActionEvent e) {
 				
 				/*
-				 * Si controlla se l'ip inserito e' un indirizzo ip valido.
-				 * Se i field sono vuoti, si lascia il valore dell'ultimo indirizzo ip utilizzato.
-				 * Se l'indirizzo ip inserito e' mal formattato, viene visualizzato un errore, e non
-				 * si modifica l'indirizzo ip corrente.
+				 * Viene usato uno StringBuffer per la concatenzione del nuovo indirizzo Ip per evitare
+				 * la creazione ripetuta di nuovi oggetti String.
 				 */
-				
-				// Se nessun campo di testo e' riempito, allora l'indirizzo ip utilizzato e' l'ultimo selezionato.
-				boolean isDefault = Arrays.asList(ipAdd).stream().filter(i -> ((TextField) i).getText().equals("")).count() == 4;
-				
-				if (!isDefault) {
+				StringBuffer newIp = null;
+				int intPort = -1;
 
-					boolean isValid = true;
-					for (TextField i : ipAdd) {
+				/*
+				 * Si controlla se l'ip inserito e' un indirizzo ip valido.
+				 * Se l'indirizzo ip inserito e' mal formattato, viene visualizzato un errore, e non viene
+				 * inserito il nuovo server.
+				 */
+				boolean isValid = true;
+				for (TextField i : ipAdd) {
+					
+					int readInteger = -1;
+					try {
+	
+						readInteger = Integer.parseInt(i.getText());
+					} catch (NumberFormatException err) {
 						
-						int readInteger = -1;
-						try {
-		
-							readInteger = Integer.parseInt(i.getText());
-						} catch (NumberFormatException err) {
-							
-							isValid = false;
-							break;
-						}
-						if (readInteger < 0 || readInteger > 255) {
-							
-							isValid = false;
-							break;
-						}
+						isValid = false;
+						break;
 					}
-					if (isValid) {
-		
-						/*
-						 * Viene utilizzato un oggetto StringBuffer in maniera da non creare un nuovo oggetto di classe
-						 * String per ogni iterazione del ciclo.
-						 */
-						StringBuffer newIp = new StringBuffer("");
-						for (int i = 0; i < 3; i++) {
-							
-							newIp.append(ipAdd[i].getText());
-							newIp.append(".");
-						}
-						newIp.append(ipAdd[3].getText());
-						ip = new String(newIp);
-					} else {
-		
-						showAlert("L'indirizzo IP inserito non è valido.\n"
-								+ "I valori che compongono l'indirizzo devono essere interi da 0 a 255.");
+					if (readInteger < 0 || readInteger > 255) {
+						
+						isValid = false;
+						break;
 					}
+				}
+				if (isValid) {
+	
+					newIp = new StringBuffer("");
+					for (int i = 0; i < 3; i++) {
+						
+						newIp.append(ipAdd[i].getText());
+						newIp.append(".");
+					}
+					newIp.append(ipAdd[3].getText());
+				} else {
+
+					showAlert("L'indirizzo IP inserito non è valido.\n"
+							+ "I valori che compongono l'indirizzo devono essere interi da 0 a 255.");
+					return;
 				}
 				
 				/*
 				 * Si parsifica il numero di porta inserito nel field associato. Se il numero di porta
-				 * e' valido, si aggiorna l'attributo port, altrimenti viene lasciato invariato (e si visualizza
-				 * un errore).
+				 * non e' valido, viene visualizzato un errore.
 				 */
 				String readPort = portField.getText();
 				
 				if (!readPort.equals("")) {
 				
-					final String errorMessage = "Il numero di porta inserito non è valido.\n"
+					final String errorMessage = "Il numero di porta inserito non ï¿½ valido.\n"
 							+ "Il numero di porta deve essere un intero fra 1 e 65535.";
-					int intPort;
+
 					try {
 
 						intPort = Integer.parseInt(readPort);
-						if (intPort > 0 && intPort <= 65535) {
-
-							port = intPort;
-						} else {
+						if (!(intPort > 0 && intPort <= 65535)) {
 
 							showAlert(errorMessage);
+							return;
 						}
 					} catch (NumberFormatException f) {
 
 						showAlert(errorMessage);
+						return;
 					}
 				}
 				
-				// Infine si aggiornano le stringhe di prompt dei campi testuali con i valori correnti di indirizzo ip e porta
-				updateSettingsPromptText(ipAdd, portField);
+				String readId = idField.getText();
+				
+				/*
+				 * L'ID dovra' essere un campo compilato, e non devono essere gia' presenti in memoria
+				 * server dallo stesso identificatore.
+				 */
+				if (readId.equals("")) {
+					
+					showAlert("Il server deve avere un identificatore");
+					return;
+				}
+
+				ServerInformation toAdd = new ServerInformation(newIp.toString(), intPort, readId);
+				if (servers.contains(toAdd)) {
+
+					showAlert("Un server dall'ID \"" + readId + "\" e' gia' esistente.");
+					return;
+				}
+				
+				servers.add(toAdd);
+				updateSettingsPromptText(ipAdd, portField, idField);
+				
+				// Si sblocca il pulsante per confermare l'aggiunta di un server
+				confirmServer.setDisable(false);
+				mainStage.setScene(settingsScene);
 			}
 		};
 
@@ -401,6 +666,7 @@ public class AppMain extends Application {
 				}
 			});
 		}
+		
 		portField.setOnKeyReleased(e -> {
 
 			if (e.getCode().equals(KeyCode.ENTER)) {
@@ -410,45 +676,145 @@ public class AppMain extends Application {
 		});
 
 		/*
+		 * Questo bottone appartiene alla schermata di visione dei server, ma la dichiarazione del comportamento
+		 * e' effettuata qua, poiche' deve richiamare updateSettingsPromptText
+		 */
+		confirmServer.setOnAction(e -> {
+
+			currServer = userFocus.getFocusedItem();
+			updateSettingsPromptText(ipAdd, portField, idField);
+			mainStage.setScene(homeScene);
+		});
+		
+		/*
 		 * Si aggiungono i nodi alla griglia di layout.
 		 */
-		settingsPane.add(ipLabel, 1, 1);
-		settingsPane.add(ipLayout, 2, 1);
-		settingsPane.add(portLabel, 1, 2);
-		settingsPane.add(portField, 2, 2);
-		settingsPane.add(confirmButtonSettings, 1, 3);
-		settingsPane.add(backLayoutSettings, 2, 3);
-		
+		newServerPane.add(idLabel, 1, 1);
+		newServerPane.add(idField, 2, 1);
+		newServerPane.add(ipLabel, 1, 2);
+		newServerPane.add(ipLayout, 2, 2);
+		newServerPane.add(portLabel, 1, 3);
+		newServerPane.add(portField, 2, 3);
+		newServerPane.add(confirmButtonSettings, 1, 4);
+		newServerPane.add(backLayoutSettings, 2, 4);
+
 		/*
 		 * Chiamata ai metodi per mostrare la scena principale
 		 */
 		homeScene = new Scene(homePane, 400, 400);
 		selectionScene = new Scene(selectionPane, 400, 400);
-		settingsScene = new Scene(settingsPane, 400,400);
 		homeScene.getStylesheets().add("file:res/bright.css");
+		settingsScene = new Scene(serversPane, 400, 400);
+		newServerScene = new Scene(newServerPane, 400,400);
+		predictScene = new Scene(predictPane, 400, 400);
+
 		mainStage.setScene(homeScene);
 		mainStage.show();
 	}
 
-	
+	/** 
+	 * Metodo necessario per connettersi al server
+	 * 
+	 * @throws IOException lanciata nel caso in cui ci siano errori nella costruzione
+	 * degli streams
+	 */
 	private void connectToServer() throws IOException {
 		
-			clientSocket = new Socket(ip, port);
+			clientSocket = new Socket(currServer.getIp(), currServer.getPort());
 			out = new ObjectOutputStream(clientSocket.getOutputStream());
 			in = new ObjectInputStream(clientSocket.getInputStream());
 	}
 	
+	/** 
+	 * Se qualcosa va storto e' possibile mostrare una finestra di dialogo con un messaggio,
+	 * tramite questo metodo.
+	 * 
+	 * @param message <code>String</code> da mostrare nella finestra di dialogo 
+	 */
 	private void showAlert(String message) {
 
-		/*
-		 * Se qualcosa va storto e' possibile mostrare una finestra di dialogo con un messaggio
-		 */
+
 		
 		Alert toShow = new Alert(Alert.AlertType.ERROR);
 		toShow.setContentText(message);
 		toShow.show();
 	}
 	
+	/**
+	 * Metodo necessario per poter gestire la predizione attraverso il server
+	 * 
+	 * @param userChoices <code>TilePane</code> su cui inserire i tasti, corrispondenti alle possibili scelte 
+	 * (quando, esplorando l'albero di regressione, si arriva ad un nodo di split)
+	 * @param predictedValue <code>Label</code> su cui scrivere il risultato della predizione
+	 * @param redo <code>Button</code> necessario per poter effettuare una nuova predizione una volta finita
+	 * quella precedente. E' necessario avere questo parametro per poter gestire quando Ã¨ attivato e quando no.
+	 * 
+	 */
+	private void handlePredict(TilePane userChoices, Label predictedValue, Button redo) {
+		
+		try {
+			
+			String toCheck;
+			
+			toCheck = (String)in.readObject();
+			
+			
+			if (toCheck.equals("QUERY")) {
+				
+				List<String> options = new ArrayList<String>((ArrayList<String>)in.readObject());
+				int i = 0;
+				for (String elem : options) {
+					
+					addSplitButton(userChoices, elem, i, predictedValue, redo);
+					i++;
+				}
+				
+			} else {
+				
+				predictedValue.setText(((Double)in.readObject()).toString());
+				redo.setDisable(false);
+				
+				
+			}
+		} catch (ClassNotFoundException e) {
+			
+			e.printStackTrace();
+		} catch (IOException e) {
+		
+			e.printStackTrace();
+		}
+	}
+	
+	/** 
+	 * Metodo necessario per aggiungere dei pulsanti alla finestra di predizione. 
+	 * Tali pulsanti serviranno a scegliere le alternative possibili durante la predizione.
+	 * Dato che viene descritta la caratteristica di ogni tasto, sono necessari anche i parametri 
+	 * di handlePredict, che viene richiamata ogni volta che viene premuto un tasto.
+	 * 
+	 * @param userChoices <code>TilePane</code> in cui vanno inseriti i tasti.
+	 * @param toInsert <code>Stringa</code> contenente l'etichetta del nuovo tasto da aggiungere.
+	 * @param toSend <code>Integer</code> da inviare al server, corrispondente alla scelta desiderata.
+	 * @param predictedValue riferimento al <code>Label</code> su cui scrivere il risultato (necessario per richiamare handlePredict).
+	 * @param redo riferimento al <code>Button</code> per ricominciare la predizione (necessario per richiamare handlePredict).
+	 */
+	private void addSplitButton(TilePane userChoices, String toInsert, Integer toSend, Label predictedValue, Button redo) {
+		
+		Button toShow = new Button(toInsert);
+		toShow.setOnAction(e->{
+			
+			try {
+				
+				out.writeObject(toSend);
+				userChoices.getChildren().clear();
+				handlePredict(userChoices, predictedValue, redo);
+				
+			} catch (IOException e1) {
+				
+				showAlert("Impossibile inviare la scelta selezionata al server (errore di comunicazione)");
+			}
+		});
+		userChoices.getChildren().add(toShow);
+	}
 	
 	/**
 	 * Metodo utilizzato per tenere aggiornati le stringhe di prompt nei campi
@@ -459,15 +825,18 @@ public class AppMain extends Application {
 	 * @param ipAdd Array di <code>TextField</code> che compongono un indirizzo Ip.
 	 * @param portField <code>TextField</code> dove verra' inserito il numero di porta.
 	 */
-	private void updateSettingsPromptText(TextField[] ipAdd, TextField portField) {
+	private void updateSettingsPromptText(TextField[] ipAdd, TextField portField, TextField idField) {
 		
-		String[] currIpString = ip.split("\\.");
+		String[] currIpString = currServer.getIp().split("\\.");
 		for (int i = 0; i < 4; i++) {
 			
 			ipAdd[i].setPromptText(currIpString[i]);
+			ipAdd[i].setText("");
 		}
 		
-		portField.setPromptText(new Integer(port).toString());
-
+		portField.setPromptText(new Integer(currServer.getPort()).toString());
+		portField.setText("");
+		idField.setPromptText(currServer.getId());
+		idField.setText("");
 	}
 }
