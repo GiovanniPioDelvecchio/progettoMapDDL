@@ -131,6 +131,7 @@ public class AppMain extends Application {
 			}
 		});
 		
+
 		/** FINESTRA DI PREDIZIONE **/
 		
 		/*	
@@ -194,6 +195,26 @@ public class AppMain extends Application {
 		predictPane.setCenter(predictBox);
 		
 		
+
+		/** HELP **/
+		
+		help.setOnAction(e -> {
+			
+			Alert helpScreen = new Alert(Alert.AlertType.INFORMATION);
+			helpScreen.setHeaderText("Aiuto");
+			helpScreen.setTitle("Aiuto");
+			helpScreen.setContentText("Programma per la creazione ed esplorazione di alberi di regressione.\n\n"
+									+ "E' possibile creare un albero connettendosi ad un server adeguato contenente dei dataset.\n"
+									+ "Nella schermata delle impostazioni e' possibile specificare il server a cui connettersi tramite indirizzo IP e porta.\n\n"
+									+ "L'opzione \"crea\" permette di creare un nuovo albero di regressione a partire da un dataset memorizzato nel server.\n"
+									+ "L'opzione \"carica\" permette di caricare un albero di regressione creato in precedenza dal server.\n\n"
+									+ "Per selezionare il dataset, e' necessario inserire il nome della tabella in cui e' memorizzato nel Database del server.\n"
+									+ "Una volta inserito il nome della tabella, si potra' esplorare l'albero tramite una serie di query a cui rispondere.\n\n"
+									+ "Autori: Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea");
+			helpScreen.show();
+		});
+
+
 		/** INSERIMENTO TABELLA **/
 
 		// Si viene a creare un layout a griglia
