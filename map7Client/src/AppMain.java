@@ -139,12 +139,9 @@ public class AppMain extends Application {
 		 */
 		BorderPane predictPane = new BorderPane();
 		VBox predictBox = new VBox(50);
-		//Label predictMessage = new Label();
 		TilePane userChoices = new TilePane();
 		Label predictedValue = new Label();
-		//TextField userChoice = new TextField();
 		HBox predictButtons = new HBox(50);
-		//Button confirmChoice = new Button("Conferma");
 		predictBox.setAlignment(Pos.CENTER);
 		userChoices.setAlignment(Pos.CENTER);
 		predictedValue.setAlignment(Pos.CENTER);
@@ -548,7 +545,6 @@ public class AppMain extends Application {
 			
 			if(toCheck.equals("QUERY")) {
 				
-				//predictMessage.setText((String)in.readObject());
 				List<String> options = new ArrayList<String>((ArrayList<String>)in.readObject());
 				int i = 0;
 				for (String elem : options) {
