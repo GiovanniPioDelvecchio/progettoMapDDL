@@ -99,6 +99,7 @@ public class AppMain extends Application {
 		create.setMinSize(130, 20);
 		centralPanel.getChildren().addAll(sel, load,create);
 		homePane.setCenter(centralPanel);
+
 		
 		
 		/*
@@ -157,6 +158,9 @@ public class AppMain extends Application {
 		HBox predictButtons = new HBox(50);
 		predictBox.setAlignment(Pos.CENTER);
 		userChoices.setAlignment(Pos.CENTER);
+		userChoices.setHgap(5d);
+		userChoices.setVgap(5d);
+		userChoices.setPrefColumns(3);
 		predictedValue.setAlignment(Pos.CENTER);
 		predictButtons.setAlignment(Pos.CENTER);
 		
@@ -829,6 +833,7 @@ public class AppMain extends Application {
 				showAlert("Impossibile inviare la scelta selezionata al server (errore di comunicazione)");
 			}
 		});
+
 		userChoices.getChildren().add(toShow);
 	}
 	
