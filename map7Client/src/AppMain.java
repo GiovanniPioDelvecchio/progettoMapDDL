@@ -307,11 +307,15 @@ public class AppMain extends Application {
 		selectionPane.add(confirm, 0, 2);
 		
 		// si crea anche un bottone per tornare indietro alla home
+
 		Button backSelection = new Button("Indietro");
 		backSelection.setOnAction(backPredict.getOnAction());
 		
 		selectionPane.add(backSelection, 1, 2);
+
 		
+
+
 		// Si imposta il campo testuale in maniera che se risulta essere vuoto, il tasto di conferma viene disabilitato
 		tableName.setOnKeyReleased(e -> {
 
@@ -327,7 +331,7 @@ public class AppMain extends Application {
 				}
 			}
 		});
-		
+
 		
 		
 		
