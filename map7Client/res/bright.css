@@ -50,8 +50,53 @@
     -fx-fill: #373D37;
 }
 
-#toolButton {
+
+.table-view {
+	-fx-border-color : #93A393;
+}
+
+.table-view .table-row-cell:odd{
+    -fx-background-color: #CFE6CF;
+	-fx-table-cell-border-color: white;
+}
+
+.table-view .table-row-cell:even{
+    -fx-background-color: #d9f0d8;
+	-fx-table-cell-border-color: white;
+	
+}
+
+.table-view .table-row-cell:focused{
+	-fx-background-color: #AABDAA;
+	-fx-table-cell-border-color: #93A393;
+
+}
+
+.table-view .table-row-cell:focused .text{
+	-fx-fill:d9f0d8;
+
+}
+.table-view .column-header{
+	
+    -fx-background-color: linear-gradient(#AABDAA,#93A393);
+}
+
+.table-view .filler{
+	-fx-background-color: linear-gradient(#AABDAA,#93A393);;
+}
+
+.table-view .column-drag-header,
+.table-view .column-overlay {
+    -fx-background-color: #71e86d;
+}
+.table-view .column-resize-line {
+    -fx-background-color: #71e86d;
+}
+
+
+#smallButton {
     -fx-font-size: 12px;
+	-fx-padding: 6 15 6 15;
 }
 
 #welcomeLabel {

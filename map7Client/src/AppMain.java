@@ -78,8 +78,8 @@ public class AppMain extends Application {
 		
 		Button opt = new Button("Opzioni");
 		Button help = new Button("Aiuto");
-		opt.setId("toolButton");
-		help.setId("toolButton");
+		opt.setId("smallButton");
+		help.setId("smallButton");
 		opt.setGraphic(gearV);
 		help.setGraphic(questionMarkV);
 		opt.setOnAction(e -> mainStage.setScene(settingsScene));
@@ -429,6 +429,7 @@ public class AppMain extends Application {
 		
 		// Infine vengono aggiunte le tabelle appena create alla TableView serverTable.
 		serverTable.getColumns().setAll(idCol, ipCol, portCol);
+		serverTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		
 		/*
 		 * Viene creato un oggetto TableViewFocusModel per poter gestire l'interazione fra l'utente e la tabella.
@@ -443,11 +444,16 @@ public class AppMain extends Application {
 		HBox settingsButtonsLayout = new HBox();
 		settingsButtonsLayout.setAlignment(Pos.CENTER);
 		settingsButtonsLayout.setPadding(new Insets(25, 25, 25, 25));
+		settingsButtonsLayout.setSpacing(5d);
 
 		Button addServer = new Button("Aggiungi");
 		Button removeServer = new Button("Elimina");
 		Button confirmServer = new Button("Conferma");
 		Button backSettings = new Button("Indietro");
+		addServer.setId("smallButton");
+		removeServer.setId("smallButton");
+		confirmServer.setId("smallButton");
+		backSettings.setId("smallButton");
 		
 		backSettings.setOnAction(e -> {
 			
