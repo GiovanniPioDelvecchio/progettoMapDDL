@@ -154,7 +154,7 @@ public class AppMain extends Application {
 		BorderPane predictPane = new BorderPane();
 		VBox predictBox = new VBox(50);
 		TilePane userChoices = new TilePane();
-		Label predictedValue = new Label();
+		Label predictedValue = new Label("Seleziona il valore dell'attributo:");
 		HBox predictButtons = new HBox(50);
 		predictBox.setAlignment(Pos.CENTER);
 		userChoices.setAlignment(Pos.CENTER);
@@ -163,6 +163,7 @@ public class AppMain extends Application {
 		userChoices.setPrefColumns(3);
 		predictedValue.setAlignment(Pos.CENTER);
 		predictButtons.setAlignment(Pos.CENTER);
+		predictedValue.setId("predictionLabel");
 		
 		Button redo = new Button("Ricomincia");
 		redo.setDisable(true);
@@ -181,6 +182,7 @@ public class AppMain extends Application {
 						showAlert("Errore durante la connessione al server");
 					}
 					userChoices.getChildren().clear();
+					predictedValue.setText("Seleziona il valore dell'attributo:");
 				}
 				
 			}
@@ -191,7 +193,7 @@ public class AppMain extends Application {
 			
 			try {
 				out.writeObject(3);
-				predictedValue.setText("");
+				predictedValue.setText("Seleziona il valore dell'attributo:");
 				redo.setDisable(true);
 				handlePredict(userChoices, predictedValue, redo);
 			} catch (IOException e1) {
@@ -204,9 +206,10 @@ public class AppMain extends Application {
 		
 		predictButtons.getChildren().add(redo);
 		predictButtons.getChildren().add(backPredict);
+		predictBox.getChildren().add(predictedValue);
 		predictBox.getChildren().add(userChoices);
 		predictBox.getChildren().add(predictButtons);
-		predictBox.getChildren().add(predictedValue);
+
 		
 		predictPane.setCenter(predictBox);
 		
@@ -227,7 +230,7 @@ public class AppMain extends Application {
 									+ "Per selezionare il dataset, e' necessario inserire il nome della tabella in cui e' memorizzato nel Database del server.\n"
 									+ "Una volta inserito il nome della tabella, si potra' esplorare l'albero tramite una serie di query a cui rispondere.\n\n"
 									+ "Autori: Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea");
-			helpScreen.getDialogPane().getStylesheets().add("file:res/bright.css");
+			helpScreen.getDialogPane().getStylesheets().add("file:src/theme.css");
 			((Stage) helpScreen.getDialogPane().getScene().getWindow()).getIcons().add(new Image("file:res/icon.png"));
 			helpScreen.show();
 		});
@@ -366,7 +369,7 @@ public class AppMain extends Application {
 				Alert serversNotFound = new Alert(Alert.AlertType.WARNING);
 				serversNotFound.setContentText("Non e' stato trovato il file \"servers.info\" contenente le informazioni sui server conosciuti.\n"
 						+ "Verra' caricata una lista di default.");
-				serversNotFound.getDialogPane().getStylesheets().add("file:res/bright.css");
+				serversNotFound.getDialogPane().getStylesheets().add("file:src/theme.css");
 				((Stage) serversNotFound.getDialogPane().getScene().getWindow()).getIcons().add(new Image("file:res/warning.png"));
 				serversNotFound.show();
 			} else {
@@ -720,11 +723,11 @@ public class AppMain extends Application {
 		newServerScene = new Scene(newServerPane, 400,400);
 		predictScene = new Scene(predictPane, 400, 400);
 
-		homeScene.getStylesheets().add("file:res/bright.css");
-		selectionScene.getStylesheets().add("file:res/bright.css");
-		settingsScene.getStylesheets().add("file:res/bright.css");
-		newServerScene.getStylesheets().add("file:res/bright.css");
-		predictScene.getStylesheets().add("file:res/bright.css");
+		homeScene.getStylesheets().add("file:src/theme.css");
+		selectionScene.getStylesheets().add("file:src/theme.css");
+		settingsScene.getStylesheets().add("file:src/theme.css");
+		newServerScene.getStylesheets().add("file:src/theme.css");
+		predictScene.getStylesheets().add("file:src/theme.css");
 
 		mainStage.setScene(homeScene);
 		mainStage.show();
@@ -755,7 +758,7 @@ public class AppMain extends Application {
 		
 		Alert toShow = new Alert(Alert.AlertType.ERROR);
 		toShow.setContentText(message);
-		toShow.getDialogPane().getStylesheets().add("file:res/bright.css");
+		toShow.getDialogPane().getStylesheets().add("file:src/theme.css");
 		((Stage) toShow.getDialogPane().getScene().getWindow()).getIcons().add(new Image("file:res/error.png"));
 		toShow.show();
 	}
@@ -791,7 +794,7 @@ public class AppMain extends Application {
 				
 			} else {
 				
-				predictedValue.setText(((Double)in.readObject()).toString());
+				predictedValue.setText("Valore predetto:\n" + ((Double)in.readObject()).toString());
 				redo.setDisable(false);
 				
 				
@@ -833,7 +836,7 @@ public class AppMain extends Application {
 				showAlert("Impossibile inviare la scelta selezionata al server (errore di comunicazione)");
 			}
 		});
-
+		toShow.setId("predictionButton");
 		userChoices.getChildren().add(toShow);
 	}
 	
