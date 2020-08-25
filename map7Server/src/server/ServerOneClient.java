@@ -68,17 +68,20 @@ public class ServerOneClient extends Thread {
 
 		
 		Integer clientDecision = null;
+		RegressionTree tree = null;
+		boolean noTable = true;
+		
 		try {
 			
 			// Viene letta la prima scelta effettuata dall'utente tramite il Client
 			clientDecision = (Integer) in.readObject();
+		while(noTable) {
 			String trainingfileName = (String) in.readObject();
+			
 			if(trainingfileName.equals("#ABORT")) {
 				clientDecision = -1;
 				return;
 			}
-			
-			RegressionTree tree = null;
 
 			// Viene letto l'intero 0 se l'utente vuole generare un nuovo albero di regressione
 			if (clientDecision == 0) {
@@ -109,7 +112,6 @@ public class ServerOneClient extends Thread {
 							tree.salva(trainingfileName + ".dmp");
 							
 							// Viene comunicato al Client che il salvataggio e' andato a buon fine
-							out.writeObject("OK");
 						} catch (IOException e) {
 							
 							/*
@@ -117,6 +119,8 @@ public class ServerOneClient extends Thread {
 							 */
 							System.out.println(e.toString());
 						}
+						out.writeObject("OK");
+						noTable = false;
 					}
 				} catch (TrainingDataException e) {
 
@@ -126,7 +130,6 @@ public class ServerOneClient extends Thread {
 					 * stringa. Cio' portera' alla terminazione della comunicazione con il Client.
 					 */
 					out.writeObject(e.toString());
-					return;
 				}
 			} 
 			
@@ -141,6 +144,13 @@ public class ServerOneClient extends Thread {
 					 * L'utente non ha bisogno di inserire l'estensione ".dmp" nella stringa inserita.
 					 */
 					tree = RegressionTree.carica(trainingfileName + ".dmp");
+					noTable = false;
+					/*
+					 * In caso di corretto caricamento da parte del Server dell'albero di regressione da file,
+					 * viene inviata la stringa "OK" al Client.
+					 */
+					out.writeObject("OK");
+					
 				} catch (FileNotFoundException e) {
 
 					/*
@@ -149,7 +159,6 @@ public class ServerOneClient extends Thread {
 					 * ferma la sua esecuzione.
 					 */
 					out.writeObject(e.toString());
-					return;
 				} catch (IOException e) {
 
 					/*
@@ -168,14 +177,9 @@ public class ServerOneClient extends Thread {
 					out.writeObject(e.toString());
 					return;
 				} 
-				
-				/*
-				 * In caso di corretto caricamento da parte del Server dell'albero di regressione da file,
-				 * viene inviata la stringa "OK" al Client.
-				 */
-				out.writeObject("OK");
+
 			}
-			
+		}
 			/*
 			 * Viene letta l'azione che vuole effettuare il Client.
 			 */

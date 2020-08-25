@@ -281,11 +281,9 @@ public class AppMain extends Application {
 					mainStage.setScene(predictScene);
 					
 					out.writeObject(3);
-					//confirmChoice.setDisable(false);
 					
 					handlePredict(userChoices, predictedValue, redo);
-					
-					//confirmChoice.setDisable(true);
+
 
 				}
 			} catch (ClassNotFoundException | IOException e1) {
@@ -295,6 +293,7 @@ public class AppMain extends Application {
 				 * e pertanto non si prevede di gestire una NullPointerException
 				 */
 				showAlert("Errore durante la connessione al server");
+				mainStage.setScene(homeScene);
 			} 
 		});
 		selectionPane.add(confirm, 0, 2);
@@ -396,8 +395,24 @@ public class AppMain extends Application {
 		 */
 		mainStage.setOnCloseRequest(e -> {
 			
-			try {
+			if (clientSocket != null) {
+				if (clientSocket.isConnected()) {
+					try {
+						// se e' in corso una comunicazione col server, si notifica che si sta tornando alla home
+						if(mainStage.getScene().equals(selectionScene)) {
+							out.writeObject("#ABORT");
+						} else {
+							out.writeObject(-1);
+						}
+						clientSocket.close();
+					} catch (IOException e1) {
+	
+						showAlert("Errore durante la connessione al server");
+					}
 				
+				}
+			}
+			try {
 				FileOutputStream serverOutFile = new FileOutputStream("servers.info");
 				ObjectOutputStream serverOut = new ObjectOutputStream(serverOutFile);
 
