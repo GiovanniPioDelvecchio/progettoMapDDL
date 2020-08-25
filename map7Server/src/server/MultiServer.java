@@ -34,13 +34,6 @@ public class MultiServer {
 	public MultiServer(int port) {
 
 		String log;
-		try {
-
-			logFile = new FileWriter("server.log", true);
-		} catch (IOException e1) {
-	
-			System.out.println("Failed to create a log file");
-		}
 
 		PORT = port;
 		try {
@@ -49,6 +42,8 @@ public class MultiServer {
 			
 			// Log di avvio del Server
 			System.out.println(log);
+
+			logFile = new FileWriter("server.log", true);
 			logFile.write(log);
 			logFile.close();
 
