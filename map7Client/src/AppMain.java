@@ -126,7 +126,7 @@ public class AppMain extends Application {
 		
 		/*
 		 * Se il tasto "Crea" viene premuto, ci si connette al server e si comunica di caricare
-		 * da un database la tabella da cui verrÃ  ricavato l'albero di regressione
+		 * da un database la tabella da cui verra'  ricavato l'albero di regressione
 		 */
 		create.setOnAction(e -> {
 
@@ -170,12 +170,16 @@ public class AppMain extends Application {
 		Button backPredict = new Button("Indietro");
 		backPredict.setOnAction(e -> { 
 			try {
-				//si notifica che si sta tornando alla home
-				out.writeObject(-1);
-				clientSocket.close();
+					// Si notifica che si sta tornando alla home
+					out.writeObject(-1);
+					clientSocket.close();
 				} catch (IOException e1) {
-						showAlert("Errore durante la connessione al server");
+					showAlert("Errore durante la chiusura della connessione al server");
 				}
+				/**
+				 * Inoltre si ripuliscono i pulsanti di predizione, si reinizializza la label e si
+				 * disattiva il tasto redo.
+				 */
 				userChoices.getChildren().clear();
 				predictedValue.setText("Seleziona il valore dell'attributo:");
 				redo.setDisable(true);
@@ -191,7 +195,8 @@ public class AppMain extends Application {
 				handlePredict(userChoices, predictedValue, redo);
 			} catch (IOException e1) {
 				
-				showAlert("Non Ã¨ stato possibile raggiungere il server");
+				showAlert("Non e' stato possibile raggiungere il server");
+				mainStage.setScene(homeScene);
 			}
 			
 		});
@@ -203,7 +208,6 @@ public class AppMain extends Application {
 		predictBox.getChildren().add(userChoices);
 		predictBox.getChildren().add(predictButtons);
 
-		
 		predictPane.setCenter(predictBox);
 		
 		
@@ -265,17 +269,18 @@ public class AppMain extends Application {
 					showAlert(ans);
 				} else {
 					
-					
-					
 					if (loadFlag == false) {
 						
 						out.writeObject(1);
-						if (!((String) in.readObject()).equals("OK")) {
+						ans = ((String) in.readObject());
+						/* Se il salvataggio dell'albero non va a buon fine, si permette comunque
+						 * di accedere alla predizione
+						 */
+						if (!ans.equals("OK")) {
 						
-							showAlert("Errore nel salvataggio dei dati");
+							showAlert("Errore nel salvataggio dei dati: " + ans);
 						}
 					}
-					
 					
 					
 					mainStage.setScene(predictScene);
@@ -304,13 +309,14 @@ public class AppMain extends Application {
 		backSelection.setOnAction(e->{	
 			
 		try {
-				//si notifica che si sta tornando alla home
-				//la stringa comincia con # poichè nessun file può avere tale nome
+				/*Si notifica che si sta tornando alla home
+				 *la stringa comincia con # poichè nessun file può avere tale nome
+				 */
 				out.writeObject("#ABORT");
 				clientSocket.close();
 				} catch (IOException e1) {
 	
-				showAlert("Errore durante la connessione al server");
+				showAlert("Errore durante la chiusura della connessione con il server");
 				}
 		
 			mainStage.setScene(homeScene);
@@ -407,7 +413,7 @@ public class AppMain extends Application {
 						clientSocket.close();
 					} catch (IOException e1) {
 	
-						showAlert("Errore durante la connessione al server");
+						showAlert("Errore durante la chiusura della comunicazione con il server");
 					}
 				
 				}

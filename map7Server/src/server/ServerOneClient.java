@@ -75,111 +75,120 @@ public class ServerOneClient extends Thread {
 			
 			// Viene letta la prima scelta effettuata dall'utente tramite il Client
 			clientDecision = (Integer) in.readObject();
-		while(noTable) {
-			String trainingfileName = (String) in.readObject();
-			
-			if(trainingfileName.equals("#ABORT")) {
-				clientDecision = -1;
-				return;
-			}
-
-			// Viene letto l'intero 0 se l'utente vuole generare un nuovo albero di regressione
-			if (clientDecision == 0) {
-
-				Data trainingSet = null;
-				
-				try {
-
-					/*
-					 * Viene inizializzato il training set a partire dalla tabella inserita in input
-					 */
-					trainingSet = new Data(trainingfileName);
-					tree = new RegressionTree(trainingSet);
-
-					/*
-					 * Per comunicare al Client che non ci sono stati problemi, viene inviata la stringa "OK"
-					 */
-					out.writeObject("OK");
-					
-					/*
-					 * Il salvataggio dell'albero avviene alla lettura dell'intero 1 sullo stream di comunicazione
-					 */
-					clientDecision = (Integer) in.readObject();
-					if (clientDecision == 1) {
-						
-						try {
-							
-							tree.salva(trainingfileName + ".dmp");
-							
-							// Viene comunicato al Client che il salvataggio e' andato a buon fine
-						} catch (IOException e) {
-							
-							/*
-							 * In caso di errore durante il salvataggio, viene effettuato un log dell'errore
-							 */
-							System.out.println(e.toString());
-						}
-						out.writeObject("OK");
-						noTable = false;
-					}
-				} catch (TrainingDataException e) {
-
-					/*
-					 * Nel caso in cui il costrttore di Data sollevi un'eccezione (quindi non e' possibile creare
-					 * l'albero di regressione), viene inviata la motivazione dell'errore al Client sotto forma di
-					 * stringa. Cio' portera' alla terminazione della comunicazione con il Client.
-					 */
-					out.writeObject(e.toString());
-				}
-			} 
-			
 			/*
-			 * La lettura dell'intero 2 indica il caricamento di un albero di regressione presente in memoria.
+			 * Si attende poi da parte del client la stringa contenente il nome di una tabella/file valido
+			 * (finchè noTable = false)
 			 */
-			if(clientDecision == 2) {
+			while(noTable) {
+				String trainingfileName = (String) in.readObject();
 				
-				try {
-
-					/*
-					 * L'utente non ha bisogno di inserire l'estensione ".dmp" nella stringa inserita.
-					 */
-					tree = RegressionTree.carica(trainingfileName + ".dmp");
-					noTable = false;
-					/*
-					 * In caso di corretto caricamento da parte del Server dell'albero di regressione da file,
-					 * viene inviata la stringa "OK" al Client.
-					 */
-					out.writeObject("OK");
+				if(trainingfileName.equals("#ABORT")) {
+					// Se viene ricevuta la stringa speciale di chiusura (l'utente torna alla home)
+					// si procede alla chiusura della connessione
+					clientDecision = -1;
+					return;
+				}
+	
+				// Viene letto l'intero 0 se l'utente vuole generare un nuovo albero di regressione
+				if (clientDecision == 0) {
+	
+					Data trainingSet = null;
 					
-				} catch (FileNotFoundException e) {
-
-					/*
-					 * Nel caso in cui non fosse presente in memoria il file dal nome specificato, viene inviato al Client
-					 * un messaggio di errore, la comunicazione con il Client viene terminata e l'istanza di ServerOneClient 
-					 * ferma la sua esecuzione.
-					 */
-					out.writeObject(e.toString());
-				} catch (IOException e) {
-
-					/*
-					 * Se si verificano errori durante il caricamento dell'albero di regressione da file, si invia al Client
-					 * la motivazione dell'errore, e si termina la comunicazione con esso.
-					 */
-					out.writeObject(e.toString());
-					return;
-				} catch (ClassNotFoundException e) {
-
-					/*
-					 * In caso di mancato caricamento del classfile di RegressionTree da parte del Server, viene sollevata
-					 * una ClassNotFoundException. La motivazione dell'errore viene inviata al Client, e la comunicazione viene
-					 * chiusa.
-					 */
-					out.writeObject(e.toString());
-					return;
+					try {
+	
+						/*
+						 * Viene inizializzato il training set a partire dalla tabella inserita in input
+						 */
+						trainingSet = new Data(trainingfileName);
+						tree = new RegressionTree(trainingSet);
+	
+						/*
+						 * Per comunicare al Client che non ci sono stati problemi, viene inviata la stringa "OK"
+						 */
+						out.writeObject("OK");
+						
+						/*
+						 * Il salvataggio dell'albero avviene alla lettura dell'intero 1 sullo stream di comunicazione
+						 */
+						clientDecision = (Integer) in.readObject();
+						if (clientDecision == 1) {
+							
+							try {
+								
+								tree.salva(trainingfileName + ".dmp");
+								out.writeObject("OK");
+								// Viene comunicato al Client che il salvataggio e' andato a buon fine
+							} catch (IOException e) {
+								
+								/*
+								 * In caso di errore durante il salvataggio, viene effettuato un log dell'errore
+								 */
+								System.out.println(e.toString());
+								out.writeObject(e.toString());
+							} finally {
+								/*
+								 * anche in caso di errore nel salvataggio, la predizione viene eseguita.
+								 */
+								noTable = false;
+							}
+						}
+					} catch (TrainingDataException e) {
+	
+						/*
+						 * Nel caso in cui il costrttore di Data sollevi un'eccezione (quindi non e' possibile creare
+						 * l'albero di regressione), viene inviata la motivazione dell'errore al Client sotto forma di
+						 * stringa. 
+						 */
+						out.writeObject(e.toString());
+					}
 				} 
-
+				
+				/*
+				 * La lettura dell'intero 2 indica il caricamento di un albero di regressione presente in memoria.
+				 */
+				if(clientDecision == 2) {
+					
+					try {
+	
+						/*
+						 * L'utente non ha bisogno di inserire l'estensione ".dmp" nella stringa inserita.
+						 */
+						tree = RegressionTree.carica(trainingfileName + ".dmp");
+						noTable = false;
+						/*
+						 * In caso di corretto caricamento da parte del Server dell'albero di regressione da file,
+						 * viene inviata la stringa "OK" al Client.
+						 */
+						out.writeObject("OK");
+						
+					} catch (FileNotFoundException e) {
+	
+						/*
+						 * Nel caso in cui non fosse presente in memoria il file dal nome specificato, viene inviato al Client
+						 * un messaggio di errore.
+						 */
+						out.writeObject(e.toString());
+					} catch (IOException e) {
+	
+						/*
+						 * Se si verificano errori durante il caricamento dell'albero di regressione da file, si invia al Client
+						 * la motivazione dell'errore, e si termina la comunicazione con esso.
+						 */
+						out.writeObject(e.toString());
+						return;
+					} catch (ClassNotFoundException e) {
+	
+						/*
+						 * In caso di mancato caricamento del classfile di RegressionTree da parte del Server, viene sollevata
+						 * una ClassNotFoundException. La motivazione dell'errore viene inviata al Client, e la comunicazione viene
+						 * chiusa.
+						 */
+						out.writeObject(e.toString());
+						return;
+					} 
+	
+				}
 			}
-		}
 			/*
 			 * Viene letta l'azione che vuole effettuare il Client.
 			 */
@@ -208,9 +217,9 @@ public class ServerOneClient extends Thread {
 				} catch (UnknownValueException e) {
 
 					/*
-					 * Nel caso in cui l'utente effettui una scelta sbagliata durante l'esplorazione dell'albero di regressione,
+					 * Termini in anticipo l'esplorazione dell'albero di regressione,
 					 * viene catturata una UnknownValueException. Il suo toString() verra' inviato come messaggio di errore 
-					 * al Client. La connessione rimane aperta per permettere una nuova esplorazione dell'albero.
+					 * al Client.
 					 */
 					clientDecision = -1;
 					return;
