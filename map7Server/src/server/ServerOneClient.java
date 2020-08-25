@@ -217,9 +217,9 @@ public class ServerOneClient extends Thread {
 				} catch (UnknownValueException e) {
 
 					/*
-					 * Termini in anticipo l'esplorazione dell'albero di regressione,
-					 * viene catturata una UnknownValueException. Il suo toString() verra' inviato come messaggio di errore 
-					 * al Client.
+					 * Nel caso in cui termini in anticipo l'esplorazione dell'albero di regressione,
+					 * viene catturata una UnknownValueException. Di conseguenza, si passa alla chiusura
+					 * della connessione.
 					 */
 					clientDecision = -1;
 					return;
