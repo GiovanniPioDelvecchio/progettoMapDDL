@@ -112,6 +112,7 @@ public class Data {
 					
 					if (index == schema.getNumberOfAttributes() - 1) {
 						
+
 						//se l'attributo e' l'ultimo, allora e' l'attributo di classe
 						classAttribute = new ContinuousAttribute(c.getColumnName(), index);
 					} else {
@@ -121,6 +122,7 @@ public class Data {
 					
 				} else {
 					/*
+
 					 * Poiche' getDistinctColumnValues restituisce un set di object, ed esso non puo' essere
 					 * direttamente castato in un set di stringhe (utile ad inizializzare l'attributo discreto)
 					 * si esegue un "travaso" con cast esplicito.

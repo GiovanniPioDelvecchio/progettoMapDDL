@@ -195,7 +195,7 @@ public class RegressionTree implements Serializable {
 			 * La stringa "QUERY" serve a notificare l'utente che si e' arrivati ad un nodo di split.
 			 */
 			out.writeObject("QUERY");
-			out.writeObject(((SplitNode) root).formulateQuery());
+			out.writeObject(((SplitNode) root).queryAsList());
 			int risp;
 			
 			/*
