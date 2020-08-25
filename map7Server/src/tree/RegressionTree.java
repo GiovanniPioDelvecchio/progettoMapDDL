@@ -30,12 +30,12 @@ public class RegressionTree implements Serializable {
 	/**
 	 * Nodo radice del (sotto)albero rappresentato da RegressionTree.
 	 */
-	Node root;
+	private Node root;
 	
 	/**
 	 * Array di figli (rappresentabili come sottoalberi) originati da root.
 	 */
-	RegressionTree childTree[];
+	private RegressionTree childTree[];
 	
 	// Costruttore a zero argomenti. Viene utilizzato per la costruzione di sottoalberi in learnTree
 	RegressionTree() {}
