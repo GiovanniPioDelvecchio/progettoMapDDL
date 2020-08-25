@@ -1,7 +1,6 @@
 package server;
 
 import java.io.FileWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
