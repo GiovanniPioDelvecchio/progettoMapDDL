@@ -1,11 +1,11 @@
 package server;
 
+import java.io.FileWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.SocketException;
 import java.time.Instant;
 
 import data.Data;
@@ -30,6 +30,7 @@ public class ServerOneClient extends Thread {
 	private Socket socket;
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
+	private FileWriter logFile;
 	
 	/**
 	 * Costruttore di ServerOneClient.
@@ -37,17 +38,26 @@ public class ServerOneClient extends Thread {
 	 * La nuova istanza della classe comunichera' con il Client su di un nuovo thread.
 	 * 
 	 * @param s Socket di comunicazione con il Client che ha effettuato la connessione.
+	 * @param log File utilizzato per la scrittura dei log del server
 	 * @throws IOException Lanciata in caso di errore di comunicazione con il Client.
 	 */
-	public ServerOneClient(Socket s) throws IOException {
+	public ServerOneClient(Socket s, FileWriter log) throws IOException {
 
 		// Si avvalorano gli attributi di classe utilizzati per la comunicazione con il Client
 		socket = s;
 		in = new ObjectInputStream(s.getInputStream());
 		out = new ObjectOutputStream(s.getOutputStream());
+		logFile = log;
 		
 		// Log di avvio della comunicazione con il Client
-		System.out.println("Connected with client " + socket + " at " + Instant.now());
+		String connectionLog = "Connected with client " + socket + " at " + Instant.now();
+		System.out.println(connectionLog);
+		synchronized (logFile) {
+			
+			logFile = new FileWriter("server.log", true);
+			logFile.write("\n" + connectionLog);
+			logFile.close();
+		}
 		
 		/*
 		 * Si avvia l'esecuzione del metodo run() su di un nuovo Thread, per permettere la comunicazione
@@ -68,6 +78,7 @@ public class ServerOneClient extends Thread {
 
 		
 		Integer clientDecision = null;
+		String log;
 		try {
 			
 			// Viene letta la prima scelta effettuata dall'utente tramite il Client
@@ -112,6 +123,12 @@ public class ServerOneClient extends Thread {
 							 * In caso di errore durante il salvataggio, viene effettuato un log dell'errore
 							 */
 							System.out.println(e.toString());
+							synchronized (logFile) {
+
+								logFile = new FileWriter("server.log", true);
+								logFile.write("\n" + e.toString());
+								logFile.close();
+							}
 						}
 					}
 				} catch (TrainingDataException e) {
@@ -218,6 +235,18 @@ public class ServerOneClient extends Thread {
 			 * terminata l'esecuzione dell'istanza di ServerOneClient.
 			 */
 			System.out.println(e);
+			synchronized (logFile) {
+				
+				try {
+
+					logFile = new FileWriter("server.log", true);
+					logFile.write("\n" + e.toString());
+					logFile.close();
+				} catch (IOException e1) {
+
+					System.out.println("Unable to write on log file");
+				}
+			}
 			return;
 		} finally {
 
@@ -234,10 +263,24 @@ public class ServerOneClient extends Thread {
 				 */
 				if (clientDecision != null && clientDecision == -1) {
 
-					System.out.println("Closing connection with " + socket + " at " + Instant.now());
+					log = "Closing connection with " + socket + " at " + Instant.now();
+					System.out.println(log);
+					synchronized (logFile) {
+						
+						logFile = new FileWriter("server.log", true);
+						logFile.write("\n" + log);
+						logFile.close();
+					}
 				} else {
 
-					System.out.println("Aborted connection with " + socket + " at " + Instant.now());
+					log = "Aborted connection with " + socket + " at " + Instant.now();
+					System.out.println(log);
+					synchronized (logFile) {
+						
+						logFile = new FileWriter("server.log", true);
+						logFile.write("\n" + log);
+						logFile.close();
+					}
 				}
 				socket.close();
 			} catch (IOException e) {
@@ -246,8 +289,22 @@ public class ServerOneClient extends Thread {
 				 * In caso di errore di comunicazione con il Client durante la chiusura del Socket, viene
 				 * stampato un messaggio di errore sulla console del Server.
 				 */
-				System.out.println("Error closing connection with " + socket + " : " + e.getClass().getName()
-						+ " : " + e.getMessage());
+				log = "Error closing connection with " + socket + " : " + e.getClass().getName()
+						+ " : " + e.getMessage();
+				System.out.println(log);
+			
+				synchronized (logFile) {
+					
+					try {
+
+						logFile = new FileWriter("server.log", true);
+						logFile.write("\n" + e.toString());
+						logFile.close();
+					} catch (IOException e1) {
+
+						System.out.println("Unable to write on log file: " + e1.getMessage());
+					}
+				}
 			}
 		}
 	}
