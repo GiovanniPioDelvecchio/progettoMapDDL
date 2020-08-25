@@ -22,7 +22,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
-import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToolBar;
@@ -65,23 +64,26 @@ public class AppMain extends Application {
 
 		mainStage.setTitle("Client");
 		BorderPane homePane = new BorderPane();
+		mainStage.getIcons().add(new Image("file:res/icon.png"));
 
 		/*
 		 * descrizione componenti per la barra degli strumenti superiore
 		 */
 
 		ToolBar tools = new ToolBar();
-		Image gear = new Image("file:res/gear.png", 30, 30, true, true);
+		Image gear = new Image("file:res/gear.png", 20, 20, true, true);
 		ImageView gearV = new ImageView(gear);
-		Image questionMark = new Image("file:res/questionMark.png", 30, 30, true, true);
+		Image questionMark = new Image("file:res/questionMark.png", 20, 20, true, true);
 		ImageView questionMarkV = new ImageView(questionMark);
 		
 		Button opt = new Button("Opzioni");
 		Button help = new Button("Aiuto");
+		opt.setId("smallButton");
+		help.setId("smallButton");
 		opt.setGraphic(gearV);
 		help.setGraphic(questionMarkV);
 		opt.setOnAction(e -> mainStage.setScene(settingsScene));
-		tools.getItems().addAll(opt, new Separator(), help);
+		tools.getItems().addAll(opt, help);
 		homePane.setTop(tools);		
 		
 		/*
@@ -90,12 +92,14 @@ public class AppMain extends Application {
 		VBox centralPanel = new VBox(50);
 		centralPanel.setAlignment(Pos.CENTER);
 		Label sel = new Label("Seleziona un'operazione");
+		sel.setId("welcomeLabel");
 		Button load = new Button("Carica");
 		load.setMinSize(130, 20);
 		Button create = new Button("Crea");
 		create.setMinSize(130, 20);
 		centralPanel.getChildren().addAll(sel, load,create);
 		homePane.setCenter(centralPanel);
+
 		
 		
 		/*
@@ -150,12 +154,16 @@ public class AppMain extends Application {
 		BorderPane predictPane = new BorderPane();
 		VBox predictBox = new VBox(50);
 		TilePane userChoices = new TilePane();
-		Label predictedValue = new Label();
+		Label predictedValue = new Label("Seleziona il valore dell'attributo:");
 		HBox predictButtons = new HBox(50);
 		predictBox.setAlignment(Pos.CENTER);
 		userChoices.setAlignment(Pos.CENTER);
+		userChoices.setHgap(5d);
+		userChoices.setVgap(5d);
+		userChoices.setPrefColumns(3);
 		predictedValue.setAlignment(Pos.CENTER);
 		predictButtons.setAlignment(Pos.CENTER);
+		predictedValue.setId("predictionLabel");
 		
 		Button redo = new Button("Ricomincia");
 		redo.setDisable(true);
@@ -174,6 +182,7 @@ public class AppMain extends Application {
 						showAlert("Errore durante la connessione al server");
 					}
 					userChoices.getChildren().clear();
+					predictedValue.setText("Seleziona il valore dell'attributo:");
 				}
 				
 			}
@@ -184,7 +193,7 @@ public class AppMain extends Application {
 			
 			try {
 				out.writeObject(3);
-				predictedValue.setText("");
+				predictedValue.setText("Seleziona il valore dell'attributo:");
 				redo.setDisable(true);
 				handlePredict(userChoices, predictedValue, redo);
 			} catch (IOException e1) {
@@ -197,9 +206,10 @@ public class AppMain extends Application {
 		
 		predictButtons.getChildren().add(redo);
 		predictButtons.getChildren().add(backPredict);
+		predictBox.getChildren().add(predictedValue);
 		predictBox.getChildren().add(userChoices);
 		predictBox.getChildren().add(predictButtons);
-		predictBox.getChildren().add(predictedValue);
+
 		
 		predictPane.setCenter(predictBox);
 		
@@ -220,6 +230,8 @@ public class AppMain extends Application {
 									+ "Per selezionare il dataset, e' necessario inserire il nome della tabella in cui e' memorizzato nel Database del server.\n"
 									+ "Una volta inserito il nome della tabella, si potra' esplorare l'albero tramite una serie di query a cui rispondere.\n\n"
 									+ "Autori: Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea");
+			helpScreen.getDialogPane().getStylesheets().add("file:src/theme.css");
+			((Stage) helpScreen.getDialogPane().getScene().getWindow()).getIcons().add(new Image("file:res/icon.png"));
 			helpScreen.show();
 		});
 
@@ -295,11 +307,15 @@ public class AppMain extends Application {
 		selectionPane.add(confirm, 0, 2);
 		
 		// si crea anche un bottone per tornare indietro alla home
+
 		Button backSelection = new Button("Indietro");
 		backSelection.setOnAction(backPredict.getOnAction());
 		
 		selectionPane.add(backSelection, 1, 2);
+
 		
+
+
 		// Si imposta il campo testuale in maniera che se risulta essere vuoto, il tasto di conferma viene disabilitato
 		tableName.setOnKeyReleased(e -> {
 
@@ -315,7 +331,7 @@ public class AppMain extends Application {
 				}
 			}
 		});
-		
+
 		
 		
 		
@@ -357,6 +373,8 @@ public class AppMain extends Application {
 				Alert serversNotFound = new Alert(Alert.AlertType.WARNING);
 				serversNotFound.setContentText("Non e' stato trovato il file \"servers.info\" contenente le informazioni sui server conosciuti.\n"
 						+ "Verra' caricata una lista di default.");
+				serversNotFound.getDialogPane().getStylesheets().add("file:src/theme.css");
+				((Stage) serversNotFound.getDialogPane().getScene().getWindow()).getIcons().add(new Image("file:res/warning.png"));
 				serversNotFound.show();
 			} else {
 
@@ -422,6 +440,7 @@ public class AppMain extends Application {
 		
 		// Infine vengono aggiunte le tabelle appena create alla TableView serverTable.
 		serverTable.getColumns().setAll(idCol, ipCol, portCol);
+		serverTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		
 		/*
 		 * Viene creato un oggetto TableViewFocusModel per poter gestire l'interazione fra l'utente e la tabella.
@@ -436,11 +455,16 @@ public class AppMain extends Application {
 		HBox settingsButtonsLayout = new HBox();
 		settingsButtonsLayout.setAlignment(Pos.CENTER);
 		settingsButtonsLayout.setPadding(new Insets(25, 25, 25, 25));
+		settingsButtonsLayout.setSpacing(5d);
 
 		Button addServer = new Button("Aggiungi");
 		Button removeServer = new Button("Elimina");
 		Button confirmServer = new Button("Conferma");
 		Button backSettings = new Button("Indietro");
+		addServer.setId("smallButton");
+		removeServer.setId("smallButton");
+		confirmServer.setId("smallButton");
+		backSettings.setId("smallButton");
 		
 		backSettings.setOnAction(e -> {
 			
@@ -702,7 +726,13 @@ public class AppMain extends Application {
 		settingsScene = new Scene(serversPane, 400, 400);
 		newServerScene = new Scene(newServerPane, 400,400);
 		predictScene = new Scene(predictPane, 400, 400);
-		
+
+		homeScene.getStylesheets().add("file:src/theme.css");
+		selectionScene.getStylesheets().add("file:src/theme.css");
+		settingsScene.getStylesheets().add("file:src/theme.css");
+		newServerScene.getStylesheets().add("file:src/theme.css");
+		predictScene.getStylesheets().add("file:src/theme.css");
+
 		mainStage.setScene(homeScene);
 		mainStage.show();
 	}
@@ -732,6 +762,8 @@ public class AppMain extends Application {
 		
 		Alert toShow = new Alert(Alert.AlertType.ERROR);
 		toShow.setContentText(message);
+		toShow.getDialogPane().getStylesheets().add("file:src/theme.css");
+		((Stage) toShow.getDialogPane().getScene().getWindow()).getIcons().add(new Image("file:res/error.png"));
 		toShow.show();
 	}
 	
@@ -766,7 +798,7 @@ public class AppMain extends Application {
 				
 			} else {
 				
-				predictedValue.setText(((Double)in.readObject()).toString());
+				predictedValue.setText("Valore predetto:\n" + ((Double)in.readObject()).toString());
 				redo.setDisable(false);
 				
 				
@@ -808,6 +840,7 @@ public class AppMain extends Application {
 				showAlert("Impossibile inviare la scelta selezionata al server (errore di comunicazione)");
 			}
 		});
+		toShow.setId("predictionButton");
 		userChoices.getChildren().add(toShow);
 	}
 	
