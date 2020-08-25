@@ -757,8 +757,6 @@ public class AppMain extends Application {
 	 * @param message <code>String</code> da mostrare nella finestra di dialogo 
 	 */
 	private void showAlert(String message) {
-
-
 		
 		Alert toShow = new Alert(Alert.AlertType.ERROR);
 		toShow.setContentText(message);
@@ -787,7 +785,7 @@ public class AppMain extends Application {
 			
 			
 			if (toCheck.equals("QUERY")) {
-				
+
 				List<String> options = new ArrayList<String>((ArrayList<String>)in.readObject());
 				int i = 0;
 				for (String elem : options) {
@@ -805,10 +803,13 @@ public class AppMain extends Application {
 			}
 		} catch (ClassNotFoundException e) {
 			
-			e.printStackTrace();
+			showAlert("Errore di comunicazione con il Server: risposta inattesa");
 		} catch (IOException e) {
-		
-			e.printStackTrace();
+
+			showAlert("Errore di comunicazione con il Server");
+		} catch (ClassCastException e) {
+			
+			showAlert("Errore di comunicazione con il Server: risposta erronea");
 		}
 	}
 	
