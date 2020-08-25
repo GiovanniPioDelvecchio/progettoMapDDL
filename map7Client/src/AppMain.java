@@ -278,7 +278,7 @@ public class AppMain extends Application {
 						 */
 						if (!ans.equals("OK")) {
 						
-							showAlert("Errore nel salvataggio dei dati: " + ans);
+							showAlert("Errore nel salvataggio dei dati da parte del server");
 						}
 					}
 					
