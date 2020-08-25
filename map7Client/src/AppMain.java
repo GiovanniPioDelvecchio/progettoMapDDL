@@ -169,24 +169,17 @@ public class AppMain extends Application {
 		redo.setDisable(true);
 		Button backPredict = new Button("Indietro");
 		backPredict.setOnAction(e -> { 
-			
-			if (clientSocket != null) {
-				if (clientSocket.isConnected()) {
-					try {
-	
-						// se e' in corso una comunicazione col server, si notifica che si sta tornando alla home
-						out.writeObject(-1);
-						clientSocket.close();
-					} catch (IOException e1) {
-	
+			try {
+				//si notifica che si sta tornando alla home
+				out.writeObject(-1);
+				clientSocket.close();
+				} catch (IOException e1) {
 						showAlert("Errore durante la connessione al server");
-					}
-					userChoices.getChildren().clear();
-					predictedValue.setText("Seleziona il valore dell'attributo:");
 				}
-				
-			}
-			mainStage.setScene(homeScene);
+				userChoices.getChildren().clear();
+				predictedValue.setText("Seleziona il valore dell'attributo:");
+				redo.setDisable(true);
+				mainStage.setScene(homeScene);
 		});
 		
 		redo.setOnAction(e->{
@@ -261,7 +254,7 @@ public class AppMain extends Application {
 		confirm.setOnAction(e -> {
 
 			try {
-				
+
 				// Alla pressione si tenta di mandare il nome della tabella al server
 				out.writeObject(tableName.getText());
 
@@ -309,7 +302,21 @@ public class AppMain extends Application {
 		// si crea anche un bottone per tornare indietro alla home
 
 		Button backSelection = new Button("Indietro");
-		backSelection.setOnAction(backPredict.getOnAction());
+		backSelection.setOnAction(e->{	
+			
+		try {
+				//si notifica che si sta tornando alla home
+				//la stringa comincia con # poichè nessun file può avere tale nome
+				out.writeObject("#ABORT");
+				clientSocket.close();
+				} catch (IOException e1) {
+	
+				showAlert("Errore durante la connessione al server");
+				}
+		
+			mainStage.setScene(homeScene);
+			
+		});
 		
 		selectionPane.add(backSelection, 1, 2);
 

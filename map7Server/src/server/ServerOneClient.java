@@ -72,6 +72,12 @@ public class ServerOneClient extends Thread {
 			
 			// Viene letta la prima scelta effettuata dall'utente tramite il Client
 			clientDecision = (Integer) in.readObject();
+			String trainingfileName = (String) in.readObject();
+			if(trainingfileName.equals("#ABORT")) {
+				clientDecision = -1;
+				return;
+			}
+			
 			RegressionTree tree = null;
 
 			// Viene letto l'intero 0 se l'utente vuole generare un nuovo albero di regressione
@@ -82,10 +88,8 @@ public class ServerOneClient extends Thread {
 				try {
 
 					/*
-					 * Viene letta dallo Stream la stringa contenente il nome della tabella SQL
-					 * contenente il dataset da cui creare l'albero di regressione.
+					 * Viene inizializzato il training set a partire dalla tabella inserita in input
 					 */
-					String trainingfileName = (String) in.readObject();
 					trainingSet = new Data(trainingfileName);
 					tree = new RegressionTree(trainingSet);
 
@@ -131,15 +135,11 @@ public class ServerOneClient extends Thread {
 			 */
 			if(clientDecision == 2) {
 				
-				Data trainingSet = null;
 				try {
 
 					/*
-					 * Viene letta dal Client la stringa contenente il nome della tabella SQL di cui si era creato
-					 * l'albero di regressione in precedenza. L'utente non ha bisogno di inserire l'estenzione ".dmp"
-					 * nella stringa inserita.
+					 * L'utente non ha bisogno di inserire l'estensione ".dmp" nella stringa inserita.
 					 */
-					String trainingfileName = (String) in.readObject();
 					tree = RegressionTree.carica(trainingfileName + ".dmp");
 				} catch (FileNotFoundException e) {
 
@@ -208,7 +208,8 @@ public class ServerOneClient extends Thread {
 					 * viene catturata una UnknownValueException. Il suo toString() verra' inviato come messaggio di errore 
 					 * al Client. La connessione rimane aperta per permettere una nuova esplorazione dell'albero.
 					 */
-					out.writeObject(e.toString());
+					clientDecision = -1;
+					return;
 				}
 			}
 		} catch (IOException | ClassNotFoundException e) {
