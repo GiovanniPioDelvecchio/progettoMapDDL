@@ -1,5 +1,6 @@
 package server;
 
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -26,7 +27,7 @@ public class MultiServer {
 	private int PORT = 8080;
 	
 	// File dove verranno effettuate le stampe di log
-	private String logFileName;
+	private BufferedWriter logFile;
 	
 	/**
 	 * Costruttore di MultiServer.
@@ -38,20 +39,19 @@ public class MultiServer {
 	public MultiServer(int port) {
 
 		String log;
-		FileWriter logFile;
-
-		logFileName = "server-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".log";
+		String logFileName = "server-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".log";
+		
 		PORT = port;
 		try {
 			
-			log = "Started server at " + Instant.now();
-			
+			logFile = new BufferedWriter(new FileWriter(logFileName, true));
+
 			// Log di avvio del Server
+			log = "Started server at " + Instant.now();
 			System.out.println(log);
 
-			logFile = new FileWriter(logFileName, true);
 			logFile.write(log);
-			logFile.close();
+			logFile.flush();
 
 			this.run();
 		} catch (IOException e) {
@@ -66,9 +66,8 @@ public class MultiServer {
 			System.out.println(log);
 			try {
 
-				logFile = new FileWriter(logFileName, true);
 				logFile.write("\n" + log);
-				logFile.close();
+				logFile.flush();
 			} catch (IOException e) {
 
 				System.out.println("Failed to close the log file");
@@ -87,7 +86,6 @@ public class MultiServer {
 	 */
 	private void run() throws IOException {
 
-		FileWriter logFile;
 		ServerSocket ssocket = new ServerSocket(PORT);
 		try {
 
@@ -98,7 +96,7 @@ public class MultiServer {
 				Socket csocket = ssocket.accept();
 				try {
 
-					new ServerOneClient(csocket, logFileName);
+					new ServerOneClient(csocket, logFile);
 				} catch (IOException e) {
 
 					/*
@@ -111,9 +109,8 @@ public class MultiServer {
 					log = "Connection to client failed :" + e.getMessage();
 					System.out.println(log);
 
-					logFile = new FileWriter(logFileName, true);
 					logFile.write("\n" + log);
-					logFile.close();
+					logFile.flush();
 				}
 			} 
 		} finally {

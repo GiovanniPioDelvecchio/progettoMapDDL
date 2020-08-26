@@ -1,6 +1,6 @@
 package server;
 
-import java.io.FileWriter;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -30,7 +30,7 @@ public class ServerOneClient extends Thread {
 	private Socket socket;
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
-	private String logFileName;
+	private BufferedWriter logFile;
 	
 	/**
 	 * Costruttore di ServerOneClient.
@@ -41,23 +41,23 @@ public class ServerOneClient extends Thread {
 	 * @param logFileName Nome del file che viene utilizzato per trascrivere i log
 	 * @throws IOException Lanciata in caso di errore di comunicazione con il Client.
 	 */
-	public ServerOneClient(Socket s, String logFileName) throws IOException {
+	public ServerOneClient(Socket s, BufferedWriter l) throws IOException {
 
-		FileWriter logFile = new FileWriter(logFileName, true);
-		
+	
 		// Si avvalorano gli attributi di classe utilizzati per la comunicazione con il Client
 		socket = s;
 		in = new ObjectInputStream(s.getInputStream());
 		out = new ObjectOutputStream(s.getOutputStream());
-		this.logFileName = logFileName;
+		this.logFile = l;
 		
 		// Log di avvio della comunicazione con il Client
 		String connectionLog = "Thread " + this.getId() + ": " + "Connected with client " + socket + " at " + Instant.now();
 		System.out.println(connectionLog);
+
 		synchronized (logFile) {
 
 			logFile.write("\n" + connectionLog);
-			logFile.close();
+			logFile.flush();
 		}
 		
 		/*
@@ -80,11 +80,8 @@ public class ServerOneClient extends Thread {
 		
 		Integer clientDecision = null;
 		String log;
-		FileWriter logFile;
 		
 		try {
-			
-			logFile = new FileWriter(logFileName, true);
 			
 			// Viene letta la prima scelta effettuata dall'utente tramite il Client
 			clientDecision = (Integer) in.readObject();
@@ -131,7 +128,7 @@ public class ServerOneClient extends Thread {
 							synchronized (logFile) {
 
 								logFile.write("\n" + e.toString());
-								logFile.close();
+								logFile.flush();
 							}
 						}
 					}
@@ -242,12 +239,11 @@ public class ServerOneClient extends Thread {
 			System.out.println(log);
 			
 			try {
-				
-				logFile = new FileWriter(logFileName, true);
+
 				synchronized (logFile) {
 
 					logFile.write("\n" + log);
-					logFile.close();
+					logFile.flush();
 				}
 			} catch (IOException e2) {
 
@@ -267,7 +263,6 @@ public class ServerOneClient extends Thread {
 				 * la variabile non e' stata avvalorata. Cio' porta alla segnalazione di una chiusura con errore della
 				 * comunicazione.
 				 */
-				logFile = new FileWriter(logFileName, true);
 				if (clientDecision != null && clientDecision == -1) {
 
 					log = "Thread " + this.getId() + ": " + "closing connection with " + socket + " at " + Instant.now();
@@ -276,7 +271,7 @@ public class ServerOneClient extends Thread {
 					synchronized (logFile) {
 						
 						logFile.write("\n" + log);
-						logFile.close();
+						logFile.flush();
 					}
 				} else {
 
@@ -285,7 +280,7 @@ public class ServerOneClient extends Thread {
 					synchronized (logFile) {
 
 						logFile.write("\n" + log);
-						logFile.close();
+						logFile.flush();
 					}
 				}
 				socket.close();
@@ -301,11 +296,11 @@ public class ServerOneClient extends Thread {
 			
 				try {
 					
-					logFile = new FileWriter(logFileName, true);
+					
 					synchronized (logFile) {
 	
 							logFile.write("\n" + e.toString());
-							logFile.close();
+							logFile.flush();
 					}
 				} catch (IOException e1) {
 
