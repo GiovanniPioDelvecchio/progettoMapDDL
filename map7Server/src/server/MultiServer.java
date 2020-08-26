@@ -67,7 +67,7 @@ public class MultiServer {
 			try {
 
 				logFile.write("\n" + log);
-				logFile.flush();
+				logFile.close();
 			} catch (IOException e) {
 
 				System.out.println("Failed to close the log file");
