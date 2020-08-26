@@ -11,6 +11,7 @@ import java.time.Instant;
 import data.Data;
 import data.TrainingDataException;
 import tree.RegressionTree;
+import util.Constants;
 
 /**
  * Classe utilizzata per comunicare con un singolo Client su un Thread separato da quello principale.
@@ -94,7 +95,7 @@ public class ServerOneClient extends Thread {
 			while(noTable) {
 				String trainingfileName = (String) in.readObject();
 				
-				if(trainingfileName.equals("#ABORT")) {
+				if(trainingfileName.equals(Constants.CLIENT_ABORT)) {
 					// Se viene ricevuta la stringa speciale di chiusura (l'utente torna alla home)
 					// si procede alla chiusura della connessione
 					clientDecision = -1;
@@ -117,7 +118,7 @@ public class ServerOneClient extends Thread {
 						/*
 						 * Per comunicare al Client che non ci sono stati problemi, viene inviata la stringa "OK"
 						 */
-						out.writeObject("OK");
+						out.writeObject(Constants.SERVER_OK);
 						
 						/*
 						 * Il salvataggio dell'albero avviene alla lettura dell'intero 1 sullo stream di comunicazione
@@ -128,7 +129,7 @@ public class ServerOneClient extends Thread {
 							try {
 								
 								tree.salva(trainingfileName + ".dmp");
-								out.writeObject("OK");
+								out.writeObject(Constants.SERVER_OK);
 								// Viene comunicato al Client che il salvataggio e' andato a buon fine
 							} catch (IOException e) {
 								

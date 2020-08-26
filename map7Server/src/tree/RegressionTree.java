@@ -12,6 +12,7 @@ import java.util.TreeSet;
 import data.Data;
 import data.DiscreteAttribute;
 import server.UnknownValueException;
+import util.Constants;
 import data.Attribute;
 import data.ContinuousAttribute;
 
@@ -185,7 +186,7 @@ public class RegressionTree implements Serializable {
 			/*
 			 * Viene notificato all'utente che e' stato raggiunto un nodo foglia.
 			 */
-			out.writeObject("OK");
+			out.writeObject(Constants.SERVER_OK);
 
 			// Viene ritornato il valore dell'attributo target predetto
 		    return ((LeafNode) root).getPredictedClassValue(); 
@@ -194,7 +195,7 @@ public class RegressionTree implements Serializable {
 			/*
 			 * La stringa "QUERY" serve a notificare l'utente che si e' arrivati ad un nodo di split.
 			 */
-			out.writeObject("QUERY");
+			out.writeObject(Constants.SERVER_QUERY);
 			out.writeObject(((SplitNode) root).queryAsList());
 			int risp;
 			
@@ -209,7 +210,7 @@ public class RegressionTree implements Serializable {
 				/*
 				 * In caso di scelta errata viene sollevata una UnknownValueException. 
 				 */
-				throw new UnknownValueException("The answer should be an integer between 0 and " + (root.getNumberOfChildren() - 1) + "!");  
+				throw new UnknownValueException(Constants.BAD_VALUE_SELECTION + (root.getNumberOfChildren() - 1));  
 			} else {
 
 				/*
@@ -228,10 +229,10 @@ public class RegressionTree implements Serializable {
 	public void printRules() {
 		
 		// esplora i nodi dell'albero, se e' di split crea la regola, se e' leaf si scrive il valore predetto
-		System.out.println("********* RULES **********\n");
+		System.out.println(Constants.BEGIN_RULES);
 		String toPrint = new String();
 		printRules(toPrint);
-		System.out.println("*************************\n");
+		System.out.println(Constants.END_RULES);
 	}
 
 	/**
@@ -282,9 +283,9 @@ public class RegressionTree implements Serializable {
 	 */
 	public void printTree() {
 
-		System.out.println("********* TREE **********\n");
+		System.out.println(Constants.BEGIN_TREE);
 		System.out.println(toString());
-		System.out.println("*************************\n");
+		System.out.println(Constants.END_TREE);
 	}
 	
 	/**

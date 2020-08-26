@@ -1,6 +1,7 @@
 package tree;
 
 import data.Data;
+import util.Constants;
 
 /**
  * Classe che rappresenta un nodo foglia di un albero di regressione.
@@ -75,6 +76,6 @@ public class LeafNode extends Node {
 	@Override
 	public String toString() {
 		
-		return  "LEAF: class=" +  predictedClassValue + " "+ super.toString();
+		return Constants.LEAF_PREFIX +  predictedClassValue + " "+ super.toString();
 	}
 }
