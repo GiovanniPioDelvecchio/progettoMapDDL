@@ -1,5 +1,6 @@
 package server;
 
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -29,6 +30,7 @@ public class ServerOneClient extends Thread {
 	private Socket socket;
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
+	private BufferedWriter logFile;
 	
 	/**
 	 * Costruttore di ServerOneClient.
@@ -36,17 +38,27 @@ public class ServerOneClient extends Thread {
 	 * La nuova istanza della classe comunichera' con il Client su di un nuovo thread.
 	 * 
 	 * @param s Socket di comunicazione con il Client che ha effettuato la connessione.
+	 * @param logFileName Nome del file che viene utilizzato per trascrivere i log
 	 * @throws IOException Lanciata in caso di errore di comunicazione con il Client.
 	 */
-	public ServerOneClient(Socket s) throws IOException {
+	public ServerOneClient(Socket s, BufferedWriter l) throws IOException {
 
+	
 		// Si avvalorano gli attributi di classe utilizzati per la comunicazione con il Client
 		socket = s;
 		in = new ObjectInputStream(s.getInputStream());
 		out = new ObjectOutputStream(s.getOutputStream());
+		this.logFile = l;
 		
 		// Log di avvio della comunicazione con il Client
-		System.out.println("Connected with client " + socket + " at " + Instant.now());
+		String connectionLog = "Thread " + this.getId() + ": " + "Connected with client " + socket + " at " + Instant.now();
+		System.out.println(connectionLog);
+
+		synchronized (logFile) {
+
+			logFile.write("\n" + connectionLog);
+			logFile.flush();
+		}
 		
 		/*
 		 * Si avvia l'esecuzione del metodo run() su di un nuovo Thread, per permettere la comunicazione
@@ -67,6 +79,7 @@ public class ServerOneClient extends Thread {
 
 		
 		Integer clientDecision = null;
+		String log;
 		RegressionTree tree = null;
 		boolean noTable = true;
 		
@@ -111,7 +124,7 @@ public class ServerOneClient extends Thread {
 						 */
 						clientDecision = (Integer) in.readObject();
 						if (clientDecision == 1) {
-							
+
 							try {
 								
 								tree.salva(trainingfileName + ".dmp");
@@ -123,6 +136,12 @@ public class ServerOneClient extends Thread {
 								 * In caso di errore durante il salvataggio, viene effettuato un log dell'errore
 								 */
 								System.out.println(e.toString());
+								
+								synchronized (logFile) {
+
+									logFile.write("\n" + e.toString());
+									logFile.flush();
+								}
 								out.writeObject(e.toString());
 							} finally {
 								/*
@@ -230,7 +249,20 @@ public class ServerOneClient extends Thread {
 			 * In caso di errore di comunicazione con il Client, viene stampato un messaggio di log sulla console del Server, e viene
 			 * terminata l'esecuzione dell'istanza di ServerOneClient.
 			 */
-			System.out.println(e);
+			log = "Thread " + this.getId() + ": " + e.getMessage();
+			System.out.println(log);
+			
+			try {
+
+				synchronized (logFile) {
+
+					logFile.write("\n" + log);
+					logFile.flush();
+				}
+			} catch (IOException e2) {
+
+				System.out.println("Unable to log on file: " + e2.getMessage());
+			}
 			return;
 		} finally {
 
@@ -247,10 +279,23 @@ public class ServerOneClient extends Thread {
 				 */
 				if (clientDecision != null && clientDecision == -1) {
 
-					System.out.println("Closing connection with " + socket + " at " + Instant.now());
+					log = "Thread " + this.getId() + ": " + "closing connection with " + socket + " at " + Instant.now();
+					System.out.println(log);
+					 
+					synchronized (logFile) {
+						
+						logFile.write("\n" + log);
+						logFile.flush();
+					}
 				} else {
 
-					System.out.println("Aborted connection with " + socket + " at " + Instant.now());
+					log = "Thread " + this.getId() + ": " + "aborted connection with " + socket + " at " + Instant.now();
+					System.out.println(log);
+					synchronized (logFile) {
+
+						logFile.write("\n" + log);
+						logFile.flush();
+					}
 				}
 				socket.close();
 			} catch (IOException e) {
@@ -259,8 +304,22 @@ public class ServerOneClient extends Thread {
 				 * In caso di errore di comunicazione con il Client durante la chiusura del Socket, viene
 				 * stampato un messaggio di errore sulla console del Server.
 				 */
-				System.out.println("Error closing connection with " + socket + " : " + e.getClass().getName()
-						+ " : " + e.getMessage());
+				log = "Thread " + this.getId() + ": " + "error closing connection with " + socket + " : " + e.getClass().getName()
+						+ " : " + e.getMessage();
+				System.out.println(log);
+			
+				try {
+					
+					
+					synchronized (logFile) {
+	
+							logFile.write("\n" + e.toString());
+							logFile.flush();
+					}
+				} catch (IOException e1) {
+
+					System.out.println("Unable to write on log file: " + e1.getMessage());
+				}
 			}
 		}
 	}

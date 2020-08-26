@@ -1,9 +1,13 @@
 package server;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Classe utilizzata per modellare un Server multithreaded per la comunicazione con piu' Client.
@@ -19,6 +23,9 @@ public class MultiServer {
 	// Porta di default dove viene locato il Server.
 	private int PORT = 8080;
 	
+	// File dove verranno effettuate le stampe di log
+	private BufferedWriter logFile;
+	
 	/**
 	 * Costruttore di MultiServer.
 	 * L'istanziazione di MultiServer equivale all'esecuzione
@@ -28,11 +35,21 @@ public class MultiServer {
 	 */
 	public MultiServer(int port) {
 
+		String log;
+		String logFileName = "server-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".log";
+		
 		PORT = port;
 		try {
 			
+			logFile = new BufferedWriter(new FileWriter(logFileName, true));
+
 			// Log di avvio del Server
-			System.out.println("Started server at " + Instant.now());
+			log = "Started server at " + Instant.now();
+			System.out.println(log);
+
+			logFile.write(log);
+			logFile.flush();
+
 			this.run();
 		} catch (IOException e) {
 
@@ -40,6 +57,18 @@ public class MultiServer {
 			 * Eventuali errori sollevati durante l'esecuzione del server vengono stampati sulla console.
 			 */
 			System.out.println(e.getMessage());
+		} finally {
+			
+			log = "Closing server at " + Instant.now();
+			System.out.println(log);
+			try {
+
+				logFile.write("\n" + log);
+				logFile.close();
+			} catch (IOException e) {
+
+				System.out.println("Failed to close the log file");
+			}
 		}
 	}
 	
@@ -57,13 +86,14 @@ public class MultiServer {
 		ServerSocket ssocket = new ServerSocket(PORT);
 		try {
 
+			String log;
 			while (true) {
 				
 				// Il server rimane in attesa di un contatto da parte di un Client
 				Socket csocket = ssocket.accept();
 				try {
 
-					new ServerOneClient(csocket);
+					new ServerOneClient(csocket, logFile);
 				} catch (IOException e) {
 
 					/*
@@ -72,7 +102,12 @@ public class MultiServer {
 					 * del Server.
 					 */
 					csocket.close();
-					System.out.println("Connection to client failed :" + e.getMessage());
+					
+					log = "Connection to client failed :" + e.getMessage();
+					System.out.println(log);
+
+					logFile.write("\n" + log);
+					logFile.flush();
 				}
 			} 
 		} finally {
