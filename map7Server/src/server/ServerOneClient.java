@@ -52,7 +52,7 @@ public class ServerOneClient extends Thread {
 		this.logFileName = logFileName;
 		
 		// Log di avvio della comunicazione con il Client
-		String connectionLog = "Connected with client " + socket + " at " + Instant.now();
+		String connectionLog = "Thread " + this.getId() + ": " + "Connected with client " + socket + " at " + Instant.now();
 		System.out.println(connectionLog);
 		synchronized (logFile) {
 
@@ -238,19 +238,20 @@ public class ServerOneClient extends Thread {
 			 * In caso di errore di comunicazione con il Client, viene stampato un messaggio di log sulla console del Server, e viene
 			 * terminata l'esecuzione dell'istanza di ServerOneClient.
 			 */
-			System.out.println(e);
+			log = "Thread " + this.getId() + ": " + e.getMessage();
+			System.out.println(log);
 			
 			try {
 				
 				logFile = new FileWriter(logFileName, true);
 				synchronized (logFile) {
 
-					logFile.write("\n" + e.toString());
+					logFile.write("\n" + log);
 					logFile.close();
-				}	
+				}
 			} catch (IOException e2) {
 
-				System.out.println("Unable to write on log file");
+				System.out.println("Unable to log on file: " + e2.getMessage());
 			}
 			return;
 		} finally {
@@ -269,7 +270,7 @@ public class ServerOneClient extends Thread {
 				logFile = new FileWriter(logFileName, true);
 				if (clientDecision != null && clientDecision == -1) {
 
-					log = "Closing connection with " + socket + " at " + Instant.now();
+					log = "Thread " + this.getId() + ": " + "closing connection with " + socket + " at " + Instant.now();
 					System.out.println(log);
 					 
 					synchronized (logFile) {
@@ -279,7 +280,7 @@ public class ServerOneClient extends Thread {
 					}
 				} else {
 
-					log = "Aborted connection with " + socket + " at " + Instant.now();
+					log = "Thread " + this.getId() + ": " + "aborted connection with " + socket + " at " + Instant.now();
 					System.out.println(log);
 					synchronized (logFile) {
 
@@ -294,7 +295,7 @@ public class ServerOneClient extends Thread {
 				 * In caso di errore di comunicazione con il Client durante la chiusura del Socket, viene
 				 * stampato un messaggio di errore sulla console del Server.
 				 */
-				log = "Error closing connection with " + socket + " : " + e.getClass().getName()
+				log = "Thread " + this.getId() + ": " + "error closing connection with " + socket + " : " + e.getClass().getName()
 						+ " : " + e.getMessage();
 				System.out.println(log);
 			
