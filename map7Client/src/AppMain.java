@@ -126,7 +126,7 @@ public class AppMain extends Application {
 		
 		/*
 		 * Se il tasto "Crea" viene premuto, ci si connette al server e si comunica di caricare
-		 * da un database la tabella da cui verrÃ  ricavato l'albero di regressione
+		 * da un database la tabella da cui verra'  ricavato l'albero di regressione
 		 */
 		create.setOnAction(e -> {
 
@@ -169,24 +169,21 @@ public class AppMain extends Application {
 		redo.setDisable(true);
 		Button backPredict = new Button("Indietro");
 		backPredict.setOnAction(e -> { 
-			
-			if (clientSocket != null) {
-				if (clientSocket.isConnected()) {
-					try {
-	
-						// se e' in corso una comunicazione col server, si notifica che si sta tornando alla home
-						out.writeObject(-1);
-						clientSocket.close();
-					} catch (IOException e1) {
-	
-						showAlert("Errore durante la connessione al server");
-					}
-					userChoices.getChildren().clear();
-					predictedValue.setText("Seleziona il valore dell'attributo:");
+			try {
+					// Si notifica che si sta tornando alla home
+					out.writeObject(-1);
+					clientSocket.close();
+				} catch (IOException e1) {
+					showAlert("Errore durante la chiusura della connessione al server");
 				}
-				
-			}
-			mainStage.setScene(homeScene);
+				/**
+				 * Inoltre si ripuliscono i pulsanti di predizione, si reinizializza la label e si
+				 * disattiva il tasto redo.
+				 */
+				userChoices.getChildren().clear();
+				predictedValue.setText("Seleziona il valore dell'attributo:");
+				redo.setDisable(true);
+				mainStage.setScene(homeScene);
 		});
 		
 		redo.setOnAction(e->{
@@ -198,7 +195,8 @@ public class AppMain extends Application {
 				handlePredict(userChoices, predictedValue, redo);
 			} catch (IOException e1) {
 				
-				showAlert("Non Ã¨ stato possibile raggiungere il server");
+				showAlert("Non e' stato possibile raggiungere il server");
+				mainStage.setScene(homeScene);
 			}
 			
 		});
@@ -210,7 +208,6 @@ public class AppMain extends Application {
 		predictBox.getChildren().add(userChoices);
 		predictBox.getChildren().add(predictButtons);
 
-		
 		predictPane.setCenter(predictBox);
 		
 		
@@ -261,7 +258,7 @@ public class AppMain extends Application {
 		confirm.setOnAction(e -> {
 
 			try {
-				
+
 				// Alla pressione si tenta di mandare il nome della tabella al server
 				out.writeObject(tableName.getText());
 
@@ -272,27 +269,26 @@ public class AppMain extends Application {
 					showAlert(ans);
 				} else {
 					
-					
-					
 					if (loadFlag == false) {
 						
 						out.writeObject(1);
-						if (!((String) in.readObject()).equals("OK")) {
+						ans = ((String) in.readObject());
+						/* Se il salvataggio dell'albero non va a buon fine, si permette comunque
+						 * di accedere alla predizione
+						 */
+						if (!ans.equals("OK")) {
 						
-							showAlert("Errore nel salvataggio dei dati");
+							showAlert("Errore nel salvataggio dei dati da parte del server");
 						}
 					}
-					
 					
 					
 					mainStage.setScene(predictScene);
 					
 					out.writeObject(3);
-					//confirmChoice.setDisable(false);
 					
 					handlePredict(userChoices, predictedValue, redo);
-					
-					//confirmChoice.setDisable(true);
+
 
 				}
 			} catch (ClassNotFoundException | IOException e1) {
@@ -302,6 +298,7 @@ public class AppMain extends Application {
 				 * e pertanto non si prevede di gestire una NullPointerException
 				 */
 				showAlert("Errore durante la connessione al server");
+				mainStage.setScene(homeScene);
 			} 
 		});
 		selectionPane.add(confirm, 0, 2);
@@ -309,7 +306,22 @@ public class AppMain extends Application {
 		// si crea anche un bottone per tornare indietro alla home
 
 		Button backSelection = new Button("Indietro");
-		backSelection.setOnAction(backPredict.getOnAction());
+		backSelection.setOnAction(e->{	
+			
+		try {
+				/*Si notifica che si sta tornando alla home
+				 *la stringa comincia con # poichè nessun file può avere tale nome
+				 */
+				out.writeObject("#ABORT");
+				clientSocket.close();
+				} catch (IOException e1) {
+	
+				showAlert("Errore durante la chiusura della connessione con il server");
+				}
+		
+			mainStage.setScene(homeScene);
+			
+		});
 		
 		selectionPane.add(backSelection, 1, 2);
 
@@ -389,8 +401,24 @@ public class AppMain extends Application {
 		 */
 		mainStage.setOnCloseRequest(e -> {
 			
-			try {
+			if (clientSocket != null) {
+				if (clientSocket.isConnected()) {
+					try {
+						// se e' in corso una comunicazione col server, si notifica che si sta tornando alla home
+						if(mainStage.getScene().equals(selectionScene)) {
+							out.writeObject("#ABORT");
+						} else {
+							out.writeObject(-1);
+						}
+						clientSocket.close();
+					} catch (IOException e1) {
+	
+						showAlert("Errore durante la chiusura della comunicazione con il server");
+					}
 				
+				}
+			}
+			try {
 				FileOutputStream serverOutFile = new FileOutputStream("servers.info");
 				ObjectOutputStream serverOut = new ObjectOutputStream(serverOutFile);
 
@@ -757,8 +785,6 @@ public class AppMain extends Application {
 	 * @param message <code>String</code> da mostrare nella finestra di dialogo 
 	 */
 	private void showAlert(String message) {
-
-
 		
 		Alert toShow = new Alert(Alert.AlertType.ERROR);
 		toShow.setContentText(message);
@@ -787,7 +813,7 @@ public class AppMain extends Application {
 			
 			
 			if (toCheck.equals("QUERY")) {
-				
+
 				List<String> options = new ArrayList<String>((ArrayList<String>)in.readObject());
 				int i = 0;
 				for (String elem : options) {
@@ -805,10 +831,13 @@ public class AppMain extends Application {
 			}
 		} catch (ClassNotFoundException e) {
 			
-			e.printStackTrace();
+			showAlert("Errore di comunicazione con il Server: risposta inattesa");
 		} catch (IOException e) {
-		
-			e.printStackTrace();
+
+			showAlert("Errore di comunicazione con il Server");
+		} catch (ClassCastException e) {
+			
+			showAlert("Errore di comunicazione con il Server: risposta erronea");
 		}
 	}
 	
