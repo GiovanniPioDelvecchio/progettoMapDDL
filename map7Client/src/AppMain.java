@@ -314,9 +314,10 @@ public class AppMain extends Application {
 				 */
 				out.writeObject("#ABORT");
 				clientSocket.close();
+
 				} catch (IOException e1) {
 	
-				showAlert("Errore durante la chiusura della connessione con il server");
+					showAlert("Errore durante la chiusura della connessione con il server");
 				}
 		
 			mainStage.setScene(homeScene);
@@ -402,7 +403,7 @@ public class AppMain extends Application {
 		mainStage.setOnCloseRequest(e -> {
 			
 			if (clientSocket != null) {
-				if (clientSocket.isConnected()) {
+				if (!clientSocket.isClosed()) {
 					try {
 						// se e' in corso una comunicazione col server, si notifica che si sta tornando alla home
 						if(mainStage.getScene().equals(selectionScene)) {
@@ -414,6 +415,7 @@ public class AppMain extends Application {
 					} catch (IOException e1) {
 	
 						showAlert("Errore durante la chiusura della comunicazione con il server");
+						e1.printStackTrace();
 					}
 				
 				}

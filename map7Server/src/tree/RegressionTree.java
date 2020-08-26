@@ -204,7 +204,7 @@ public class RegressionTree implements Serializable {
 			 */
 			risp = (Integer) in.readObject(); 
 
-			if (risp == -1 || risp >= root.getNumberOfChildren()) {
+			if (risp <= -1 || risp >= root.getNumberOfChildren()) {
 
 				/*
 				 * In caso di scelta errata viene sollevata una UnknownValueException. 
