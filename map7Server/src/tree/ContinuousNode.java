@@ -7,6 +7,7 @@ import data.Attribute;
 import data.ContinuousAttribute;
 import data.Data;
 import server.UnknownValueException;
+import util.Constants;
 
 /**
  * Classe usata per rappresentare un nodo di split su di un attributo continuo.
@@ -84,16 +85,16 @@ public class ContinuousNode extends SplitNode {
 				if (bestMapSplit == null) {
 
 					bestMapSplit = new ArrayList<SplitInfo>();
-					bestMapSplit.add(new SplitInfo(currentSplitValue, beginExampleIndex, i - 1, 0, "<="));
-					bestMapSplit.add(new SplitInfo(currentSplitValue, i, endExampleIndex, 1, ">"));
+					bestMapSplit.add(new SplitInfo(currentSplitValue, beginExampleIndex, i - 1, 0, Constants.MINUS_EQUAL_COMPARATOR));
+					bestMapSplit.add(new SplitInfo(currentSplitValue, i, endExampleIndex, 1, Constants.GREATER_COMPARATOR));
 					bestInfoVariance = candidateSplitVariance;
 				} else {		
 
 					if (candidateSplitVariance < bestInfoVariance) {
 
 						bestInfoVariance = candidateSplitVariance;
-						bestMapSplit.set(0, new SplitInfo(currentSplitValue, beginExampleIndex, i - 1, 0, "<="));
-						bestMapSplit.set(1, new SplitInfo(currentSplitValue, i, endExampleIndex, 1, ">"));
+						bestMapSplit.set(0, new SplitInfo(currentSplitValue, beginExampleIndex, i - 1, 0, Constants.MINUS_EQUAL_COMPARATOR));
+						bestMapSplit.set(1, new SplitInfo(currentSplitValue, i, endExampleIndex, 1, Constants.GREATER_COMPARATOR));
 					}
 				}
 				currentSplitValue = value;
@@ -135,7 +136,7 @@ public class ContinuousNode extends SplitNode {
 			}
 		}
 		
-		throw new UnknownValueException("Tried to test the split node to a non existant split value");
+		throw new UnknownValueException(Constants.ERROR_BAD_TEST_CONDITION);
 	}
 
 	/**
@@ -146,7 +147,7 @@ public class ContinuousNode extends SplitNode {
 	@Override
 	public String toString() {
 		
-		String v = "CONTINUOUS "  + super.toString();
+		String v = Constants.CONTINUOUS_PREFIX + super.toString();
 		return v;
 	}
 }

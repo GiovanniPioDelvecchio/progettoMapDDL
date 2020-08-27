@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import util.Constants;
+
 /**
  * Classe utilizzata per modellare lo schema di una tabella di un database. A tale scopo
  * questa classe fa utilizzo della classe <code>Column</code> la quale modella, appunto, le colonne dello schema.<br>
@@ -43,15 +45,15 @@ public class TableSchema implements Iterable<Column> {
 		// una Stringa o con "number" se possono essere resi attraverso una variabile numerica
 		HashMap<String, String> mapSQL_JAVATypes = new HashMap<String, String>();
 	
-		mapSQL_JAVATypes.put("CHAR", "string");
-		mapSQL_JAVATypes.put("VARCHAR", "string");
-		mapSQL_JAVATypes.put("LONGVARCHAR", "string");
-		mapSQL_JAVATypes.put("BIT", "string");
-		mapSQL_JAVATypes.put("SHORT", "number");
-		mapSQL_JAVATypes.put("INT", "number");
-		mapSQL_JAVATypes.put("LONG", "number");
-		mapSQL_JAVATypes.put("FLOAT", "number");
-		mapSQL_JAVATypes.put("DOUBLE", "number");
+		mapSQL_JAVATypes.put(Constants.SQL_CHAR, Constants.SQL_STRING_TYPE);
+		mapSQL_JAVATypes.put(Constants.SQL_VARCHAR, Constants.SQL_STRING_TYPE);
+		mapSQL_JAVATypes.put(Constants.SQL_LONGVARCHAR, Constants.SQL_STRING_TYPE);
+		mapSQL_JAVATypes.put(Constants.SQL_BIT, Constants.SQL_STRING_TYPE);
+		mapSQL_JAVATypes.put(Constants.SQL_SHORT, Constants.SQL_NUMBER_TYPE);
+		mapSQL_JAVATypes.put(Constants.SQL_INT, Constants.SQL_NUMBER_TYPE);
+		mapSQL_JAVATypes.put(Constants.SQL_LONG, Constants.SQL_NUMBER_TYPE);
+		mapSQL_JAVATypes.put(Constants.SQL_FLOAT, Constants.SQL_NUMBER_TYPE);
+		mapSQL_JAVATypes.put(Constants.SQL_DOUBLE, Constants.SQL_NUMBER_TYPE);
 		
 		
 		//si recupera la connessione da db e si ricava da lì lo schema
@@ -62,10 +64,10 @@ public class TableSchema implements Iterable<Column> {
 		while (res.next()) {
 			
 			// per ogni colonna si crea un'istanza di Column con nome e tipo (number o string)
-			if (mapSQL_JAVATypes.containsKey(res.getString("TYPE_NAME"))) {
+			if (mapSQL_JAVATypes.containsKey(res.getString(Constants.SQL_TYPE_NAME))) {
 
-				tableSchema.add(new Column(res.getString("COLUMN_NAME"),
-							mapSQL_JAVATypes.get(res.getString("TYPE_NAME"))));
+				tableSchema.add(new Column(res.getString(Constants.SQL_COLUMN_NAME),
+							mapSQL_JAVATypes.get(res.getString(Constants.SQL_TYPE_NAME))));
 			}
 		}
 		

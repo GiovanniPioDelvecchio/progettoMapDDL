@@ -1,5 +1,7 @@
 package database;
 
+import util.Constants;
+
 /**
  * Classe che modella un'eccezione lanciata in caso la tabella del database a cui si sta cercando di accedere
  * non presenti tuple.<br>
@@ -20,7 +22,7 @@ public class EmptySetException extends Exception {
 	 */
 	EmptySetException() {
 
-		super("Empty database");
+		super(Constants.ERROR_EMPTY_DATABASE);
 	}
 	
 	/**

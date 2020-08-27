@@ -6,6 +6,7 @@ import data.Attribute;
 import data.Data;
 import data.DiscreteAttribute;
 import server.UnknownValueException;
+import util.Constants;
 
 
 /**
@@ -98,7 +99,7 @@ public class DiscreteNode extends SplitNode {
 			}
 		}
 
-		throw new UnknownValueException("Tried to test the split node to a non existant split value");
+		throw new UnknownValueException(Constants.ERROR_BAD_TEST_CONDITION);
 	} 
 	
 	/**
@@ -109,7 +110,7 @@ public class DiscreteNode extends SplitNode {
 	@Override
 	public String toString() {
 
-		String v = "DISCRETE " + super.toString();
+		String v = Constants.DISCRETE_PREFIX + super.toString();
 		return v;
 	}
 }

@@ -1,5 +1,7 @@
 package database;
 
+import util.Constants;
+
 /**
  * Classe che modella una colonna di una tabella di un database. In particolare tiene traccia del nome
  * e del tipo dei valori contenuti.
@@ -50,7 +52,7 @@ public class Column {
 	 */
 	public boolean isNumber() {
 		
-		return type.equals("number");
+		return type.equals(Constants.SQL_NUMBER_TYPE);
 	}
 
 	/**

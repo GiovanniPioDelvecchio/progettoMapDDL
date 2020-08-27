@@ -11,6 +11,7 @@ import java.time.Instant;
 import data.Data;
 import data.TrainingDataException;
 import tree.RegressionTree;
+import util.Constants;
 
 /**
  * Classe utilizzata per comunicare con un singolo Client su un Thread separato da quello principale.
@@ -94,15 +95,15 @@ public class ServerOneClient extends Thread {
 			while(noTable) {
 				String trainingfileName = (String) in.readObject();
 				
-				if(trainingfileName.equals("#ABORT")) {
+				if(trainingfileName.equals(Constants.CLIENT_ABORT)) {
 					// Se viene ricevuta la stringa speciale di chiusura (l'utente torna alla home)
 					// si procede alla chiusura della connessione
-					clientDecision = -1;
+					clientDecision = Constants.CLIENT_END;
 					return;
 				}
 	
 				// Viene letto l'intero 0 se l'utente vuole generare un nuovo albero di regressione
-				if (clientDecision == 0) {
+				if (clientDecision == Constants.CLIENT_CREATE) {
 	
 					Data trainingSet = null;
 					
@@ -118,21 +119,21 @@ public class ServerOneClient extends Thread {
 						/*
 						 * Per comunicare al Client che non ci sono stati problemi, viene inviata la stringa "OK"
 						 */
-						out.writeObject("OK");
+						out.writeObject(Constants.SERVER_OK);
 						
 						/*
 						 * Il salvataggio dell'albero avviene alla lettura dell'intero 1 sullo stream di comunicazione
 						 */
 						clientDecision = (Integer) in.readObject();
-						if (clientDecision == 1) {
+						if (clientDecision == Constants.CLIENT_SAVE) {
 
 							try {
 								
 								tree.salva(trainingfileName + ".dmp");
-								out.writeObject("OK");
+								out.writeObject(Constants.SERVER_OK);
 								// Viene comunicato al Client che il salvataggio e' andato a buon fine
 							} catch (IOException e) {
-								
+
 								/*
 								 * In caso di errore durante il salvataggio, viene effettuato un log dell'errore
 								 */
@@ -165,7 +166,7 @@ public class ServerOneClient extends Thread {
 				/*
 				 * La lettura dell'intero 2 indica il caricamento di un albero di regressione presente in memoria.
 				 */
-				if(clientDecision == 2) {
+				if(clientDecision == Constants.CLIENT_LOAD) {
 					
 					try {
 	
@@ -218,7 +219,7 @@ public class ServerOneClient extends Thread {
 			 * Finche' l'operazione da svolgere sara' identificata da questo numero, verra' avviato un nuovo
 			 * processo di esplorazione dell'albero.
 			 */
-			while (clientDecision == 3) {
+			while (clientDecision == Constants.CLIENT_PREDICT) {
 				
 				try {
 
@@ -240,7 +241,7 @@ public class ServerOneClient extends Thread {
 					 * viene catturata una UnknownValueException. Di conseguenza, si passa alla chiusura
 					 * della connessione.
 					 */
-					clientDecision = -1;
+					clientDecision = Constants.CLIENT_END;
 					return;
 				}
 			}

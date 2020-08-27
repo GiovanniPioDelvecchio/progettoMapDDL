@@ -15,6 +15,8 @@ import database.TableData;
 import database.TableSchema;
 import database.Column;
 
+import util.Constants;
+
 /**
  * Classe creata per modellare un insieme di esempi per l'addestramento di un albero di regressione.<br>
  * Una sua istanza puo' essere inizializzata a partire da una tabella MySQL di un database attraverso i metodi 
@@ -68,10 +70,11 @@ public class Data {
 			
 			db.initConnection();
 		} catch (DatabaseConnectionException e) {
-			/* si rilancia l'eccezione ottenuta in caso di errore di connessione
+			/* 
+			 * si rilancia l'eccezione ottenuta in caso di errore di connessione
 			 * sottoforma di TrainingDataException.
 			 */
-			throw new TrainingDataException("Unable to connect to the database");
+			throw new TrainingDataException(Constants.ERROR_NO_DATABASE_CONNECTION);
 		}
 		
 		TableSchema schema;
@@ -89,19 +92,19 @@ public class Data {
 			if (schema.getNumberOfAttributes() == 0) {
 				
 				//schema e' restituito senza attributi se la tabella non esiste.
-				throw new TrainingDataException("Table not found");
+				throw new TrainingDataException(Constants.ERROR_TABLE_NOT_FOUND);
 			}
 			
 			if (schema.getNumberOfAttributes() < 2) {
 				
 				//Si lancia l'eccezione se gli attributi sono meno di due.
-				throw new TrainingDataException("Attributes must be at least 2");
+				throw new TrainingDataException(Constants.ERROR_TOO_FEW_ATTRIBUTES);
 			}
 			
 			if (!schema.getColumn(schema.getNumberOfAttributes() - 1).isNumber()) {
 				
 				//Si lancia un'eccezione se l'ultimo attributo (target) della tabella non e' numerico.
-				throw new TrainingDataException("Missing class attribute");
+				throw new TrainingDataException(Constants.ERROR_NO_CLASS_ATTRIBUTE);
 			}
 			
 			int index = 0;
@@ -155,11 +158,11 @@ public class Data {
 		} catch (ClassCastException e) {
 			
 			// Viene rilanciata anche l'eccezione generata in caso di errore durante il casting...
-			throw new TrainingDataException("Error in casting a discrete value");
+			throw new TrainingDataException(Constants.ERROR_BAD_DISCRETE_VALUE_CAST);
 		} catch (EmptySetException e) {
 			
 			// ...e in caso di training set vuoto.
-			throw new TrainingDataException("Empty table");
+			throw new TrainingDataException(Constants.ERROR_EMPTY_TABLE);
 		} finally {
 			/* Qualsiasi cosa accada nel blocco precedente, si chiude la connessione al database
 			 * Ricordiamo che se la connessione rimane aperta, potrebbero essere generati ulteriori errori
@@ -171,7 +174,7 @@ public class Data {
 			} catch (DatabaseConnectionException e) {
 
 				//Si lancia un'eccezione anche in caso di errore durante la chiusura del database
-				throw new TrainingDataException("Error in closing db connection");
+				throw new TrainingDataException(Constants.ERROR_DB_CONNECTION_CLOSING);
 			}
 		}
 		
