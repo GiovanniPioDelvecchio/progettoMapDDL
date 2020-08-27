@@ -9,6 +9,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import util.Constants;
+
 /**
  * Classe utilizzata per modellare un Server multithreaded per la comunicazione con piu' Client.
  * 
@@ -21,7 +23,7 @@ import java.time.format.DateTimeFormatter;
 public class MultiServer {
 
 	// Porta di default dove viene locato il Server.
-	private int PORT = 8080;
+	private int PORT = Constants.DEFAULT_PORT;
 	
 	// File dove verranno effettuate le stampe di log
 	private BufferedWriter logFile;
@@ -36,7 +38,7 @@ public class MultiServer {
 	public MultiServer(int port) {
 
 		String log;
-		String logFileName = "server-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".log";
+		String logFileName = "server-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern(Constants.DATE_REGEX)) + ".log";
 		
 		PORT = port;
 		try {
@@ -67,7 +69,7 @@ public class MultiServer {
 				logFile.close();
 			} catch (IOException e) {
 
-				System.out.println("Failed to close the log file");
+				System.out.println(Constants.ERROR_LOG_FILE_CLOSING);
 			}
 		}
 	}

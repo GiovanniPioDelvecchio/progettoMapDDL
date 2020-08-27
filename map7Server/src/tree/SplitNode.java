@@ -7,6 +7,7 @@ import java.util.List;
 import data.Attribute;
 import data.Data;
 import server.UnknownValueException;
+import util.Constants;
 
 /**
  * Classe astratta che rappresenta un nodo di split all'interno di un albero di regressione.
@@ -55,7 +56,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * Stringa contenente il simbolo della relazione fra i valori dell'attributo di split
 		 * rappresentati da un'istanza di SplitInfo, e i possibili valori dell'attributo di split.
 		 */
-		String comparator = "=";
+		String comparator = Constants.DISCRETE_COMPARATOR;
 		
 		/**
 		 * Costruttore di SplitInfo.
@@ -273,7 +274,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	@Override
 	public String toString() {
 		
-		String v = "SPLIT : attribute=" + attribute + " Nodo: " + super.toString() +  " Split Variance: " + getVariance() + "\n" ;
+		String v = "SPLIT : attribute=" + attribute + " Nodo: " + super.toString() +  " Split Variance: " + getVariance() + "\n";
 		
 		for (SplitInfo si : mapSplit) {
 

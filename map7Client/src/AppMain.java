@@ -44,7 +44,8 @@ public class AppMain extends Application {
 	 * Viene creata una ObservableList di istanze di ServerInformation contenente le informazioni sulle possibili connessioni ai server effettuabili.
 	 * La lista viene inizializzata con un server di default, che rappresenta il localhost
 	 */
-	private ObservableList<ServerInformation> servers = FXCollections.observableArrayList(new ServerInformation("127.0.0.1", 8080, "(Default)"));
+	private ObservableList<ServerInformation> servers = FXCollections.observableArrayList(new ServerInformation(Constants.DEFAULT_SERVER_IP,
+			Constants.DEFAULT_SERVER_PORT, Constants.DEFAULT_SERVER_ID));
 
 	// Il server a cui viene inizializzato il programma e' quello di default
 	private ServerInformation currServer = servers.get(0);
@@ -62,24 +63,24 @@ public class AppMain extends Application {
 
 		/** HOME **/
 
-		mainStage.setTitle("Client");
+		mainStage.setTitle(Constants.CLIENT_WINDOW_NAME);
 		BorderPane homePane = new BorderPane();
-		mainStage.getIcons().add(new Image("file:res/icon.png"));
+		mainStage.getIcons().add(new Image(Constants.PATH_CLIENT_ICON));
 
 		/*
 		 * descrizione componenti per la barra degli strumenti superiore
 		 */
 
 		ToolBar tools = new ToolBar();
-		Image gear = new Image("file:res/gear.png", 20, 20, true, true);
+		Image gear = new Image(Constants.PATH_GEAR_ICON, 20, 20, true, true);
 		ImageView gearV = new ImageView(gear);
-		Image questionMark = new Image("file:res/questionMark.png", 20, 20, true, true);
+		Image questionMark = new Image(Constants.PATH_HELP_ICON, 20, 20, true, true);
 		ImageView questionMarkV = new ImageView(questionMark);
 		
-		Button opt = new Button("Opzioni");
-		Button help = new Button("Aiuto");
-		opt.setId("smallButton");
-		help.setId("smallButton");
+		Button opt = new Button(Constants.BUTTON_OPTIONS);
+		Button help = new Button(Constants.BUTTON_HELP);
+		opt.setId(Constants.ID_SMALL_BUTTON);
+		help.setId(Constants.ID_SMALL_BUTTON);
 		opt.setGraphic(gearV);
 		help.setGraphic(questionMarkV);
 		opt.setOnAction(e -> mainStage.setScene(settingsScene));
@@ -91,11 +92,11 @@ public class AppMain extends Application {
 		 */
 		VBox centralPanel = new VBox(50);
 		centralPanel.setAlignment(Pos.CENTER);
-		Label sel = new Label("Seleziona un'operazione");
-		sel.setId("welcomeLabel");
-		Button load = new Button("Carica");
+		Label sel = new Label(Constants.LABEL_SELECTION);
+		sel.setId(Constants.ID_WELCOME_LABEL);
+		Button load = new Button(Constants.BUTTON_LOAD);
 		load.setMinSize(130, 20);
-		Button create = new Button("Crea");
+		Button create = new Button(Constants.BUTTON_CREATE);
 		create.setMinSize(130, 20);
 		centralPanel.getChildren().addAll(sel, load,create);
 		homePane.setCenter(centralPanel);
@@ -112,14 +113,14 @@ public class AppMain extends Application {
 			try {
 				loadFlag = true;
 				connectToServer();
-				out.writeObject(2);
+				out.writeObject(Constants.CLIENT_LOAD);
 				mainStage.setScene(selectionScene);
 			} catch(IOException | NullPointerException e1) {
 				
 				/*
 				 * Se qualcosa va storto con l'invio dei messaggi al server si mostra un alert
 				 */
-				showAlert("Non e' stato possibile comunicare l'operazione al server selezionato");
+				showAlert(Constants.ERROR_NO_COMMUNICATION);
 			}
 		
 		});
@@ -133,14 +134,14 @@ public class AppMain extends Application {
 			try {
 				loadFlag = false;
 				connectToServer();
-				out.writeObject(0);
+				out.writeObject(Constants.CLIENT_CREATE);
 				mainStage.setScene(selectionScene);
 			} catch(IOException | NullPointerException e1) {
 				
 				/*
 				 * Se qualcosa va storto con l'invio dei messaggi al server si mostra un alert
 				 */
-				showAlert("Non e' stato possibile comunicare l'operazione al server selezionato");
+				showAlert(Constants.ERROR_NO_COMMUNICATION);
 			}
 		});
 		
@@ -154,7 +155,7 @@ public class AppMain extends Application {
 		BorderPane predictPane = new BorderPane();
 		VBox predictBox = new VBox(50);
 		TilePane userChoices = new TilePane();
-		Label predictedValue = new Label("Seleziona il valore dell'attributo:");
+		Label predictedValue = new Label(Constants.LABEL_PREDICTION_QUERY);
 		HBox predictButtons = new HBox(50);
 		predictBox.setAlignment(Pos.CENTER);
 		userChoices.setAlignment(Pos.CENTER);
@@ -163,25 +164,25 @@ public class AppMain extends Application {
 		userChoices.setPrefColumns(3);
 		predictedValue.setAlignment(Pos.CENTER);
 		predictButtons.setAlignment(Pos.CENTER);
-		predictedValue.setId("predictionLabel");
+		predictedValue.setId(Constants.ID_PREDICTION_LABEL);
 		
-		Button redo = new Button("Ricomincia");
+		Button redo = new Button(Constants.BUTTON_RESTART);
 		redo.setDisable(true);
-		Button backPredict = new Button("Indietro");
+		Button backPredict = new Button(Constants.BUTTON_BACK);
 		backPredict.setOnAction(e -> { 
 			try {
 					// Si notifica che si sta tornando alla home
-					out.writeObject(-1);
+					out.writeObject(Constants.CLIENT_END);
 					clientSocket.close();
 				} catch (IOException e1) {
-					showAlert("Errore durante la chiusura della connessione al server");
+					showAlert(Constants.ERROR_CLOSING_COMMUNICATION);
 				}
 				/**
 				 * Inoltre si ripuliscono i pulsanti di predizione, si reinizializza la label e si
 				 * disattiva il tasto redo.
 				 */
 				userChoices.getChildren().clear();
-				predictedValue.setText("Seleziona il valore dell'attributo:");
+				predictedValue.setText(Constants.LABEL_PREDICTION_QUERY);
 				redo.setDisable(true);
 				mainStage.setScene(homeScene);
 		});
@@ -189,13 +190,13 @@ public class AppMain extends Application {
 		redo.setOnAction(e->{
 			
 			try {
-				out.writeObject(3);
-				predictedValue.setText("Seleziona il valore dell'attributo:");
+				out.writeObject(Constants.CLIENT_PREDICT);
+				predictedValue.setText(Constants.LABEL_PREDICTION_QUERY);
 				redo.setDisable(true);
 				handlePredict(userChoices, predictedValue, redo);
 			} catch (IOException e1) {
 				
-				showAlert("Non e' stato possibile raggiungere il server");
+				showAlert(Constants.ERROR_SERVER_UNREACHABLE);
 				mainStage.setScene(homeScene);
 			}
 			
@@ -217,18 +218,11 @@ public class AppMain extends Application {
 		help.setOnAction(e -> {
 			
 			Alert helpScreen = new Alert(Alert.AlertType.INFORMATION);
-			helpScreen.setHeaderText("Aiuto");
-			helpScreen.setTitle("Aiuto");
-			helpScreen.setContentText("Programma per la creazione ed esplorazione di alberi di regressione.\n\n"
-									+ "E' possibile creare un albero connettendosi ad un server adeguato contenente dei dataset.\n"
-									+ "Nella schermata delle impostazioni e' possibile specificare il server a cui connettersi tramite indirizzo IP e porta.\n\n"
-									+ "L'opzione \"crea\" permette di creare un nuovo albero di regressione a partire da un dataset memorizzato nel server.\n"
-									+ "L'opzione \"carica\" permette di caricare un albero di regressione creato in precedenza dal server.\n\n"
-									+ "Per selezionare il dataset, e' necessario inserire il nome della tabella in cui e' memorizzato nel Database del server.\n"
-									+ "Una volta inserito il nome della tabella, si potra' esplorare l'albero tramite una serie di query a cui rispondere.\n\n"
-									+ "Autori: Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea");
-			helpScreen.getDialogPane().getStylesheets().add("file:src/theme.css");
-			((Stage) helpScreen.getDialogPane().getScene().getWindow()).getIcons().add(new Image("file:res/icon.png"));
+			helpScreen.setHeaderText(Constants.HELP_WINDOW_NAME);
+			helpScreen.setTitle(Constants.HELP_WINDOW_NAME);
+			helpScreen.setContentText(Constants.HELP_CONTENT_TEXT);
+			helpScreen.getDialogPane().getStylesheets().add(Constants.PATH_THEME);
+			((Stage) helpScreen.getDialogPane().getScene().getWindow()).getIcons().add(new Image(Constants.PATH_CLIENT_ICON));
 			helpScreen.show();
 		});
 
@@ -243,7 +237,7 @@ public class AppMain extends Application {
 		selectionPane.setPadding(new Insets(30,30,30,30));
 		
 		// Sulla prima riga, per due colonne, si estende il label di richiesta.
-		Label selLabel = new Label("Inserisci il nome della tabella");
+		Label selLabel = new Label(Constants.LABEL_TABLE_SELECTION);
 		selectionPane.add(selLabel, 0, 0, 2, 1);
 		
 		// Sulla seconda riga, per due colonne, si estende il campo per inserire il testo contenente il nome della tabella
@@ -251,7 +245,7 @@ public class AppMain extends Application {
 		selectionPane.add(tableName, 0, 1, 2, 1);
 		
 		// Si inserisce un bottone di conferma che rimane disattivato se non viene inserito del testo
-		Button confirm = new Button("Conferma");
+		Button confirm = new Button(Constants.BUTTON_CONFIRM);
 		
 		
 		confirm.setDisable(true);
@@ -264,28 +258,28 @@ public class AppMain extends Application {
 
 				String ans = (String) in.readObject();
 				
-				if (!ans.equals("OK")) {
+				if (!ans.equals(Constants.SERVER_OK)) {
 					
 					showAlert(ans);
 				} else {
 					
 					if (loadFlag == false) {
 						
-						out.writeObject(1);
+						out.writeObject(Constants.CLIENT_SAVE);
 						ans = ((String) in.readObject());
 						/* Se il salvataggio dell'albero non va a buon fine, si permette comunque
 						 * di accedere alla predizione
 						 */
-						if (!ans.equals("OK")) {
+						if (!ans.equals(Constants.SERVER_OK)) {
 						
-							showAlert("Errore nel salvataggio dei dati da parte del server");
+							showAlert(Constants.ERROR_SAVING_TREE);
 						}
 					}
 					
 					
 					mainStage.setScene(predictScene);
 					
-					out.writeObject(3);
+					out.writeObject(Constants.CLIENT_PREDICT);
 					
 					handlePredict(userChoices, predictedValue, redo);
 
@@ -297,7 +291,7 @@ public class AppMain extends Application {
 				 * si presuppone che la connessione sia giï¿½ stata stabilita
 				 * e pertanto non si prevede di gestire una NullPointerException
 				 */
-				showAlert("Errore durante la connessione al server");
+				showAlert(Constants.ERROR_INIT_CONNECTION);
 				mainStage.setScene(homeScene);
 			} 
 		});
@@ -305,18 +299,19 @@ public class AppMain extends Application {
 		
 		// si crea anche un bottone per tornare indietro alla home
 
-		Button backSelection = new Button("Indietro");
+		Button backSelection = new Button(Constants.BUTTON_BACK);
 		backSelection.setOnAction(e->{	
 			
 		try {
-				/*Si notifica che si sta tornando alla home
+				/*
+				 * Si notifica che si sta tornando alla home
 				 *la stringa comincia con # poichè nessun file può avere tale nome
 				 */
-				out.writeObject("#ABORT");
+				out.writeObject(Constants.CLIENT_ABORT);
 				clientSocket.close();
 				} catch (IOException e1) {
 	
-				showAlert("Errore durante la chiusura della connessione con il server");
+				showAlert(Constants.ERROR_CLOSING_COMMUNICATION);
 				}
 		
 			mainStage.setScene(homeScene);
@@ -360,7 +355,7 @@ public class AppMain extends Application {
 		 */
 		try {
 
-			FileInputStream serversInFile = new FileInputStream("servers.info");
+			FileInputStream serversInFile = new FileInputStream(Constants.PATH_SERVER_INFO);
 			ObjectInputStream serversIn = new ObjectInputStream(serversInFile);
 
 			/*
@@ -383,15 +378,13 @@ public class AppMain extends Application {
 			if (e1 instanceof FileNotFoundException) {
 				
 				Alert serversNotFound = new Alert(Alert.AlertType.WARNING);
-				serversNotFound.setContentText("Non e' stato trovato il file \"servers.info\" contenente le informazioni sui server conosciuti.\n"
-						+ "Verra' caricata una lista di default.");
-				serversNotFound.getDialogPane().getStylesheets().add("file:src/theme.css");
-				((Stage) serversNotFound.getDialogPane().getScene().getWindow()).getIcons().add(new Image("file:res/warning.png"));
+				serversNotFound.setContentText(Constants.CONTENT_TEXT_NO_SERVERS_INFO);
+				serversNotFound.getDialogPane().getStylesheets().add(Constants.PATH_THEME);
+				((Stage) serversNotFound.getDialogPane().getScene().getWindow()).getIcons().add(new Image(Constants.PATH_WARNING_ICON));
 				serversNotFound.show();
 			} else {
 
-				showAlert("Errore durante il caricamento della lista dei server conosciuti.\n"
-						+ "Verra' caricata una lista di default.");
+				showAlert(Constants.ERROR_LOADING_SERVERS);
 			}
 		}
 		
@@ -406,20 +399,20 @@ public class AppMain extends Application {
 					try {
 						// se e' in corso una comunicazione col server, si notifica che si sta tornando alla home
 						if(mainStage.getScene().equals(selectionScene)) {
-							out.writeObject("#ABORT");
+							out.writeObject(Constants.CLIENT_ABORT);
 						} else {
-							out.writeObject(-1);
+							out.writeObject(Constants.CLIENT_END);
 						}
 						clientSocket.close();
 					} catch (IOException e1) {
 	
-						showAlert("Errore durante la chiusura della comunicazione con il server");
+						showAlert(Constants.ERROR_CLOSING_COMMUNICATION);
 					}
 				
 				}
 			}
 			try {
-				FileOutputStream serverOutFile = new FileOutputStream("servers.info");
+				FileOutputStream serverOutFile = new FileOutputStream(Constants.PATH_SERVER_INFO);
 				ObjectOutputStream serverOut = new ObjectOutputStream(serverOutFile);
 
 				/*
@@ -438,7 +431,7 @@ public class AppMain extends Application {
 				serverOutFile.close();
 			} catch (IOException e1) {
 
-				showAlert("Errore durante la memorizzazione dei server conosciuti.");
+				showAlert(Constants.ERROR_SAVING_SERVERS);
 			}
 		});
 		
@@ -485,14 +478,14 @@ public class AppMain extends Application {
 		settingsButtonsLayout.setPadding(new Insets(25, 25, 25, 25));
 		settingsButtonsLayout.setSpacing(5d);
 
-		Button addServer = new Button("Aggiungi");
-		Button removeServer = new Button("Elimina");
-		Button confirmServer = new Button("Conferma");
-		Button backSettings = new Button("Indietro");
-		addServer.setId("smallButton");
-		removeServer.setId("smallButton");
-		confirmServer.setId("smallButton");
-		backSettings.setId("smallButton");
+		Button addServer = new Button(Constants.BUTTON_ADD);
+		Button removeServer = new Button(Constants.BUTTON_DELETE);
+		Button confirmServer = new Button(Constants.BUTTON_CONFIRM);
+		Button backSettings = new Button(Constants.BUTTON_BACK);
+		addServer.setId(Constants.ID_SMALL_BUTTON);
+		removeServer.setId(Constants.ID_SMALL_BUTTON);
+		confirmServer.setId(Constants.ID_SMALL_BUTTON);
+		backSettings.setId(Constants.ID_SMALL_BUTTON);
 		
 		backSettings.setOnAction(e -> {
 			
@@ -526,11 +519,11 @@ public class AppMain extends Application {
 		newServerPane.setVgap(10);
 		newServerPane.setPadding(new Insets(25, 50, 25, 25));
 		
-		Label ipLabel = new Label("Indirizzo IP");
-		Label portLabel = new Label("Porta");
-		Label idLabel = new Label("Server ID");
+		Label ipLabel = new Label(Constants.LABEL_SERVER_IP_ADDRESS);
+		Label portLabel = new Label(Constants.LABEL_SERVER_PORT);
+		Label idLabel = new Label(Constants.LABEL_SERVER_ID);
 		
-		Button backSetting = new Button("Indietro");
+		Button backSetting = new Button(Constants.BUTTON_BACK);
 		backSetting.setOnAction(e->mainStage.setScene(homeScene));
 		
 		
@@ -583,7 +576,7 @@ public class AppMain extends Application {
 		/*
 		 * Infine si utilizzano due pulsanti, uno di conferma e uno per tornare alla home del programma.
 		 */
-		Button confirmButtonSettings = new Button("Conferma");
+		Button confirmButtonSettings = new Button(Constants.BUTTON_CONFIRM);
 		HBox backLayoutSettings = new HBox();
 		backLayoutSettings.setAlignment(Pos.CENTER_LEFT);
 		backLayoutSettings.getChildren().add(backSetting);
@@ -623,7 +616,7 @@ public class AppMain extends Application {
 						isValid = false;
 						break;
 					}
-					if (readInteger < 0 || readInteger > 255) {
+					if (readInteger < Constants.MIN_IP_FIELD || readInteger > Constants.MAX_IP_FIELD) {
 						
 						isValid = false;
 						break;
@@ -640,8 +633,7 @@ public class AppMain extends Application {
 					newIp.append(ipAdd[3].getText());
 				} else {
 
-					showAlert("L'indirizzo IP inserito non è valido.\n"
-							+ "I valori che compongono l'indirizzo devono essere interi da 0 a 255.");
+					showAlert(Constants.ERROR_PARSING_IP);
 					return;
 				}
 				
@@ -652,21 +644,18 @@ public class AppMain extends Application {
 				String readPort = portField.getText();
 				
 				if (!readPort.equals("")) {
-				
-					final String errorMessage = "Il numero di porta inserito non ï¿½ valido.\n"
-							+ "Il numero di porta deve essere un intero fra 1 e 65535.";
 
 					try {
 
 						intPort = Integer.parseInt(readPort);
-						if (!(intPort > 0 && intPort <= 65535)) {
+						if (!(intPort > Constants.MIN_PORT && intPort <= Constants.MAX_PORT)) {
 
-							showAlert(errorMessage);
+							showAlert(Constants.ERROR_PARSING_PORT);
 							return;
 						}
 					} catch (NumberFormatException f) {
 
-						showAlert(errorMessage);
+						showAlert(Constants.ERROR_PARSING_PORT);
 						return;
 					}
 				}
@@ -679,14 +668,14 @@ public class AppMain extends Application {
 				 */
 				if (readId.equals("")) {
 					
-					showAlert("Il server deve avere un identificatore");
+					showAlert(Constants.ERROR_NO_SERVER_ID);
 					return;
 				}
 
 				ServerInformation toAdd = new ServerInformation(newIp.toString(), intPort, readId);
 				if (servers.contains(toAdd)) {
 
-					showAlert("Un server dall'ID \"" + readId + "\" e' gia' esistente.");
+					showAlert(Constants.ERROR_ID_ALREADY_EXISTS + readId);
 					return;
 				}
 				
@@ -755,11 +744,11 @@ public class AppMain extends Application {
 		newServerScene = new Scene(newServerPane, 400,400);
 		predictScene = new Scene(predictPane, 400, 400);
 
-		homeScene.getStylesheets().add("file:src/theme.css");
-		selectionScene.getStylesheets().add("file:src/theme.css");
-		settingsScene.getStylesheets().add("file:src/theme.css");
-		newServerScene.getStylesheets().add("file:src/theme.css");
-		predictScene.getStylesheets().add("file:src/theme.css");
+		homeScene.getStylesheets().add(Constants.PATH_THEME);
+		selectionScene.getStylesheets().add(Constants.PATH_THEME);
+		settingsScene.getStylesheets().add(Constants.PATH_THEME);
+		newServerScene.getStylesheets().add(Constants.PATH_THEME);
+		predictScene.getStylesheets().add(Constants.PATH_THEME);
 
 		mainStage.setScene(homeScene);
 		mainStage.show();
@@ -788,8 +777,8 @@ public class AppMain extends Application {
 		
 		Alert toShow = new Alert(Alert.AlertType.ERROR);
 		toShow.setContentText(message);
-		toShow.getDialogPane().getStylesheets().add("file:src/theme.css");
-		((Stage) toShow.getDialogPane().getScene().getWindow()).getIcons().add(new Image("file:res/error.png"));
+		toShow.getDialogPane().getStylesheets().add(Constants.PATH_THEME);
+		((Stage) toShow.getDialogPane().getScene().getWindow()).getIcons().add(new Image(Constants.PATH_ERROR_ICON));
 		toShow.show();
 	}
 	
@@ -812,7 +801,7 @@ public class AppMain extends Application {
 			toCheck = (String)in.readObject();
 			
 			
-			if (toCheck.equals("QUERY")) {
+			if (toCheck.equals(Constants.SERVER_QUERY)) {
 
 				List<String> options = new ArrayList<String>((ArrayList<String>)in.readObject());
 				int i = 0;
@@ -824,20 +813,20 @@ public class AppMain extends Application {
 				
 			} else {
 				
-				predictedValue.setText("Valore predetto:\n" + ((Double)in.readObject()).toString());
+				predictedValue.setText(Constants.LABEL_PREDICTED_VALUE + ((Double)in.readObject()).toString());
 				redo.setDisable(false);
 				
 				
 			}
 		} catch (ClassNotFoundException e) {
 			
-			showAlert("Errore di comunicazione con il Server: risposta inattesa");
+			showAlert(Constants.ERROR_COMMUNICATING_UNEXPECTED_ANSWER);
 		} catch (IOException e) {
 
-			showAlert("Errore di comunicazione con il Server");
+			showAlert(Constants.ERROR_COMMUNICATING);
 		} catch (ClassCastException e) {
 			
-			showAlert("Errore di comunicazione con il Server: risposta erronea");
+			showAlert(Constants.ERROR_COMMUNICATING_BAD_ANSWER);
 		}
 	}
 	
@@ -866,10 +855,10 @@ public class AppMain extends Application {
 				
 			} catch (IOException e1) {
 				
-				showAlert("Impossibile inviare la scelta selezionata al server (errore di comunicazione)");
+				showAlert(Constants.ERROR_SENDING_VALUE);
 			}
 		});
-		toShow.setId("predictionButton");
+		toShow.setId(Constants.ID_PREDICTION_BUTTON);
 		userChoices.getChildren().add(toShow);
 	}
 	
