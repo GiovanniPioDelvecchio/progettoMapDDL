@@ -30,7 +30,7 @@ public class DbAccess {
 	/**
 	 * Stringa contenente il nome del server dov'è locato il database.
 	 */
-	private String SERVER= "localhost";
+	private String SERVER = "localhost";
 	
 	/**
 	 * Stringa contenente il nome della base di dati a cui accedere

@@ -1,5 +1,7 @@
 package database;
 
+import util.Constants;
+
 /**
  * Classe che modella un'eccezione generata durante la connessione al Database.
  * Poich� pu� essere lanciata solamente all'interno del package <code>database</code>
@@ -42,7 +44,7 @@ public class DatabaseConnectionException extends Exception {
 		
 		if (this.getMessage() == null ) {
 		
-			return this.getClass().getName() + ": Failure during connection with Database.";
+			return this.getClass().getName() + Constants.ERROR_DATABASE_CONNECTION_FAILURE;
 		} else {
 		
 			return this.getClass().getName() + ": " + this.getMessage();
