@@ -67,11 +67,13 @@ public class ServerOneClient extends Thread {
 
 		
 		Integer clientDecision = null;
+		RegressionTree tree = null;
+		
 		try {
 			
 			// Viene letta la prima scelta effettuata dall'utente tramite il Client
 			clientDecision = (Integer) in.readObject();
-			RegressionTree tree = null;
+			String trainingfileName = (String) in.readObject();
 
 			// Viene letto l'intero 0 se l'utente vuole generare un nuovo albero di regressione
 			if (clientDecision == 0) {
@@ -81,10 +83,10 @@ public class ServerOneClient extends Thread {
 				try {
 
 					/*
-					 * Viene letta dallo Stream la stringa contenente il nome della tabella SQL
+					 * E' stata letta dallo Stream la stringa contenente il nome della tabella SQL
 					 * contenente il dataset da cui creare l'albero di regressione.
 					 */
-					String trainingfileName = (String) in.readObject();
+
 					trainingSet = new Data(trainingfileName);
 					tree = new RegressionTree(trainingSet);
 
@@ -130,15 +132,14 @@ public class ServerOneClient extends Thread {
 			 */
 			if(clientDecision == 2) {
 				
-				Data trainingSet = null;
+
 				try {
 
 					/*
-					 * Viene letta dal Client la stringa contenente il nome della tabella SQL di cui si era creato
+					 * E'stata letta dal Client la stringa contenente il nome della tabella SQL di cui si era creato
 					 * l'albero di regressione in precedenza. L'utente non ha bisogno di inserire l'estenzione ".dmp"
 					 * nella stringa inserita.
 					 */
-					String trainingfileName = (String) in.readObject();
 					tree = RegressionTree.carica(trainingfileName + ".dmp");
 				} catch (FileNotFoundException e) {
 
@@ -195,11 +196,8 @@ public class ServerOneClient extends Thread {
 					 * scritto sull ObjectOutputStream da parte del Server.
 					 */
 					out.writeObject(tree.predictClass(out, in));
-					
-					/*
-					 * Questa lettura e' effettuata nel caso in cui l'utente voglia esplorare nuovamente l'albero.
-					 */
-					clientDecision = (Integer) in.readObject();
+
+
 				} catch (UnknownValueException e) {
 
 					/*
@@ -208,7 +206,13 @@ public class ServerOneClient extends Thread {
 					 * al Client. La connessione rimane aperta per permettere una nuova esplorazione dell'albero.
 					 */
 					out.writeObject(e.toString());
+
 				}
+				
+				/*
+				 * Questa lettura e' effettuata nel caso in cui l'utente voglia esplorare nuovamente l'albero.
+				 */
+				clientDecision = (Integer) in.readObject();
 			}
 		} catch (IOException | ClassNotFoundException e) {
 

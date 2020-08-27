@@ -249,20 +249,20 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		return mapSplit.get(child);
 	}
 	
+	
 	/**
-	 * Metodo per formulare una List di stringhe che descrive un nodo di split ed enumera i suoi figli.
+	 * Metodo per formulare una stringa che descrive un nodo di split ed enumera i suoi figli.
 	 * 
-	 * @return Una List contenente informazioni sullo split e sui suoi figli.
+	 * @return Una stringa contenente informazioni sullo split e i suoi figli.
 	 */
-	List<String> queryAsList() {
+	String formulateQuery() {
 		
-		List<String> toReturn = new ArrayList<String>();
-		
+		String query = "";
 		for (int i = 0; i < mapSplit.size(); i++) {
 
-			toReturn.add(attribute + mapSplit.get(i).getComparator() + mapSplit.get(i).getSplitValue());
+			query += (i + ":" + attribute + mapSplit.get(i).getComparator() + mapSplit.get(i).getSplitValue()) + "\n";
 		}
-		return toReturn;
+		return query;
 	}
 	
 	/**
