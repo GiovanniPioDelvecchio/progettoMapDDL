@@ -22,9 +22,14 @@ public class Constants {
 	public static final String LEAF_PREFIX = "LEAF: class=";
 	
 	// Messaggi di comunicazione con il client
+	public static final int CLIENT_CREATE = 0;
+	public static final int CLIENT_SAVE = 1;
+	public static final int CLIENT_LOAD = 2;
+	public static final int CLIENT_END = -1;
+	public static final int CLIENT_PREDICT = 3;
+	public static final String CLIENT_ABORT = "#ABORT";
 	public static final String SERVER_OK = "SERVER_OK";
 	public static final String SERVER_QUERY = "QUERY";
-	public static final String CLIENT_ABORT = "#ABORT";
 	
 	// Stringhe per la stampa delle informazioni sull'albero
 	public final static String BEGIN_RULES = "********* RULES **********\n";

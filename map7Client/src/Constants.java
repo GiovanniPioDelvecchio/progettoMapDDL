@@ -80,9 +80,15 @@ class Constants {
 	static final String ID_PREDICTION_BUTTON = "predictionButton";
 
 	// Messaggi di comunicazione con il server
-	static final String SERVER_OK = "OK";
+	static final int CLIENT_CREATE = 0;
+	static final int CLIENT_LOAD = 2;
+	static final int CLIENT_SAVE = 1;
+	static final int CLIENT_END = -1;
+	static final int CLIENT_PREDICT = 3;
 	static final String CLIENT_ABORT = "#ABORT";
+	static final String SERVER_OK = "OK";
 	static final String SERVER_QUERY = "QUERY";
+
 
 	// Contenuti di campi testuali
 	static final String HELP_CONTENT_TEXT = "Programma per la creazione ed esplorazione di alberi di regressione.\n\n"

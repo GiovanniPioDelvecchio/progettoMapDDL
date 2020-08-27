@@ -113,7 +113,7 @@ public class AppMain extends Application {
 			try {
 				loadFlag = true;
 				connectToServer();
-				out.writeObject(2);
+				out.writeObject(Constants.CLIENT_LOAD);
 				mainStage.setScene(selectionScene);
 			} catch(IOException | NullPointerException e1) {
 				
@@ -134,7 +134,7 @@ public class AppMain extends Application {
 			try {
 				loadFlag = false;
 				connectToServer();
-				out.writeObject(0);
+				out.writeObject(Constants.CLIENT_CREATE);
 				mainStage.setScene(selectionScene);
 			} catch(IOException | NullPointerException e1) {
 				
@@ -172,7 +172,7 @@ public class AppMain extends Application {
 		backPredict.setOnAction(e -> { 
 			try {
 					// Si notifica che si sta tornando alla home
-					out.writeObject(-1);
+					out.writeObject(Constants.CLIENT_END);
 					clientSocket.close();
 				} catch (IOException e1) {
 					showAlert(Constants.ERROR_CLOSING_COMMUNICATION);
@@ -190,7 +190,7 @@ public class AppMain extends Application {
 		redo.setOnAction(e->{
 			
 			try {
-				out.writeObject(3);
+				out.writeObject(Constants.CLIENT_PREDICT);
 				predictedValue.setText(Constants.LABEL_PREDICTION_QUERY);
 				redo.setDisable(true);
 				handlePredict(userChoices, predictedValue, redo);
@@ -265,7 +265,7 @@ public class AppMain extends Application {
 					
 					if (loadFlag == false) {
 						
-						out.writeObject(1);
+						out.writeObject(Constants.CLIENT_SAVE);
 						ans = ((String) in.readObject());
 						/* Se il salvataggio dell'albero non va a buon fine, si permette comunque
 						 * di accedere alla predizione
@@ -279,7 +279,7 @@ public class AppMain extends Application {
 					
 					mainStage.setScene(predictScene);
 					
-					out.writeObject(3);
+					out.writeObject(Constants.CLIENT_PREDICT);
 					
 					handlePredict(userChoices, predictedValue, redo);
 
@@ -401,7 +401,7 @@ public class AppMain extends Application {
 						if(mainStage.getScene().equals(selectionScene)) {
 							out.writeObject(Constants.CLIENT_ABORT);
 						} else {
-							out.writeObject(-1);
+							out.writeObject(Constants.CLIENT_END);
 						}
 						clientSocket.close();
 					} catch (IOException e1) {
