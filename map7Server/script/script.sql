@@ -28,7 +28,7 @@ INSERT INTO prova(X,Y,class) VALUES
 
 CREATE TABLE provaC(
 	X char(1),
-	Y double,
+	Y integer,
 	class double);
 
 INSERT INTO provaC(X,Y,class) VALUES
