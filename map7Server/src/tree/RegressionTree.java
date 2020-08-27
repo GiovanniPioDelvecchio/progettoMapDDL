@@ -210,7 +210,7 @@ public class RegressionTree implements Serializable {
 				/*
 				 * In caso di scelta errata viene sollevata una UnknownValueException. 
 				 */
-				throw new UnknownValueException(Constants.BAD_VALUE_SELECTION + (root.getNumberOfChildren() - 1));  
+				throw new UnknownValueException(Constants.ERROR_BAD_VALUE_SELECTION + (root.getNumberOfChildren() - 1));  
 			} else {
 
 				/*

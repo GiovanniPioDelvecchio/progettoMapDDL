@@ -22,9 +22,9 @@ public class Constants {
 	public static final String LEAF_PREFIX = "LEAF: class=";
 	
 	// Messaggi di comunicazione con il client
-	public final static String SERVER_OK = "SERVER_OK";
-	public final static String SERVER_QUERY = "QUERY";
-	public final static String CLIENT_ABORT = "#ABORT";
+	public static final String SERVER_OK = "SERVER_OK";
+	public static final String SERVER_QUERY = "QUERY";
+	public static final String CLIENT_ABORT = "#ABORT";
 	
 	// Stringhe per la stampa delle informazioni sull'albero
 	public final static String BEGIN_RULES = "********* RULES **********\n";
@@ -35,25 +35,28 @@ public class Constants {
 	// Espressione regolare per la creazione del file di log
 	public final static String DATE_REGEX = "yyyy-MM-dd_HH-mm-ss";
 	
+	public final static String SQL_NUMBER_TYPE = "number";
+	
 	/* MESSAGGI DI ECCEZIONE */
 	
 	// Data
-	public static final String NO_DATABASE_CONNECTION = "Impossibile connettersi al database";
-	public static final String TABLE_NOT_FOUND = "Tabella non trovata";
-	public static final String TOO_FEW_ATTRIBUTES = "Gli attributi della tabella devono essere almeno due";
-	public static final String NO_CLASS_ATTRIBUTE = "Attributo di classe mancante";
-	public static final String BAD_DISCRETE_VALUE_CAST = "Errore durante il casting di un valore discreto";
-	public static final String EMPTY_TABLE = "Tabella vuota";
+	public static final String ERROR_NO_DATABASE_CONNECTION = "Impossibile connettersi al database";
+	public static final String ERROR_TABLE_NOT_FOUND = "Tabella non trovata";
+	public static final String ERROR_TOO_FEW_ATTRIBUTES = "Gli attributi della tabella devono essere almeno due";
+	public static final String ERROR_NO_CLASS_ATTRIBUTE = "Attributo di classe mancante";
+	public static final String ERROR_BAD_DISCRETE_VALUE_CAST = "Errore durante il casting di un valore discreto";
+	public static final String ERROR_EMPTY_TABLE = "Tabella vuota";
 	public static final String ERROR_DB_CONNECTION_CLOSING = "Errore durante la chiusura della connesione con il database";
 	
 	
 	// ContinousNode
-	public static final String BAD_TEST_CONDITION = "Si e' tentato di testare un nodo di split con "
+	public static final String ERROR_BAD_TEST_CONDITION = "Si e' tentato di testare un nodo di split con "
 			+ "un valore di split non esistente";
 	
 	// RegressionTree
-	public static final String BAD_VALUE_SELECTION = "La risposta dovrebbe essere un intero fra 0 e ";
+	public static final String ERROR_BAD_VALUE_SELECTION = "La risposta dovrebbe essere un intero fra 0 e ";
 	
 	// MultiServer
 	public static final String ERROR_LOG_FILE_CLOSING = "Failed to close the log file";
+	
 }

@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import util.Constants;
+
 /**
  * Classe che modella un accesso ad un database MySQL.<br> In particolare la classe stabilisce una connessione
  * di default al database "MapDB" locato sulla macchina dove il programma viene lanciato alla porta 3306 con
@@ -137,7 +139,7 @@ public class DbAccess {
 			
 		} catch (SQLException e) {
 
-			throw new DatabaseConnectionException("Error while closing the database connection");
+			throw new DatabaseConnectionException(Constants.ERROR_DB_CONNECTION_CLOSING);
 		}
 	}
 	

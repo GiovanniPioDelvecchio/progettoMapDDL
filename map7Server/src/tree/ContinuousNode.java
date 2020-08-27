@@ -136,7 +136,7 @@ public class ContinuousNode extends SplitNode {
 			}
 		}
 		
-		throw new UnknownValueException(Constants.BAD_TEST_CONDITION);
+		throw new UnknownValueException(Constants.ERROR_BAD_TEST_CONDITION);
 	}
 
 	/**
