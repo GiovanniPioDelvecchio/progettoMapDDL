@@ -120,7 +120,7 @@ public class AppMain extends Application {
 				/*
 				 * Se qualcosa va storto con l'invio dei messaggi al server si mostra un alert
 				 */
-				showAlert(Constants.ERROR_NO_COMMUNICATION);
+				showAlert(Constants.ERROR_NO_COMMUNICATION, Alert.AlertType.ERROR);
 			}
 		
 		});
@@ -141,7 +141,7 @@ public class AppMain extends Application {
 				/*
 				 * Se qualcosa va storto con l'invio dei messaggi al server si mostra un alert
 				 */
-				showAlert(Constants.ERROR_NO_COMMUNICATION);
+				showAlert(Constants.ERROR_NO_COMMUNICATION, Alert.AlertType.ERROR);
 			}
 		});
 		
@@ -175,7 +175,7 @@ public class AppMain extends Application {
 					out.writeObject(Constants.CLIENT_END);
 					clientSocket.close();
 				} catch (IOException e1) {
-					showAlert(Constants.ERROR_CLOSING_COMMUNICATION);
+					showAlert(Constants.ERROR_CLOSING_COMMUNICATION, Alert.AlertType.ERROR);
 				}
 				/**
 				 * Inoltre si ripuliscono i pulsanti di predizione, si reinizializza la label e si
@@ -196,7 +196,7 @@ public class AppMain extends Application {
 				handlePredict(userChoices, predictedValue, redo);
 			} catch (IOException e1) {
 				
-				showAlert(Constants.ERROR_SERVER_UNREACHABLE);
+				showAlert(Constants.ERROR_SERVER_UNREACHABLE, Alert.AlertType.ERROR);
 				mainStage.setScene(homeScene);
 			}
 			
@@ -216,7 +216,10 @@ public class AppMain extends Application {
 		/** HELP **/
 		
 		help.setOnAction(e -> {
-			
+			/*
+			 * Non si utilizza il metodo showAlert, poichè risulta essere necessario
+			 * modificare il campo Title e Header per la finestra che andiamo a mostrare
+			 */
 			Alert helpScreen = new Alert(Alert.AlertType.INFORMATION);
 			helpScreen.setHeaderText(Constants.HELP_WINDOW_NAME);
 			helpScreen.setTitle(Constants.HELP_WINDOW_NAME);
@@ -260,7 +263,7 @@ public class AppMain extends Application {
 				
 				if (!ans.equals(Constants.SERVER_OK)) {
 					
-					showAlert(ans);
+					showAlert(ans, Alert.AlertType.ERROR);
 				} else {
 					
 					if (loadFlag == false) {
@@ -272,7 +275,7 @@ public class AppMain extends Application {
 						 */
 						if (!ans.equals(Constants.SERVER_OK)) {
 						
-							showAlert(Constants.ERROR_SAVING_TREE);
+							showAlert(Constants.ERROR_SAVING_TREE, Alert.AlertType.ERROR);
 						}
 					}
 					
@@ -291,7 +294,7 @@ public class AppMain extends Application {
 				 * si presuppone che la connessione sia giï¿½ stata stabilita
 				 * e pertanto non si prevede di gestire una NullPointerException
 				 */
-				showAlert(Constants.ERROR_INIT_CONNECTION);
+				showAlert(Constants.ERROR_INIT_CONNECTION, Alert.AlertType.ERROR);
 				mainStage.setScene(homeScene);
 			} 
 		});
@@ -312,7 +315,7 @@ public class AppMain extends Application {
 
 				} catch (IOException e1) {
 	
-				showAlert(Constants.ERROR_CLOSING_COMMUNICATION);
+					showAlert(Constants.ERROR_CLOSING_COMMUNICATION, Alert.AlertType.ERROR);
 
 				}
 		
@@ -379,14 +382,10 @@ public class AppMain extends Application {
 			
 			if (e1 instanceof FileNotFoundException) {
 				
-				Alert serversNotFound = new Alert(Alert.AlertType.WARNING);
-				serversNotFound.setContentText(Constants.CONTENT_TEXT_NO_SERVERS_INFO);
-				serversNotFound.getDialogPane().getStylesheets().add(Constants.PATH_THEME);
-				((Stage) serversNotFound.getDialogPane().getScene().getWindow()).getIcons().add(new Image(Constants.PATH_WARNING_ICON));
-				serversNotFound.show();
+				showAlert(Constants.CONTENT_TEXT_NO_SERVERS_INFO, Alert.AlertType.WARNING);
 			} else {
 
-				showAlert(Constants.ERROR_LOADING_SERVERS);
+				showAlert(Constants.ERROR_LOADING_SERVERS, Alert.AlertType.ERROR);
 			}
 		}
 		
@@ -408,7 +407,7 @@ public class AppMain extends Application {
 						clientSocket.close();
 					} catch (IOException e1) {
 	
-						showAlert(Constants.ERROR_CLOSING_COMMUNICATION);
+						showAlert(Constants.ERROR_CLOSING_COMMUNICATION, Alert.AlertType.ERROR);
 
 					}
 				
@@ -434,7 +433,7 @@ public class AppMain extends Application {
 				serverOutFile.close();
 			} catch (IOException e1) {
 
-				showAlert(Constants.ERROR_SAVING_SERVERS);
+				showAlert(Constants.ERROR_SAVING_SERVERS, Alert.AlertType.ERROR);
 			}
 		});
 		
@@ -636,7 +635,7 @@ public class AppMain extends Application {
 					newIp.append(ipAdd[3].getText());
 				} else {
 
-					showAlert(Constants.ERROR_PARSING_IP);
+					showAlert(Constants.ERROR_PARSING_IP, Alert.AlertType.ERROR);
 					return;
 				}
 				
@@ -653,12 +652,12 @@ public class AppMain extends Application {
 						intPort = Integer.parseInt(readPort);
 						if (!(intPort > Constants.MIN_PORT && intPort <= Constants.MAX_PORT)) {
 
-							showAlert(Constants.ERROR_PARSING_PORT);
+							showAlert(Constants.ERROR_PARSING_PORT, Alert.AlertType.ERROR);
 							return;
 						}
 					} catch (NumberFormatException f) {
 
-						showAlert(Constants.ERROR_PARSING_PORT);
+						showAlert(Constants.ERROR_PARSING_PORT, Alert.AlertType.ERROR);
 						return;
 					}
 				}
@@ -671,14 +670,14 @@ public class AppMain extends Application {
 				 */
 				if (readId.equals("")) {
 					
-					showAlert(Constants.ERROR_NO_SERVER_ID);
+					showAlert(Constants.ERROR_NO_SERVER_ID, Alert.AlertType.ERROR);
 					return;
 				}
 
 				ServerInformation toAdd = new ServerInformation(newIp.toString(), intPort, readId);
 				if (servers.contains(toAdd)) {
 
-					showAlert(Constants.ERROR_ID_ALREADY_EXISTS + readId);
+					showAlert(Constants.ERROR_ID_ALREADY_EXISTS + readId, Alert.AlertType.ERROR);
 					return;
 				}
 				
@@ -775,13 +774,20 @@ public class AppMain extends Application {
 	 * tramite questo metodo.
 	 * 
 	 * @param message <code>String</code> da mostrare nella finestra di dialogo 
+	 * @param type parametro di tipo <code>AlertType</code> per indicare il tipo di finestra di dialogo da mostrare
 	 */
-	private void showAlert(String message) {
+	private void showAlert(String message, Alert.AlertType type) {
 		
-		Alert toShow = new Alert(Alert.AlertType.ERROR);
+		Alert toShow = new Alert(type);
 		toShow.setContentText(message);
 		toShow.getDialogPane().getStylesheets().add(Constants.PATH_THEME);
-		((Stage) toShow.getDialogPane().getScene().getWindow()).getIcons().add(new Image(Constants.PATH_ERROR_ICON));
+		if (type.equals(Alert.AlertType.ERROR)) {
+			((Stage) toShow.getDialogPane().getScene().getWindow()).getIcons().add(new Image(Constants.PATH_ERROR_ICON));
+		} else if  (type.equals(Alert.AlertType.WARNING)) {
+			((Stage) toShow.getDialogPane().getScene().getWindow()).getIcons().add(new Image(Constants.PATH_WARNING_ICON));
+		} else {
+			((Stage) toShow.getDialogPane().getScene().getWindow()).getIcons().add(new Image(Constants.PATH_CLIENT_ICON));
+		}
 		toShow.show();
 	}
 	
@@ -823,13 +829,13 @@ public class AppMain extends Application {
 			}
 		} catch (ClassNotFoundException e) {
 			
-			showAlert(Constants.ERROR_COMMUNICATING_UNEXPECTED_ANSWER);
+			showAlert(Constants.ERROR_COMMUNICATING_UNEXPECTED_ANSWER, Alert.AlertType.ERROR);
 		} catch (IOException e) {
 
-			showAlert(Constants.ERROR_COMMUNICATING);
+			showAlert(Constants.ERROR_COMMUNICATING, Alert.AlertType.ERROR);
 		} catch (ClassCastException e) {
 			
-			showAlert(Constants.ERROR_COMMUNICATING_BAD_ANSWER);
+			showAlert(Constants.ERROR_COMMUNICATING_BAD_ANSWER, Alert.AlertType.ERROR);
 		}
 	}
 	
@@ -858,7 +864,7 @@ public class AppMain extends Application {
 				
 			} catch (IOException e1) {
 				
-				showAlert(Constants.ERROR_SENDING_VALUE);
+				showAlert(Constants.ERROR_SENDING_VALUE, Alert.AlertType.ERROR);
 			}
 		});
 		toShow.setId(Constants.ID_PREDICTION_BUTTON);
