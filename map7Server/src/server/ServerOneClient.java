@@ -114,8 +114,7 @@ public class ServerOneClient extends Thread {
 						 */
 						trainingSet = new Data(trainingfileName);
 						tree = new RegressionTree(trainingSet);
-						tree.printTree();
-						tree.printRules();
+
 						/*
 						 * Per comunicare al Client che non ci sono stati problemi, viene inviata la stringa "OK"
 						 */
