@@ -39,7 +39,7 @@ public class RegressionTree implements Serializable {
 	private RegressionTree childTree[];
 	
 	// Costruttore a zero argomenti. Viene utilizzato per la costruzione di sottoalberi in learnTree
-	RegressionTree() {}
+	private RegressionTree() {}
 
 	/**
 	 * Verifica se il sottoinsieme puo' essere rappresentato come nodo foglia all'interno dell'albero di regressione.
