@@ -507,53 +507,7 @@ public class AppMain extends Application {
 			}
 		}
 		
-		/*
-		 * Viene impostata la serializzazione della lista di server conosciuti alla chiusura
-		 * del programma.
-		 */
-		mainStage.setOnCloseRequest(e -> {
-			
-			if (clientSocket != null) {
-				if (!clientSocket.isClosed()) {
-					try {
-						// se e' in corso una comunicazione col server, si notifica che si sta tornando alla home
-						if(mainStage.getScene().equals(selectionScene)) {
-							out.writeObject(Constants.CLIENT_ABORT);
-						} else {
-							out.writeObject(Constants.CLIENT_END);
-						}
-						clientSocket.close();
-					} catch (IOException e1) {
-	
-						showAlert(Constants.ERROR_CLOSING_COMMUNICATION, Alert.AlertType.ERROR);
-
-					}
-				
-				}
-			}
-			try {
-				FileOutputStream serverOutFile = new FileOutputStream(Constants.PATH_SERVER_INFO);
-				ObjectOutputStream serverOut = new ObjectOutputStream(serverOutFile);
-
-				/*
-				 * Al posto di servers, viene serializzato un ArrayList di MutableServerInformation, ovvero la controparte
-				 * mutabile di ServerInformation. Questa scelta e' stata fatta poiche' gli attributi di ServerInformation
-				 * non sono serializzabili.
-				 */
-				ArrayList<MutableServerInformation> toSerialize = new ArrayList<MutableServerInformation>(servers.size());
-				for (ServerInformation s : servers) {
-					
-					toSerialize.add(s.toMutableServerInformation());
-				}
-				serverOut.writeObject(toSerialize);
-
-				serverOut.close();
-				serverOutFile.close();
-			} catch (IOException e1) {
-
-				showAlert(Constants.ERROR_SAVING_SERVERS, Alert.AlertType.ERROR);
-			}
-		});
+		
 		
 		/* Definizione della schermata delle impostazioni */
 		
@@ -570,13 +524,13 @@ public class AppMain extends Application {
 		 * viene associata ogni colonna all'attributo Property relativo in ServerInformation, tramite il metodo
 		 * setCellValueFactory.
 		 */
-		TableColumn<ServerInformation, String> idCol = new TableColumn<ServerInformation, String>("ID");
+		TableColumn<ServerInformation, String> idCol = new TableColumn<ServerInformation, String>(Constants.COLUMN_ID);
 		idCol.setCellValueFactory(new PropertyValueFactory<ServerInformation, String>("id"));
 		
-		TableColumn<ServerInformation, String> ipCol = new TableColumn<ServerInformation, String>("Indirizzo Ip");
+		TableColumn<ServerInformation, String> ipCol = new TableColumn<ServerInformation, String>(Constants.COLUMN_IP_ADDRESS);
 		ipCol.setCellValueFactory(new PropertyValueFactory<ServerInformation, String>("ip"));
 		
-		TableColumn<ServerInformation, Integer> portCol = new TableColumn<ServerInformation, Integer>("Porta");
+		TableColumn<ServerInformation, Integer> portCol = new TableColumn<ServerInformation, Integer>(Constants.COLUMN_PORT);
 		portCol.setCellValueFactory(new PropertyValueFactory<ServerInformation, Integer>("port"));
 		
 		// Infine vengono aggiunte le tabelle appena create alla TableView serverTable.
@@ -591,7 +545,7 @@ public class AppMain extends Application {
 		serverTable.setFocusModel(userFocus);
 		
 		/*
-		 * Infine vengono dichiarati i bottoni per interagire con gli elementi della tabella.
+		 * Infine vengono dichiarati i pulsanti per interagire con gli elementi della tabella.
 		 */
 		HBox settingsButtonsLayout = new HBox();
 		settingsButtonsLayout.setAlignment(Pos.CENTER);
@@ -610,6 +564,7 @@ public class AppMain extends Application {
 		Label currentServerInfo = new Label(Constants.LABEL_SERVER_CURR + currServer.getId());
 		currentServerInfo.setId(Constants.ID_SERVER_LABEL);
 		
+		// Si definiscono i comportamenti dei tasti
 		backSettings.setOnAction(e -> {
 			
 			mainStage.setScene(homeScene);
@@ -625,6 +580,7 @@ public class AppMain extends Application {
 			servers.remove(userFocus.getFocusedItem());
 			if (servers.size() == 0) {
 				
+				//Se la tabella viene svuotata, il tasto conferma si disattiva
 				confirmServer.setDisable(true);
 			}
 		});
@@ -637,6 +593,10 @@ public class AppMain extends Application {
 		
 		/** AGGIUNTA NUOVO SERVER **/
 		
+		/**
+		 * Si crea una finestra con layout a griglia per l'inserimento delle informazioni
+		 * relative ad un nuovo server con cui tentare la connessione
+		 */
 		GridPane newServerPane = new GridPane();
 		newServerPane.setAlignment(Pos.CENTER);
 		newServerPane.setHgap(10);
@@ -698,7 +658,8 @@ public class AppMain extends Application {
 		updateSettingsPromptText(ipAdd, portField, idField);
 
 		/*
-		 * Infine si utilizzano due pulsanti, uno di conferma e uno per tornare alla home del programma.
+		 * Infine si utilizzano due pulsanti, uno di conferma e uno per tornare alla finestra di selezione
+		 * del server.
 		 */
 		Button confirmButtonSettings = new Button(Constants.BUTTON_CONFIRM);
 		HBox backLayoutSettings = new HBox();
@@ -717,15 +678,15 @@ public class AppMain extends Application {
 			public void handle(ActionEvent e) {
 				
 				/*
-				 * Viene usato uno StringBuffer per la concatenzione del nuovo indirizzo Ip per evitare
+				 * Viene usato uno StringBuffer per la concatenzione del nuovo indirizzo IP per evitare
 				 * la creazione ripetuta di nuovi oggetti String.
 				 */
 				StringBuffer newIp = null;
 				int intPort = -1;
 
 				/*
-				 * Si controlla se l'ip inserito e' un indirizzo ip valido.
-				 * Se l'indirizzo ip inserito e' mal formattato, viene visualizzato un errore, e non viene
+				 * Si controlla se l'IP inserito e' un indirizzo IP valido.
+				 * Se l'indirizzo IP inserito e' mal formattato, viene visualizzato un errore, e non viene
 				 * inserito il nuovo server.
 				 */
 				boolean isValid = true;
@@ -817,6 +778,7 @@ public class AppMain extends Application {
 		 * o di Enter in qualsiasi campo testuale.
 		 */
 		confirmButtonSettings.setOnAction(confirmEvent);
+		
 		for (TextField i : ipAdd) {
 			
 			i.setOnKeyReleased(e -> {
@@ -838,7 +800,8 @@ public class AppMain extends Application {
 
 		/*
 		 * Questo bottone appartiene alla schermata di visione dei server, ma la dichiarazione del comportamento
-		 * e' effettuata qua, poiche' deve richiamare updateSettingsPromptText
+		 * e' effettuata qua, poiche' deve richiamare updateSettingsPromptText con i parametri
+		 * precedentemente dichiarati
 		 */
 		confirmServer.setOnAction(e -> {
 
@@ -860,8 +823,8 @@ public class AppMain extends Application {
 		newServerPane.add(confirmButtonSettings, 1, 4);
 		newServerPane.add(backLayoutSettings, 2, 4);
 
-		/*
-		 * Chiamata ai metodi per mostrare la scena principale
+		/**
+		 * Inizializzazione delle scene con i relativi pannelli-layout principali
 		 */
 		homeScene = new Scene(homePane, 400, 400);
 		selectionScene = new Scene(selectionPane, 400, 400);
@@ -869,6 +832,10 @@ public class AppMain extends Application {
 		newServerScene = new Scene(newServerPane, 400,400);
 		predictScene = new Scene(predictPane, 400, 400);
 
+		/**
+		 * Aggiunta per ciascuna scena dello stile visivo da adottare, descritto da un
+		 * file di tipo .css
+		 */
 		homeScene.getStylesheets().add(Constants.PATH_THEME);
 		selectionScene.getStylesheets().add(Constants.PATH_THEME);
 		settingsScene.getStylesheets().add(Constants.PATH_THEME);
@@ -879,6 +846,66 @@ public class AppMain extends Application {
 		mainStage.setTitle(Constants.CLIENT_WINDOW_NAME);
 		mainStage.getIcons().add(new Image(Constants.PATH_CLIENT_ICON));
 		
+		// Specifica del comportamento da assumere alla chiusura della finestra principale.
+		mainStage.setOnCloseRequest(e -> {
+			
+			/** Se e' in corso una comunicazione col server, si notifica la chiusura e 
+			 * 	si tenta l'interruzione delle comunicazioni
+			 */
+			if (clientSocket != null) {
+				if (!clientSocket.isClosed()) {
+					try {
+						
+						/** Si verifica in quale finestra ci si trova per 
+						 * 	identificare il tipo di messaggio di chiusura da mandare
+						 */
+						if (mainStage.getScene().equals(selectionScene)) {
+							
+							out.writeObject(Constants.CLIENT_ABORT);
+						} else {
+							
+							out.writeObject(Constants.CLIENT_END);
+						}
+						
+						clientSocket.close();
+					} catch (IOException e1) {
+	
+						showAlert(Constants.ERROR_CLOSING_COMMUNICATION, Alert.AlertType.ERROR);
+					}
+				
+				}
+			}
+			try {
+				/*
+				 * Viene impostata la serializzazione della lista di server conosciuti alla chiusura
+				 * del programma.
+				 */
+				FileOutputStream serverOutFile = new FileOutputStream(Constants.PATH_SERVER_INFO);
+				ObjectOutputStream serverOut = new ObjectOutputStream(serverOutFile);
+
+				/*
+				 * Al posto di servers, viene serializzato un ArrayList di MutableServerInformation, ovvero la controparte
+				 * mutabile di ServerInformation. Questa scelta e' stata fatta poiche' gli attributi di ServerInformation
+				 * non sono serializzabili.
+				 */
+				ArrayList<MutableServerInformation> toSerialize = new ArrayList<MutableServerInformation>(servers.size());
+				for (ServerInformation s : servers) {
+					
+					toSerialize.add(s.toMutableServerInformation());
+				}
+				serverOut.writeObject(toSerialize);
+
+				serverOut.close();
+				serverOutFile.close();
+			} catch (IOException e1) {
+
+				showAlert(Constants.ERROR_SAVING_SERVERS, Alert.AlertType.ERROR);
+			}
+		});
+		
+		/*
+		 * Chiamata ai metodi per mostrare la scena principale
+		 */
 		mainStage.setScene(homeScene);
 		mainStage.show();
 	}
@@ -897,22 +924,30 @@ public class AppMain extends Application {
 	}
 	
 	/** 
-	 * Se qualcosa va storto e' possibile mostrare una finestra di dialogo con un messaggio,
-	 * tramite questo metodo.
+	 * Metodo con cui costruire e mostrare una generica finestra di dialogo di tipo Alert.
+	 * Tale finestra vedrà specificato un messaggio da mostrare, <code>message</code>, e un
+	 * tipo preimpostato tra quelli resi disponibili dall'enumerazione <code>Alert.AlertType</code>
 	 * 
 	 * @param message <code>String</code> da mostrare nella finestra di dialogo 
 	 * @param type parametro di tipo <code>AlertType</code> per indicare il tipo di finestra di dialogo da mostrare
+	 * 
+	 * @see Alert
 	 */
 	private void showAlert(String message, Alert.AlertType type) {
 		
 		Alert toShow = new Alert(type);
 		toShow.setContentText(message);
 		toShow.getDialogPane().getStylesheets().add(Constants.PATH_THEME);
+		
+		// In base al tipo, viene mostrata una diversa icona
 		if (type.equals(Alert.AlertType.ERROR)) {
+			
 			((Stage) toShow.getDialogPane().getScene().getWindow()).getIcons().add(new Image(Constants.PATH_ERROR_ICON));
 		} else if  (type.equals(Alert.AlertType.WARNING)) {
+			
 			((Stage) toShow.getDialogPane().getScene().getWindow()).getIcons().add(new Image(Constants.PATH_WARNING_ICON));
 		} else {
+			
 			((Stage) toShow.getDialogPane().getScene().getWindow()).getIcons().add(new Image(Constants.PATH_CLIENT_ICON));
 		}
 		toShow.show();
@@ -922,10 +957,10 @@ public class AppMain extends Application {
 	 * Metodo necessario per poter gestire la predizione attraverso il server
 	 * 
 	 * @param userChoices <code>TilePane</code> su cui inserire i tasti, corrispondenti alle possibili scelte 
-	 * (quando, esplorando l'albero di regressione, si arriva ad un nodo di split)
+	 * 		  (quando, esplorando l'albero di regressione, si arriva ad un nodo di split)
 	 * @param predictedValue <code>Label</code> su cui scrivere il risultato della predizione
 	 * @param redo <code>Button</code> necessario per poter effettuare una nuova predizione una volta finita
-	 * quella precedente. E' necessario avere questo parametro per poter gestire quando Ã¨ attivato e quando no.
+	 * 		  quella precedente. E' necessario avere questo parametro per poter gestire quando e' attivo e quando no.
 	 * 
 	 */
 	private void handlePredict(TilePane userChoices, Label predictedValue, Button redo) {
@@ -936,9 +971,9 @@ public class AppMain extends Application {
 			
 			toCheck = (String)in.readObject();
 			
-			
 			if (toCheck.equals(Constants.SERVER_QUERY)) {
 
+				// In caso di nodo di split vengono generati i pulsanti per la selezione
 				List<String> options = new ArrayList<String>((ArrayList<String>)in.readObject());
 				int i = 0;
 				for (String elem : options) {
@@ -949,6 +984,7 @@ public class AppMain extends Application {
 				
 			} else {
 				
+				// Altrimenti viene mostrato il valore predetto e si abilita il tasto per ricominciare
 				predictedValue.setText(Constants.LABEL_PREDICTED_VALUE + ((Double)in.readObject()).toString());
 				redo.setDisable(false);
 				
@@ -1000,12 +1036,13 @@ public class AppMain extends Application {
 	
 	/**
 	 * Metodo utilizzato per tenere aggiornati le stringhe di prompt nei campi
-	 * dove inserire indirizzo Ip e Porta del server a cui collegarsi.
-	 * Le stringhe utilizzate come testo di prompt sono i valori correnti dell'Ip
-	 * e della Porta.
+	 * dove inserire indirizzo IP, Id e Porta del server a cui collegarsi.
+	 * Le stringhe utilizzate come testo di prompt sono i valori correnti dell'IP, dell'ID
+	 * e della Porta. Il metodo, inoltre, esegue il <i>flush</i> dei campi.
 	 * 
-	 * @param ipAdd Array di <code>TextField</code> che compongono un indirizzo Ip.
-	 * @param portField <code>TextField</code> dove verra' inserito il numero di porta.
+	 * @param ipAdd Array di <code>TextField</code> che compongono un indirizzo IP.
+	 * @param portField <code>TextField</code> dove puo' essere inserito il numero di porta.
+	 * @param idField <code>TextField</code>  dove puo' essere inserito l'ID
 	 */
 	private void updateSettingsPromptText(TextField[] ipAdd, TextField portField, TextField idField) {
 		

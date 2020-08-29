@@ -52,8 +52,11 @@ public class Constants {
 	public static final String LABEL_SERVER_ID = "Server ID";
 	public static final String LABEL_SERVER_CURR = "Server selezionato: ";
 	public static final String LABEL_PREDICTED_VALUE = "Valore predetto:\n";
-
 	
+	// Nomi delle colonne delle tableView
+	public static final String COLUMN_ID = "ID";
+	public static final String COLUMN_IP_ADDRESS = "Indirizzo IP";
+	public static final String COLUMN_PORT = "Porta";
 	
 
 	// Contenuti delle finestre di alert
