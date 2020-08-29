@@ -112,7 +112,7 @@ public class ContinuousNode extends SplitNode {
 			mapSplit.add(new SplitInfo(currentSplitValue, beginExampleIndex, endExampleIndex, 0));
 		} else {
 
-			if ((mapSplit.get(1).beginIndex == mapSplit.get(1).getEndIndex())) {
+			if ((mapSplit.get(1).getBeginIndex() == mapSplit.get(1).getEndIndex())) {
 
 				mapSplit.remove(1);
 			}

@@ -149,7 +149,7 @@ public class RegressionTree implements Serializable {
 				for (int i = 0; i < root.getNumberOfChildren(); i++) {
 
 					childTree[i] = new RegressionTree();
-					childTree[i].learnTree(trainingSet, ((SplitNode) root).getSplitInfo(i).beginIndex, ((SplitNode) root).getSplitInfo(i).endIndex, numberOfExamplesPerLeaf);
+					childTree[i].learnTree(trainingSet, ((SplitNode) root).getSplitInfo(i).getBeginIndex(), ((SplitNode) root).getSplitInfo(i).getEndIndex(), numberOfExamplesPerLeaf);
 				}
 			}
 			else {

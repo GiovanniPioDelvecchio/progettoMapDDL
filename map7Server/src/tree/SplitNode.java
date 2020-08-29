@@ -33,30 +33,30 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * Valore assunto dall'attributo di split dello SplitNode in una determinata
 		 * porzione di dataset.
 		 */
-		Object splitValue;
+		private Object splitValue;
 		
 		/**
 		 * Indice iniziale nella tabella contenente il sottoinsieme rappresentato da SplitNode
 		 * degli esempi aggregati in base al valore dell'attributo di split.
 		 */
-		int beginIndex;
+		private int beginIndex;
 		
 		/**
 		 * Indice finale nella tabella contenente il sottoinsieme rappresentato da SplitNode
 		 * degli esempi aggregati in base al valore dell'attributo di split.
 		 */
-		int endIndex;
+		private int endIndex;
 		
 		/**
 		 * Numero del nodo figlio di SplitNode rappresentato da SplitInfo.
 		 */
-		int numberChild;
+		private int numberChild;
 		
 		/**
 		 * Stringa contenente il simbolo della relazione fra i valori dell'attributo di split
 		 * rappresentati da un'istanza di SplitInfo, e i possibili valori dell'attributo di split.
 		 */
-		String comparator = Constants.DISCRETE_COMPARATOR;
+		private String comparator = Constants.DISCRETE_COMPARATOR;
 		
 		/**
 		 * Costruttore di SplitInfo.
@@ -67,7 +67,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * @param endIndex Indice finale nella tabella contenente il training set della porzione rappresentata.
 		 * @param numberChild Identificativo numerico del figlio di uno SplitNode rappresentato da SplitInfo. 
 		 */
-		SplitInfo(Object splitValue,int beginIndex,int endIndex,int numberChild) {
+		protected SplitInfo(Object splitValue,int beginIndex,int endIndex,int numberChild) {
 			
 			this.splitValue = splitValue;
 			this.beginIndex = beginIndex;
@@ -84,7 +84,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * @param numberChild Identificativo numerico del figlio di uno SplitNode rappresentato da SplitInfo. 
 		 * @param comparator Stringa con cui avvalorare il parametro comparator
 		 */
-		SplitInfo(Object splitValue, int beginIndex, int endIndex, int numberChild, String comparator) {
+		protected SplitInfo(Object splitValue, int beginIndex, int endIndex, int numberChild, String comparator) {
 
 			this.splitValue = splitValue;
 			this.beginIndex = beginIndex;
@@ -98,7 +98,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * 
 		 * @return L'indice iniziale del sottoinsieme associato a SplitInfo.
 		 */
-		int getBeginindex() {
+		protected int getBeginIndex() {
 
 			return beginIndex;			
 		}
@@ -108,7 +108,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * 
 		 * @return L'indice finale del sottoinsieme associato a SplitInfo.
 		 */
-		int getEndIndex() {
+		protected int getEndIndex() {
 
 			return endIndex;
 		}
@@ -119,7 +119,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * @return Il valore di split associata a SplitInfo (sotto forma di istanza di Object, in quanto
 		 * non si conosce a priori la natura dello split).
 		 */
-		 Object getSplitValue() {
+		protected Object getSplitValue() {
 
 			return splitValue;
 		}
@@ -141,7 +141,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		  * 
 		  * @return Il simbolo di comparazione associato all'attributo di split.
 		  */
-		 String getComparator() {
+		 protected String getComparator() {
 
 			return comparator;
 		}	
@@ -155,7 +155,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	/**
 	 * Lista contenente informazioni sui nodi figli generati dallo split.
 	 */
-	ArrayList<SplitInfo> mapSplit;
+	protected ArrayList<SplitInfo> mapSplit;
 	
 	/**
 	 * Varianza dell'attributo target in relazione allo split eseguito su di un attributo
@@ -204,7 +204,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 			splitVariance = 0;
 			for (SplitInfo si : mapSplit) {
 
-				double localVariance = new LeafNode(trainingSet, si.getBeginindex(), si.getEndIndex()).getVariance();
+				double localVariance = new LeafNode(trainingSet, si.getBeginIndex(), si.getEndIndex()).getVariance();
 				splitVariance += (localVariance);
 			}
 	}

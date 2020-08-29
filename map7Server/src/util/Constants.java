@@ -10,6 +10,8 @@ public class Constants {
 
 	// Porta di default dove viene eseguito il server
 	public static final int DEFAULT_PORT = 8080;
+	public static final int MIN_PORT = 0;
+	public static final int MAX_PORT = 65535;
 	
 	// Separatori per split effettuati su valori continui
 	public static final String MINUS_EQUAL_COMPARATOR = "<=";
@@ -28,7 +30,7 @@ public class Constants {
 	public static final int CLIENT_END = -1;
 	public static final int CLIENT_PREDICT = 3;
 	public static final String CLIENT_ABORT = "#ABORT";
-	public static final String SERVER_OK = "SERVER_OK";
+	public static final String SERVER_OK = "OK";
 	public static final String SERVER_QUERY = "QUERY";
 	
 	// Stringhe per la stampa delle informazioni sull'albero
@@ -57,6 +59,9 @@ public class Constants {
 	public final static String SQL_COLUMN_NAME = "COLUMN_NAME";
 	
 	/* MESSAGGI DI ECCEZIONE */
+	// MainTest
+	public static final String ERROR_BAD_PORT = "Impossibile utilizzare la porta selezionata:"
+			+ " deve un intero compreso tra 0 e 65535\n";
 	
 	// Data
 	public static final String ERROR_NO_DATABASE_CONNECTION = "Impossibile connettersi al database";

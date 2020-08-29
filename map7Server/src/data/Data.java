@@ -186,23 +186,22 @@ public class Data {
 	 * @return una stringa contenente tutti gli esempi del training set separati dal carattere di fine linea e
 	 * 		   coi valori separati da virgole.
 	 */
-	public String toString() {
-		
-		String value = "";
+    public String toString() {
+        
+        StringBuffer value = new StringBuffer("");
 
-		for (int i = 0; i < numberOfExamples; i++) {
-			
-			for (int j = 0; j < explanatorySet.size(); j++) {
-	
-				value += data.get(i).get(j) + ",";
-			}
-				
-			value += data.get(i).get(explanatorySet.size() - 1) + "\n";
-		}
+        for (int i = 0; i < numberOfExamples; i++) {
+            
+            for (int j = 0; j < explanatorySet.size(); j++) {
+    
+                value.append(data.get(i).get(j) + ",");
+            }
+                
+            value.append(data.get(i).get(explanatorySet.size() - 1) + "\n");
+        }
 
-		return value;
-	}
-	
+        return value.toString();
+    }
 
 	/**
 	 * Metodo getter per cui dato un indice (partendo da 0), restituisce il valore
