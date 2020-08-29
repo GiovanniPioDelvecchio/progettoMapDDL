@@ -97,7 +97,7 @@ public class TableSchema implements Iterable<Column> {
 	 * Implementazione del metodo della interfaccia <code>Iterable</code> per ottenere l'iteratore per scorrere
 	 * lo schema.
 	 * 
-	 * @return Un iteratore del tipo <code>Iterator\<Column\></code> per scorrere le colonne dello schema.
+	 * @return Un iteratore per scorrere le colonne dello schema.
 	 */
 	public Iterator<Column> iterator() {
 

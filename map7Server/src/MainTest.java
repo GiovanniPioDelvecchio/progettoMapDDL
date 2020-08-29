@@ -8,6 +8,12 @@ import server.MultiServer;
  */
 public class MainTest {
 
+	/**
+	 * Metodo main della classe. Crea un nuovo oggetto <code>MultiServer</code>, che gestisce
+	 * l'esecuzione del server sulla porta 8080 della macchina locale.
+	 * 
+	 * @param args Argomenti a riga di comando, non utilizzati dall'applicazione.
+	 */
 	public static void main(String [] args) {
 
 		new MultiServer(8080);
