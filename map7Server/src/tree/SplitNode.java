@@ -26,7 +26,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
 	 *
 	 */
-	protected class SplitInfo implements Serializable {
+	 protected class SplitInfo implements Serializable {
 
 		/**
 		 * Valore assunto dall'attributo di split dello SplitNode in una determinata
