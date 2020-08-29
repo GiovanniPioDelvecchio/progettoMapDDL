@@ -55,8 +55,6 @@ public class RegressionTree implements Serializable {
 				
 		return (end - begin + 1) <= numberOfExamplesPerLeaf;	
 	}
-	
-	
 
 	/**
 	 * Dato un sottoinsieme del training set, determina il miglior attributo su cui eseguire uno split.
@@ -110,7 +108,7 @@ public class RegressionTree implements Serializable {
 	/**
 	 * Metodo utilizzato per la costruzione di un albero di regressione.
 	 * 
-	 * <code>Data</code> una porzione di training set, determina se effettuare uno split o rappresentarla tramite un
+	 * Data una porzione di training set, determina se effettuare uno split o rappresentarla tramite un
 	 * nodo foglia.
 	 * 
 	 * @param trainingSet Istanza di <code>Data</code> contenente il training set da cui creare un albero di regressione.
@@ -148,7 +146,7 @@ public class RegressionTree implements Serializable {
 				for (int i = 0; i < root.getNumberOfChildren(); i++) {
 
 					childTree[i] = new RegressionTree();
-					childTree[i].learnTree(trainingSet, ((SplitNode) root).getSplitInfo(i).beginIndex, ((SplitNode) root).getSplitInfo(i).endIndex, numberOfExamplesPerLeaf);
+					childTree[i].learnTree(trainingSet, ((SplitNode) root).getSplitInfo(i).getBeginIndex(), ((SplitNode) root).getSplitInfo(i).getEndIndex(), numberOfExamplesPerLeaf);
 				}
 			}
 			else {

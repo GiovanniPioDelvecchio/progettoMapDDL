@@ -19,29 +19,29 @@ import data.Data;
 public abstract class Node implements Serializable {
 
 	/**
-	 * contatore dei nodi generati dall'albero
+	 * Contatore dei nodi generati dall'albero
 	 */
 	private static int idNodeCount = 0;
 	
 	/**
-	 * identificatore del nodo (cominciano da 0)
+	 * Identificatore del nodo (cominciano da 0)
 	 */
 	private int idNode;
 	
 	/**
-	 * indice di partenza nella tabella contenente il dataset della porzione di
+	 * Indice di partenza nella tabella contenente il dataset della porzione di
 	 * esempi rappresentata dal nodo
 	 */
 	private int beginExampleIndex; 
 
 	/**
-	 * indice finale nella tabella contenente il dataset della porzione di
+	 * Indice finale nella tabella contenente il dataset della porzione di
 	 * esempi rappresentata dal nodo
 	 */
 	private int endExampleIndex;
 
 	/**
-	 * valore della varianza calcolata rispetto all'attributo di classe, 
+	 * Valore della varianza calcolata rispetto all'attributo di classe, 
 	 * nel sotto-insieme di training del nodo
 	 */
 	private double variance; 
@@ -67,7 +67,7 @@ public abstract class Node implements Serializable {
 		double delta;
 		int n = 0;
 		
-		// algoritmo proposto da Knuth in Art of Computer Programming per il calcolo della varianza
+		// Algoritmo proposto da Donald Knuth in The Art of Computer Programming per il calcolo della varianza
 		// in un solo ciclo
 		for (int i = beginExampleIndex; i <= endExampleIndex; i++) {
 

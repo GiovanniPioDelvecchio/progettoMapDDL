@@ -7,13 +7,13 @@ package database;
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
  *
  */
-
 public class Column {
 	
 	/**
 	 * Stringa contenente il nome della colonna.
 	 */
 	private String name;
+
 	/**
 	 * Stringa contenente il nome del tipo dei valori contenuti nella colonna.
 	 */
@@ -26,11 +26,10 @@ public class Column {
 	 * @param type Stringa contenente il tipo della colonna da assegnare all'istanza di <code>Column</code>.
 	 */
 	Column(String name, String type) {
-		
+
 		this.name = name;
 		this.type = type;
 	}
-
 	
 	/**
 	 * Metodo getter per ottenere il nome della colonna.

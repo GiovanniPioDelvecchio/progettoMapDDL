@@ -46,7 +46,7 @@ public class ContinuousNode extends SplitNode {
 	 * 					istanza di <code>ContinuousAttribute</code>, poiche' viene effettuato un cast a Double sul valore degli attributi ricavati dalla
 	 * 					colonna corrispondente all'indice di attribute.
 	 * 
-	 * @throws ClassCastExcetpion Lanciata nel caso in cui attribute sia istanzia di DiscreteAttribute invece che di ContinuousAttribute.
+	 * @throws ClassCastExcetpion Lanciata nel caso in cui attribute sia istanza di DiscreteAttribute invece che di ContinuousAttribute.
 	 */
 	void setSplitInfo(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
 		
@@ -111,7 +111,7 @@ public class ContinuousNode extends SplitNode {
 			mapSplit.add(new SplitInfo(currentSplitValue, beginExampleIndex, endExampleIndex, 0));
 		} else {
 
-			if ((mapSplit.get(1).beginIndex == mapSplit.get(1).getEndIndex())) {
+			if ((mapSplit.get(1).getBeginIndex() == mapSplit.get(1).getEndIndex())) {
 
 				mapSplit.remove(1);
 			}
