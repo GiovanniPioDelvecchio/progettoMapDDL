@@ -8,7 +8,6 @@ import util.Constants;
  * 
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
  */
-
 public class MainTest {
 	
 	/**

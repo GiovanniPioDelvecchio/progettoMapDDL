@@ -10,7 +10,6 @@ import java.io.Serializable;
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
  *
  */
-
 @SuppressWarnings("serial")
 public abstract class Attribute implements Serializable {
 
