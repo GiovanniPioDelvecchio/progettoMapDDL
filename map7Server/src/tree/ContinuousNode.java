@@ -16,10 +16,10 @@ import util.Constants;
  * 
  */
 @SuppressWarnings("serial")
-public class ContinuousNode extends SplitNode {
+class ContinuousNode extends SplitNode {
 
 	/**
-	 * Costruttore di ContinuousNode.
+	 * Costruttore di <code>ContinuousNode</code>.
 	 * 
 	 * Richiama semplicemente il costruttore della superclasse <code>SplitNode</code>.
 	 * 
@@ -30,7 +30,7 @@ public class ContinuousNode extends SplitNode {
 	 * 
 	 * @see ContinuousAttribute
 	 */
-	public ContinuousNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, ContinuousAttribute attribute) {
+	ContinuousNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, ContinuousAttribute attribute) {
 		
 		super(trainingSet, beginExampleIndex, endExampleIndex, attribute);
 	}
@@ -40,14 +40,14 @@ public class ContinuousNode extends SplitNode {
 	 * 
 	 * Il metodo si occupa di trascrivere le informazioni relative al modo in cui si e' effettuato lo split sull'attributo continuo.
 	 * 
-	 * @param trainingSet Istanza di <code>Data</code> contenente il training set su cui costrutire l'albero di regressione
+	 * @param trainingSet Istanza di <code>Data</code> contenente il training set su cui costruire l'albero di regressione
 	 * @param beginExampleIndex Indice di inizio nella tabella contenente il sottoinsieme di training set rappresentato dal nodo di split continuo. 
 	 * @param endExampleIndex Indice di fine nella tabella contenente il sottoinsieme di training set rappresentato dal nodo di split continuo.
 	 * @param attribute Attributo continuo indipendente su cui viene effettuato lo split. All'atto pratico, <code>attribute</code> deve essere
 	 * 					istanza di <code>ContinuousAttribute</code>, poiche' viene effettuato un cast a Double sul valore degli attributi ricavati dalla
 	 * 					colonna corrispondente all'indice di attribute.
 	 * 
-	 * @throws ClassCastExcetpion Lanciata nel caso in cui attribute sia istanzia di DiscreteAttribute invece che di ContinuousAttribute.
+	 * @throws ClassCastExcetpion Lanciata nel caso in cui attribute sia istanza di DiscreteAttribute invece che di ContinuousAttribute.
 	 */
 	void setSplitInfo(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
 		
@@ -73,7 +73,7 @@ public class ContinuousNode extends SplitNode {
 				/*
 				 * Viene calcolata la varianza dell'attributo target in un eventuale split
 				 * [beginExampleIndex, i - 1], [i, endExampleIndex]
-				 * Tale varianza "candidata" sara' confrontata con migliore varianza dell'attributo target generata da
+				 * Tale varianza "candidata" sara' confrontata con la migliore varianza dell'attributo target generata da
 				 * altre possibili configurazioni dello split precedentemente generate. Si sta quindi effettuando una ricerca
 				 * dello split che generi la minor varianza dell'attributo target.
 				 */
@@ -111,7 +111,8 @@ public class ContinuousNode extends SplitNode {
 			mapSplit = new ArrayList<SplitInfo>();
 			mapSplit.add(new SplitInfo(currentSplitValue, beginExampleIndex, endExampleIndex, 0));
 		} else {
-
+			
+			//si rimuovono split inutili (che includono tutti gli esempi nella stessa partizione)
 			if ((mapSplit.get(1).getBeginIndex() == mapSplit.get(1).getEndIndex())) {
 
 				mapSplit.remove(1);
@@ -123,7 +124,9 @@ public class ContinuousNode extends SplitNode {
 	 * Implementazione del metodo astratto testCondition ereditato da <code>SplitNode</code>.
 	 * 
 	 * @param value Valore di split di un figlio del nodo di cui cercare l'identificativo numerico.
+	 * 
 	 * @return Un intero che indica quale nodo possiede come valore di split quello passato in input.
+	 * 
 	 * @throws UnknownValueException Nel caso in cui nessun figlio del nodo ha split value pari all'argomento.
 	 */
 	int testCondition(Object value) throws UnknownValueException {
@@ -142,7 +145,7 @@ public class ContinuousNode extends SplitNode {
 	/**
 	 * Sovrascrittura del metodo <code>toString</code> di <code>Object</code>.
 	 * 
-	 * @return lo stato dell'oggetto sotto forma di stringa.
+	 * @return Lo stato dell'oggetto sotto forma di stringa.
 	 */
 	@Override
 	public String toString() {

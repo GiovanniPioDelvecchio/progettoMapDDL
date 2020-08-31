@@ -19,7 +19,7 @@ import util.Constants;
  *
  */
 @SuppressWarnings("serial")
-public abstract class SplitNode extends Node implements Comparable<SplitNode> {
+abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	
 	/**
 	 * Classe contenente informazioni che descrivono lo split effettuato nello SplitNode.
@@ -27,7 +27,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
 	 *
 	 */
-	protected class SplitInfo implements Serializable {
+	class SplitInfo implements Serializable {
 
 		/**
 		 * Valore assunto dall'attributo di split dello SplitNode in una determinata
@@ -67,7 +67,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * @param endIndex Indice finale nella tabella contenente il training set della porzione rappresentata.
 		 * @param numberChild Identificativo numerico del figlio di uno SplitNode rappresentato da SplitInfo. 
 		 */
-		protected SplitInfo(Object splitValue,int beginIndex,int endIndex,int numberChild) {
+		SplitInfo(Object splitValue,int beginIndex,int endIndex,int numberChild) {
 			
 			this.splitValue = splitValue;
 			this.beginIndex = beginIndex;
@@ -84,7 +84,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * @param numberChild Identificativo numerico del figlio di uno SplitNode rappresentato da SplitInfo. 
 		 * @param comparator Stringa con cui avvalorare il parametro comparator
 		 */
-		protected SplitInfo(Object splitValue, int beginIndex, int endIndex, int numberChild, String comparator) {
+		SplitInfo(Object splitValue, int beginIndex, int endIndex, int numberChild, String comparator) {
 
 			this.splitValue = splitValue;
 			this.beginIndex = beginIndex;
@@ -98,7 +98,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * 
 		 * @return L'indice iniziale del sottoinsieme associato a SplitInfo.
 		 */
-		protected int getBeginIndex() {
+		int getBeginIndex() {
 
 			return beginIndex;			
 		}
@@ -108,7 +108,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * 
 		 * @return L'indice finale del sottoinsieme associato a SplitInfo.
 		 */
-		protected int getEndIndex() {
+		int getEndIndex() {
 
 			return endIndex;
 		}
@@ -119,7 +119,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * @return Il valore di split associata a SplitInfo (sotto forma di istanza di Object, in quanto
 		 * non si conosce a priori la natura dello split).
 		 */
-		protected Object getSplitValue() {
+		Object getSplitValue() {
 
 			return splitValue;
 		}
@@ -127,7 +127,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 /**
 		 * Sovrascrittura del metodo <code>toString</code> di <code>Object</code>.
 		 * 
-		 * @return lo stato dell'oggetto sotto forma di stringa.
+		 * @return Lo stato dell'oggetto sotto forma di stringa.
 		 */
 		 @Override
 		 public String toString() {
@@ -141,7 +141,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		  * 
 		  * @return Il simbolo di comparazione associato all'attributo di split.
 		  */
-		 protected String getComparator() {
+		 String getComparator() {
 
 			return comparator;
 		}	
@@ -155,7 +155,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	/**
 	 * Lista contenente informazioni sui nodi figli generati dallo split.
 	 */
-	protected ArrayList<SplitInfo> mapSplit;
+	ArrayList<SplitInfo> mapSplit;
 	
 	/**
 	 * Varianza dell'attributo target in relazione allo split eseguito su di un attributo
@@ -177,7 +177,9 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * Dato un valore, controlla se esiste un figlio del nodo di split con split value pari all'attributo passato in input.
 	 * 
 	 * @param value Possibile valore dell'attributo di split.
+	 * 
 	 * @return Identificativo del figlio a cui appartiene il valore rappresentato di value.
+	 * 
 	 * @throws UnknownValueException Viene lanciata nel caso in cui non esiste un figlio del nodo di split a cui apparterrebbe <code>value</code>.
 	 */
 	abstract int testCondition(Object value) throws UnknownValueException;
@@ -193,7 +195,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * @param endExampleIndex Indice finale nella tabella del sottoinsieme del training set rappresentato dallo SplitNode.
 	 * @param attribute Attributo su cui viene effettuato lo split.
 	 */
-	public SplitNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
+	SplitNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
 
 			super(trainingSet, beginExampleIndex, endExampleIndex);
 			this.attribute = attribute;
@@ -224,7 +226,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * 
 	 * @return La varianza dell'attributo target nel nodo di split.
 	 */
-	public double getVariance() {
+	double getVariance() {
 		
 		return splitVariance;
 	}
@@ -234,7 +236,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * 
 	 * @return Il numero di figli dello split (maggiore di 0).
 	 */
-	public int getNumberOfChildren() {
+	int getNumberOfChildren() {
 		 
 		return mapSplit.size();
 	}
@@ -243,6 +245,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * Getter per l'istanza di <code>SplitInfo</code> che descrive un certo figlio del nodo di split.
 	 * 
 	 * @param child Indice del figlio del nodo di split di cui conoscere lo SplitInfo.
+	 * 
 	 * @return L'istanza di SplitInfo associata al figlio dello split node specificato.
 	 */
 	SplitInfo getSplitInfo(int child) {
@@ -285,7 +288,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	/**
 	 * Sovrascrittura del metodo <code>toString</code> di <code>Object</code>.
 	 * 
-	 * @return lo stato dell'oggetto sotto forma di stringa.
+	 * @return Lo stato dell'oggetto sotto forma di stringa.
 	 */
 	@Override
 	public String toString() {

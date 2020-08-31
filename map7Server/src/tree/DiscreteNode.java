@@ -16,7 +16,7 @@ import util.Constants;
  *
  */
 @SuppressWarnings("serial")
-public class DiscreteNode extends SplitNode {
+class DiscreteNode extends SplitNode {
 
 	/**
 	 * Costruttore di <code>DiscreteNode</code>.
@@ -30,7 +30,7 @@ public class DiscreteNode extends SplitNode {
 	 * 
 	 * @see DiscreteAttribute
 	 */
-	public DiscreteNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, DiscreteAttribute attribute) {
+	DiscreteNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, DiscreteAttribute attribute) {
 
 		super(trainingSet, beginExampleIndex, endExampleIndex, attribute);
 	}
@@ -45,12 +45,12 @@ public class DiscreteNode extends SplitNode {
 	 * @param endExampleIndex Indice di fine nella tabella contenente il sottoinsieme di esempi rappresentato dal nodo di split.
 	 * @param attribute Attributo discreto su cui si sta effettuando uno split in un albero di regressione.
 	 */
-	public void setSplitInfo(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
+	void setSplitInfo(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
 
 		int mapSplitIndex = 0;
 		int attributeIndex = ((DiscreteAttribute) attribute).getIndex();
 		
-		// Utilizzo due indici per tenere traccia degli estremi di ogni sottoinsieme generato dallo split sull'attributo discreto
+		// Si utilizzano due indici per tenere traccia degli estremi di ogni sottoinsieme generato dallo split sull'attributo discreto
 		int beginSplitIndex = beginExampleIndex;
 		int endSplitIndex = beginSplitIndex;
 
@@ -87,7 +87,9 @@ public class DiscreteNode extends SplitNode {
 	 * Implementazione del metodo astratto testCondition ereditato da <code>SplitNode</code>.
 	 *
 	 * @param value Valore di split di un figlio del nodo di cui cercare l'identificativo numerico.
+	 * 
 	 * @return Un intero che indica quale nodo possiede come valore di split quello passato in input.
+	 * 
 	 * @throws UnknownValueException Nel caso in cui nessun figlio del nodo ha split value pari all'argomento.
 	 */
 	int testCondition(Object value) throws UnknownValueException {
@@ -105,7 +107,7 @@ public class DiscreteNode extends SplitNode {
 	/**
 	 * Sovrascrittura del metodo <code>toString</code> di <code>Object</code>.
 	 * 
-	 * @return lo stato dell'oggetto sotto forma di stringa.
+	 * @return Lo stato dell'oggetto sotto forma di stringa.
 	 */
 	@Override
 	public String toString() {
