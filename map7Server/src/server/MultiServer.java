@@ -12,20 +12,25 @@ import java.time.format.DateTimeFormatter;
 import util.Constants;
 
 /**
- * Classe utilizzata per modellare un Server multithreaded per la comunicazione con piu' Client.
- * 
+ * Classe utilizzata per modellare un Server multithreaded per la comunicazione con piu' Client.<br>
  * Il server si espone di default sulla porta 8080, e genera una nuova istanza di ServerOneClient ogni volta
- * che viene contatto da un Client.
+ * che viene contatto da un Client.<br>
+ * La classe, inoltre, gestisce la scrittura di un file di log contenente informazioni relative alle connessioni
+ * eseguite e ad eventuali errori incorsi durante queste ultime.
  * 
  * @author Domentico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
  *
  */
 public class MultiServer {
 
-	// Porta di default dove viene locato il Server.
+	/**
+	 *  Porta di default dove viene locato il Server.
+	 */
 	private int PORT = Constants.DEFAULT_PORT;
 	
-	// File dove verranno effettuate le stampe di log
+	/**
+	 * File dove verranno effettuate le stampe di log
+	 */
 	private BufferedWriter logFile;
 	
 	/**
