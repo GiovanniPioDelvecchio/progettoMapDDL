@@ -9,13 +9,13 @@ import util.Constants;
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
  *
  */
-
 public class Column {
 	
 	/**
 	 * Stringa contenente il nome della colonna.
 	 */
 	private String name;
+	
 	/**
 	 * Stringa contenente il nome del tipo dei valori contenuti nella colonna.
 	 */
@@ -37,7 +37,7 @@ public class Column {
 	/**
 	 * Metodo getter per ottenere il nome della colonna.
 	 * 
-	 * @return una Stringa contenente il nome della colonna.
+	 * @return Una stringa contenente il nome della colonna.
 	 */
 	public String getColumnName() {
 		

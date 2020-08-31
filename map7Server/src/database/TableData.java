@@ -9,8 +9,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Classe che modella l’insieme di transazioni da un database e collezionate in una tabella.<br>
- * Da essa è possibile ottenere una lista di tuple per poter manipolarle, nonchè ottenere tutti i valori
+ * Classe che modella l’insieme di transazioni da un database, collezionate in una tabella.<br>
+ * Da essa e'possibile ottenere una lista di tuple per poter manipolarle, nonche' ottenere tutti i valori
  * distinti all'interno di una colonna.
  * 
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
@@ -30,7 +30,7 @@ public class TableData {
 	 * Necessita di un'istanza di <code>DbAccess</code> già inizializzata al fine di 
 	 * poter accedere ad un database e ricavarne una tabella.
 	 * 
-	 * @param db riferimento all'accesso al database da cui trarre la tabella.
+	 * @param db Riferimento all'accesso al database da cui trarre la tabella.
 	 */
 	public TableData(DbAccess db) {
 		
@@ -38,10 +38,8 @@ public class TableData {
 	}
 
 	/**
-	 * Metodo che ricava dalla tabella il cui nome è passato in input una lista 
+	 * Metodo che ricava dalla tabella il cui nome è passato in input, una lista 
 	 * che contiene tutte le tuple della tabella sotto forma di istanze di <code>Example</code>.
-	 * 
-	 * @see Example
 	 * 
 	 * @param table Stringa contenente il nome della tabella da cui leggere i contenuti.
 	 * 
@@ -49,11 +47,14 @@ public class TableData {
 	 * 
 	 * @throws SQLException In caso di errore nell'esecuzione della query.
 	 * @throws EmptySetException In caso la tabella sia vuota.
+	 * 
+	 * @see Example
 	 */
 	public List<Example> getTransazioni(String table) throws SQLException, EmptySetException {
 		
 		LinkedList<Example> transSet = new LinkedList<Example>();
 		Statement statement;
+		
 		// Si ricava lo schema della tabella
 		TableSchema tSchema = new TableSchema(db, table);
 		
@@ -110,6 +111,7 @@ public class TableData {
 		statement.close();
 		
 		if (empty) {
+			
 			// Se il result set era vuoto, viene lanciata una ESException.
 			throw new EmptySetException();
 		}
@@ -125,15 +127,14 @@ public class TableData {
 	 * per ottenere i valori distinti di quella specifica tabella.
 	 * 
 	 * @param table Stringa contenente il nome della tabella da cui ricavare i valori
-	 * @param column istanza di Column contenente il nome della colonna della tabella da 
+	 * @param column Istanza di Column contenente il nome della colonna della tabella da 
 	 * 		  cui ricavare i valori distinti
-	 * @see Column
 	 * 
 	 * 
-	 * @return un <code>Set</code> di <code>Object</code> contenente i valori distinti della colonna column nella tabella table.
+	 * @return un <code>Set</code> di <code>Object</code> contenente i valori distinti assunti nell'attributo specificato nella tabella.
 	 * 		   Il <code>Set</code> ha i propri elementi ordinati in ordine ascendente.  
 	 * 
-	 * @throws SQLException Se avvene un errore nell'esecuzione della <i>query</i>.
+	 * @throws SQLException Se avviene un errore nell'esecuzione della <i>query</i>.
 	 */
 	public Set<Object> getDistinctColumnValues(String table, Column column) throws SQLException {
 		
@@ -149,7 +150,9 @@ public class TableData {
 		"SELECT DISTINCT " + colName + " " +
 		"FROM " + table);
 	
-		if (numFlag) { // Si controlla se la colonna è numerica e si leggono i valori di conseguenza 
+		// Si controlla se la colonna è numerica e si leggono i valori di conseguenza 
+		if (numFlag) { 
+
 			
 			while (r.next()) {
 				

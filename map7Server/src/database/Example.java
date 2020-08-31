@@ -13,7 +13,6 @@ import java.util.List;
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
  *
  */
-
 public class Example implements Comparable<Example>, Iterable<Object> {
 	
 	/**
@@ -24,7 +23,7 @@ public class Example implements Comparable<Example>, Iterable<Object> {
 	/**
 	 * Metodo per aggiungere un elemento alla tupla.
 	 * 
-	 * @param o oggetto da aggiungere in coda all'istanza di <code>Example</code>
+	 * @param o Oggetto da aggiungere in coda all'istanza di <code>Example</code>
 	 */
 	public void add(Object o){
 
@@ -34,9 +33,9 @@ public class Example implements Comparable<Example>, Iterable<Object> {
 	/**
 	 * Metodo getter per ottenere l'i-esimo valore della transazione.
 	 * 
-	 * @param i indice intero non negativo indicante la posizione dell'elemento da leggere nella tupla.
+	 * @param i Indice intero non negativo indicante la posizione dell'elemento da leggere nella tupla.
 	 * 
-	 * @return l'i-esima istanza di <code>Object</code> contenuta nella tupla.
+	 * @return L'i-esima istanza di <code>Object</code> contenuta nella tupla.
 	 */
 	public Object get(int i) {
 
@@ -49,11 +48,11 @@ public class Example implements Comparable<Example>, Iterable<Object> {
 	 * 
 	 * @param ex Istanza da confrontare con l'istanza corrente di Example
 	 * 
-	 * @return 0 se le tuple contengono gli stessi elementi nello stesso ordine, -1 se l'i-esimo
+	 * @return 0 Se le tuple contengono gli stessi elementi nello stesso ordine, -1 se l'i-esimo
 	 *         elemento dell'istanza corrente di Example è minore (secondo il compareTo dell'oggetto) dell'i-esimo
 	 *         elemento di ex, 1 altrimenti.
 	 *         
-	 * @throws ClassCastException Lancia un'eccezione se uno degli oggetti della tupla non implementa l'interfaccia
+	 * @throws ClassCastException Lanciata se uno degli oggetti della tupla non implementa l'interfaccia
 	 * 		   <code>Comparable</code>.
 	 */
 	public int compareTo(Example ex) {
@@ -74,20 +73,20 @@ public class Example implements Comparable<Example>, Iterable<Object> {
 	}
 
 	/**
-	 * <i>Overriding</i> del metodo <code>toString</code> di <code>Object</code>.
+	 * Sovrascrittura del metodo <code>toString</code> di <code>Object</code>.
 	 * 
-	 * @return una stringa che concatena le stringhe restituite dal <code>toString</code> di ogni oggetto nella tupla.
+	 * @return Una stringa che concatena le stringhe restituite dal <code>toString</code> di ogni oggetto nella tupla.
 	 */
 	public String toString() {
 		
-		String str = "";
+		StringBuffer str = new StringBuffer("");
 		
 		for(Object o : example) {
 		
-			str += o.toString() +  " ";
+			str.append(o.toString() +  " ");
 		}
 		
-		return str;
+		return str.toString();
 	}
 
 	/**
