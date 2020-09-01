@@ -102,7 +102,7 @@ public class AppMain extends Application {
 	/**
 	 * Sovrascrittura del metodo <code>start</code> di <code>Application</code>.
 	 * Tale metodo rappresenta il principale dell'applicazione che viene eseguito all'inizio del programma e
-	 * il cui scopo e' di definireil comportamento delle varie componenti interattive (pulstanti, barre,
+	 * il cui scopo e' di definire il comportamento delle varie componenti interattive (pulstanti, barre,
 	 * finestre di dialogo...) e il loro aspetto.
 	 * 
 	 * @param mainStage riferimento alla finestra principale dell'applicazione.
@@ -110,6 +110,7 @@ public class AppMain extends Application {
 	 * @see Application
 	 * 
 	 */
+	@Override
 	public void start(Stage mainStage) {
 		
 
