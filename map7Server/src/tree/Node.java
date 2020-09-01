@@ -9,39 +9,39 @@ import data.Data;
  * Classe astratta utilizzata per modellare un nodo dell'albero di regressione.
  * 
  * Un nodo nell'albero di regressione possiede informazioni sulla porzione di dataset
- * che rappresenta, e la varianza calcolata rispetto all'attributo target nel sottoinsieme
+ * che rappresenta e la varianza calcolata rispetto all'attributo target nel sottoinsieme
  * rappresentato.
  * 
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
  *
  */
 @SuppressWarnings("serial")
-public abstract class Node implements Serializable {
+abstract class Node implements Serializable {
 
 	/**
-	 * contatore dei nodi generati dall'albero
+	 * Contatore dei nodi generati dall'albero
 	 */
 	private static int idNodeCount = 0;
 	
 	/**
-	 * identificatore del nodo (cominciano da 0)
+	 * Identificatore del nodo (cominciano da 0)
 	 */
 	private int idNode;
 	
 	/**
-	 * indice di partenza nella tabella contenente il dataset della porzione di
+	 * Indice di partenza nella tabella contenente il dataset della porzione di
 	 * esempi rappresentata dal nodo
 	 */
 	private int beginExampleIndex; 
 
 	/**
-	 * indice finale nella tabella contenente il dataset della porzione di
+	 * Indice finale nella tabella contenente il dataset della porzione di
 	 * esempi rappresentata dal nodo
 	 */
 	private int endExampleIndex;
 
 	/**
-	 * valore della varianza calcolata rispetto all'attributo di classe, 
+	 * Valore della varianza calcolata rispetto all'attributo di classe, 
 	 * nel sotto-insieme di training del nodo
 	 */
 	private double variance; 
@@ -55,7 +55,7 @@ public abstract class Node implements Serializable {
 	 * @param beginExampleIndex Indice iniziale della porzione di training set rappresentata dal nodo
 	 * @param endExampleIndex Indice finale della porzione di training set rappresentata dal nodo
 	 */
-	public Node(Data trainingSet, int beginExampleIndex, int endExampleIndex) {
+	Node(Data trainingSet, int beginExampleIndex, int endExampleIndex) {
 
 		idNode = idNodeCount++;
 		this.beginExampleIndex = beginExampleIndex;
@@ -67,7 +67,7 @@ public abstract class Node implements Serializable {
 		double delta;
 		int n = 0;
 		
-		// algoritmo proposto da Knuth in Art of Computer Programming per il calcolo della varianza
+		// Algoritmo proposto da Knuth in "The Art of Computer Programming" per il calcolo della varianza
 		// in un solo ciclo
 		for (int i = beginExampleIndex; i <= endExampleIndex; i++) {
 
@@ -84,7 +84,7 @@ public abstract class Node implements Serializable {
 	 * 
 	 * @return L'intero identificativo del nodo.
 	 */
-	public int getIdNode() {
+	int getIdNode() {
 		
 		return idNode;
 	}
@@ -95,7 +95,7 @@ public abstract class Node implements Serializable {
 	 * 
 	 * @return L'indice iniziale nella tabella del sottoinsieme rappresentato dal nodo.
 	 */
-	public int getBeginExampleIndex() {
+	int getBeginExampleIndex() {
 		
 		return beginExampleIndex;
 	}
@@ -106,7 +106,7 @@ public abstract class Node implements Serializable {
 	 * 
 	 * @return L'indice finale nella tabella del sottoinsieme rappresentato dal nodo.
 	 */
-	public int getEndExampleIndex() {
+	int getEndExampleIndex() {
 		
 		return endExampleIndex;
 	}
@@ -117,7 +117,7 @@ public abstract class Node implements Serializable {
 	 * 
 	 * @return Varianza dell'attributo target associata al nodo corrente.
 	 */
-	public double getVariance() {
+	double getVariance() {
 		
 		return variance;
 	}
@@ -127,7 +127,7 @@ public abstract class Node implements Serializable {
 	 * 
 	 * @return Un intero che rappresenta il numero dei figli del nodo.
 	 */
-	public abstract int getNumberOfChildren();
+	abstract int getNumberOfChildren();
 	
 	/**
 	 * Sovrascrittura del metodo <code>toString</code> di <code>Object</code>.

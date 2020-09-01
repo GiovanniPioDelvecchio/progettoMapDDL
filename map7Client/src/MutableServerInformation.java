@@ -3,21 +3,34 @@ import java.io.Serializable;
 /**
  * Controparte modificabile di ServerInformation.
  * 
+ * @see ServerInformation
+ * 
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
  *
  */
 @SuppressWarnings("serial")
 class MutableServerInformation implements Serializable {
 
+	/**
+	 * Identificativo del server
+	 */
 	private String id;
+	
+	/**
+	 * Indirizzo IP del server
+	 */
 	private String ip;
+	
+	/**
+	 * Porta su cui risiede il server
+	 */
 	private Integer port;
 
 	/**
 	 * Costruttore di MutableServerInformation.
 	 * 
 	 * @param newIp Indirizzo Ip da memorizzare.
-	 * @param newPort Porta da associare all'indirizzo Ip.
+	 * @param newPort Porta da associare all'indirizzo IP.
 	 * @param newId Identificatore del server.
 	 */
 	MutableServerInformation(String newIp, int newPort, String newId) {
@@ -92,7 +105,7 @@ class MutableServerInformation implements Serializable {
 	 * in un'istanza di ServerInformation.
 	 * 
 	 * @return Un'istanza di ServerInformation contenente le informazioni analoghe a quelle
-	 * memorizzate nell'oggetto corrente.
+	 * 		   memorizzate nell'oggetto corrente.
 	 */
 	ServerInformation toServerInformation() {
 		

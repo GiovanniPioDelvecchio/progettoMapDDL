@@ -33,54 +33,114 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
+import utility.Constants;
 
+/**
+ * Classe che si occupa dell'interfaccia grafica del lato Client.<br>
+ * Tale classe sfrutta quanto messo a disposizione dalla libreria javafx, la quale e' <i>built-in</in> in Java 8.<br>
+ * Inoltre, <code>AppMain</code> gestisce anche la comunicazione via socket e permette il salvataggio
+ * della lista dei server con cui il programma comunica. 
+ * 
+ * @see javafx
+ * 
+ * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
+ *
+ */
 public class AppMain extends Application {
 	
+	/**
+	 * istanza della classe Socket con la quale viene instaurata la comunicazione col server
+	 */
 	private Socket clientSocket;
+	
+	/**
+	 * Stream di output per la scrittura di oggetti verso il server.
+	 */
 	private ObjectOutputStream out;
+	
+	/**
+	 * Stream di input per la lettura di oggetti provenienti dal server
+	 */
 	private ObjectInputStream in;
 
-	/*
-	 * Viene creata una ObservableList di istanze di ServerInformation contenente le informazioni sulle possibili connessioni ai server effettuabili.
+	/**
+	 * ObservableList di ServerInformation contenente le informazioni sulle possibili connessioni ai server effettuabili.
 	 * La lista viene inizializzata con un server di default, che rappresenta il localhost
 	 */
 	private ObservableList<ServerInformation> servers = FXCollections.observableArrayList(new ServerInformation(Constants.DEFAULT_SERVER_IP,
 			Constants.DEFAULT_SERVER_PORT, Constants.DEFAULT_SERVER_ID));
 
-	// Il server a cui viene inizializzato il programma e' quello di default
+	/**
+	 * Istanza di ServerInformation contenente le informazioni, appunto, relative al
+	 * server selezionato con il quale instaurare la comunicazione. 
+	 * Di default viene inizializzato al localhost.
+	 */
 	private ServerInformation currServer = servers.get(0);
 
+	/**
+	 * Istanze della classe Scene da impostare secondo il loro scopo ("scena"-home, "scena" di selezione...)
+	 */
 	private Scene selectionScene, homeScene, settingsScene, newServerScene, predictScene;
+	
+	/**
+	 * Flag per indicare se si è scelto di caricare un albero già salvato su server (true)
+	 * o di crearne uno nuovo (false).
+	 */
 	private boolean loadFlag = false;
 
+	/**
+	 * Main dell'applicazione. Richiama il metodo Application.launch.
+	 * 
+	 * @param args Argomenti a riga di comando con cui viene lanciata l'applicazione.
+	 * 			   Tali argomenti sono poi passati in input al metodo launch.
+	 */
 	public static void main(String[] args) {
 		
 		launch(args);
 	}
 	
+	/**
+	 * Sovrascrittura del metodo <code>start</code> di <code>Application</code>.
+	 * Tale metodo rappresenta il principale dell'applicazione che viene eseguito all'inizio del programma e
+	 * il cui scopo e' di definire il comportamento delle varie componenti interattive (pulstanti, barre,
+	 * finestre di dialogo...) e il loro aspetto.
+	 * 
+	 * @param mainStage riferimento alla finestra principale dell'applicazione.
+	 * 
+	 * @see Application
+	 * 
+	 */
+	@Override
 	public void start(Stage mainStage) {
 		
 
 		/** HOME **/
-
-		mainStage.setTitle(Constants.CLIENT_WINDOW_NAME);
+		
 		BorderPane homePane = new BorderPane();
-		mainStage.getIcons().add(new Image(Constants.PATH_CLIENT_ICON));
 
 		/*
-		 * descrizione componenti per la barra degli strumenti superiore
+		 * descrizione componenti per la barra degli strumenti superiore (pulsanti e immagini su di essi)
 		 */
 
 		ToolBar tools = new ToolBar();
+		
 		Image gear = new Image(Constants.PATH_GEAR_ICON, 20, 20, true, true);
 		ImageView gearV = new ImageView(gear);
+		
 		Image questionMark = new Image(Constants.PATH_HELP_ICON, 20, 20, true, true);
 		ImageView questionMarkV = new ImageView(questionMark);
 		
 		Button opt = new Button(Constants.BUTTON_OPTIONS);
 		Button help = new Button(Constants.BUTTON_HELP);
+		
+		/**
+		 * Per i pulsanti vengono specificati degli ID a cui corrispondono
+		 * specifiche caratterizzazioni grafiche, differenti da quelle specificate 
+		 * per i pulsanti standard
+		 */
 		opt.setId(Constants.ID_SMALL_BUTTON);
 		help.setId(Constants.ID_SMALL_BUTTON);
+		
 		opt.setGraphic(gearV);
 		help.setGraphic(questionMarkV);
 		opt.setOnAction(e -> mainStage.setScene(settingsScene));
@@ -88,16 +148,22 @@ public class AppMain extends Application {
 		homePane.setTop(tools);		
 		
 		/*
-		 * Descrizione componenti per la vbox centrale
+		 * Descrizione componenti per la vbox (pannello a distribuzione verticale) centrale
+		 * Presenta una etichetta esplicativa a cui seguono due pulsanti per caricare o creare
+		 * un albero di regressione dal server.
 		 */
-		VBox centralPanel = new VBox(50);
-		centralPanel.setAlignment(Pos.CENTER);
+
 		Label sel = new Label(Constants.LABEL_SELECTION);
 		sel.setId(Constants.ID_WELCOME_LABEL);
+		
 		Button load = new Button(Constants.BUTTON_LOAD);
 		load.setMinSize(130, 20);
+		
 		Button create = new Button(Constants.BUTTON_CREATE);
 		create.setMinSize(130, 20);
+		
+		VBox centralPanel = new VBox(50);
+		centralPanel.setAlignment(Pos.CENTER);
 		centralPanel.getChildren().addAll(sel, load,create);
 		homePane.setCenter(centralPanel);
 
@@ -109,25 +175,26 @@ public class AppMain extends Application {
 		 */
 		
 		load.setOnAction(e -> {
-			
+
 			try {
+
 				loadFlag = true;
 				connectToServer();
 				out.writeObject(Constants.CLIENT_LOAD);
 				mainStage.setScene(selectionScene);
-			} catch(IOException | NullPointerException e1) {
+			} catch (IOException | NullPointerException e1) {
 				
 				/*
 				 * Se qualcosa va storto con l'invio dei messaggi al server si mostra un alert
 				 */
-				showAlert(Constants.ERROR_NO_COMMUNICATION);
+				showAlert(Constants.ERROR_NO_COMMUNICATION, Alert.AlertType.ERROR);
 			}
 		
 		});
 		
 		/*
 		 * Se il tasto "Crea" viene premuto, ci si connette al server e si comunica di caricare
-		 * da un database la tabella da cui verra'  ricavato l'albero di regressione
+		 * da un database la tabella da cui verra' ricavato l'albero di regressione
 		 */
 		create.setOnAction(e -> {
 
@@ -141,42 +208,116 @@ public class AppMain extends Application {
 				/*
 				 * Se qualcosa va storto con l'invio dei messaggi al server si mostra un alert
 				 */
-				showAlert(Constants.ERROR_NO_COMMUNICATION);
+				showAlert(Constants.ERROR_NO_COMMUNICATION, Alert.AlertType.ERROR);
 			}
 		});
 		
-
+		
+		
+		/** HELP **/
+		
+		/**
+		 * Alla pressione del tasto help viene mostrata una finestra di dialogo con informazioni
+		 * relative all'applicazione
+		 */
+		help.setOnAction(e -> {
+			/*
+			 * Non si utilizza il metodo showAlert, poichè risulta essere necessario
+			 * modificare il campo Title e Header per la finestra che andiamo a mostrare
+			 */
+			Alert helpScreen = new Alert(Alert.AlertType.INFORMATION);
+			helpScreen.setHeaderText(Constants.HELP_WINDOW_NAME);
+			helpScreen.setTitle(Constants.HELP_WINDOW_NAME);
+			helpScreen.setContentText(Constants.HELP_CONTENT_TEXT);
+			helpScreen.getDialogPane().getStylesheets().add(Constants.PATH_THEME);
+			((Stage) helpScreen.getDialogPane().getScene().getWindow()).getIcons().add(new Image(Constants.PATH_CLIENT_ICON));
+			helpScreen.show();
+		});
+		
+		
+		
 		/** FINESTRA DI PREDIZIONE **/
 		
 		/*	
-		 * Si trova in questo punto perchÃ© la descrizione della scena di predizione
-		 *	deve precedere la predizione stessa (handlePredict)
+		 * La definizione della finestra di predizione si trova in maniera piuttosto controintuitiva prima
+		 * della definizione della finestra di selezione poiche' quest'ultima richiama elementi della prima.
+		 * Ad ogni modo, questa inversione di ordine non inficia il funzionamento del programma.
 		 */
+		
+		// Definizione del layout generale della finestra
 		BorderPane predictPane = new BorderPane();
+		
+		// Definizione del layout della porzione centrale del pannello precedente
 		VBox predictBox = new VBox(50);
-		TilePane userChoices = new TilePane();
-		Label predictedValue = new Label(Constants.LABEL_PREDICTION_QUERY);
-		HBox predictButtons = new HBox(50);
 		predictBox.setAlignment(Pos.CENTER);
+		
+		// Definizione del layout dove mostrare i pulsanti per la predizione
+		TilePane userChoices = new TilePane();
 		userChoices.setAlignment(Pos.CENTER);
 		userChoices.setHgap(5d);
 		userChoices.setVgap(5d);
 		userChoices.setPrefColumns(3);
+		
+		/** 
+		 * Etichetta per mostrare il risultato della predizione
+		 * Quando non si è ancora giunti alla predizione, mostra un'istruzione
+		 */
+		Label predictedValue = new Label(Constants.LABEL_PREDICTION_QUERY);
 		predictedValue.setAlignment(Pos.CENTER);
-		predictButtons.setAlignment(Pos.CENTER);
 		predictedValue.setId(Constants.ID_PREDICTION_LABEL);
 		
+		// Definizione del layout dei tasti "Ricomincia" e "Indietro"
+		HBox predictButtons = new HBox(50);
+		predictButtons.setAlignment(Pos.CENTER);
+
+		// Definizione del tasto per ricominciare la predizione
 		Button redo = new Button(Constants.BUTTON_RESTART);
 		redo.setDisable(true);
+		redo.setOnAction(e->{
+			try {
+				/**
+				 * All'atto di ricominciare si comunica al server che si vuole ricominciare la predizione
+				 * si resetta l'etichetta, si disattiva il tasto redo e si ricomincia 
+				 */
+				out.writeObject(Constants.CLIENT_PREDICT);
+				predictedValue.setText(Constants.LABEL_PREDICTION_QUERY);
+				redo.setDisable(true);
+				handlePredict(userChoices, predictedValue, redo);
+			} catch (IOException e1) {
+				/**
+				 * in caso di errore durante la comunicazione, si mostra una finestra di dialogo, 
+				 * si tenta di chiudere la cominicazione (se non e' possibile si mostra un'altra finestra)
+				 * e si torna alla home.
+				 */
+				showAlert(Constants.ERROR_SERVER_UNREACHABLE, Alert.AlertType.ERROR);
+				if (!clientSocket.isClosed()) {
+					try {
+						
+						clientSocket.close();
+					} catch (IOException e2) {
+						
+						showAlert(Constants.ERROR_CLOSING_COMMUNICATION, Alert.AlertType.ERROR);
+					}
+				}
+				
+				mainStage.setScene(homeScene);
+			}
+			
+		});
+		
+		// Definizione del tasto per tornare alla home
 		Button backPredict = new Button(Constants.BUTTON_BACK);
 		backPredict.setOnAction(e -> { 
 			try {
-					// Si notifica che si sta tornando alla home
+					// Si notifica che si sta tornando alla home e si tenta di chiudere la connessione
 					out.writeObject(Constants.CLIENT_END);
 					clientSocket.close();
 				} catch (IOException e1) {
-					showAlert(Constants.ERROR_CLOSING_COMMUNICATION);
+					
+					// in caso di errore durante la chiusura, si mostra una finestra di dialogo
+					showAlert(Constants.ERROR_CLOSING_COMMUNICATION, Alert.AlertType.ERROR);
 				}
+			
 				/**
 				 * Inoltre si ripuliscono i pulsanti di predizione, si reinizializza la label e si
 				 * disattiva il tasto redo.
@@ -187,49 +328,21 @@ public class AppMain extends Application {
 				mainStage.setScene(homeScene);
 		});
 		
-		redo.setOnAction(e->{
-			
-			try {
-				out.writeObject(Constants.CLIENT_PREDICT);
-				predictedValue.setText(Constants.LABEL_PREDICTION_QUERY);
-				redo.setDisable(true);
-				handlePredict(userChoices, predictedValue, redo);
-			} catch (IOException e1) {
-				
-				showAlert(Constants.ERROR_SERVER_UNREACHABLE);
-				mainStage.setScene(homeScene);
-			}
-			
-		});
-		
-		
+		// Si aggiungono al layout i vari elementi definiti
 		predictButtons.getChildren().add(redo);
 		predictButtons.getChildren().add(backPredict);
+		
 		predictBox.getChildren().add(predictedValue);
 		predictBox.getChildren().add(userChoices);
 		predictBox.getChildren().add(predictButtons);
 
 		predictPane.setCenter(predictBox);
 		
-		
-
-		/** HELP **/
-		
-		help.setOnAction(e -> {
-			
-			Alert helpScreen = new Alert(Alert.AlertType.INFORMATION);
-			helpScreen.setHeaderText(Constants.HELP_WINDOW_NAME);
-			helpScreen.setTitle(Constants.HELP_WINDOW_NAME);
-			helpScreen.setContentText(Constants.HELP_CONTENT_TEXT);
-			helpScreen.getDialogPane().getStylesheets().add(Constants.PATH_THEME);
-			((Stage) helpScreen.getDialogPane().getScene().getWindow()).getIcons().add(new Image(Constants.PATH_CLIENT_ICON));
-			helpScreen.show();
-		});
 
 
 		/** INSERIMENTO TABELLA **/
 
-		// Si viene a creare un layout a griglia
+		// Si crea un layout a griglia per l'inserimento del nome della tabella
 		GridPane selectionPane = new GridPane();
 		selectionPane.setAlignment(Pos.CENTER);
 		selectionPane.setHgap(40);
@@ -244,10 +357,8 @@ public class AppMain extends Application {
 		TextField tableName = new TextField();
 		selectionPane.add(tableName, 0, 1, 2, 1);
 		
-		// Si inserisce un bottone di conferma che rimane disattivato se non viene inserito del testo
+		// Si inserisce un pulsante di conferma che rimane disattivato se non viene inserito del testo
 		Button confirm = new Button(Constants.BUTTON_CONFIRM);
-		
-		
 		confirm.setDisable(true);
 		confirm.setOnAction(e -> {
 
@@ -259,24 +370,29 @@ public class AppMain extends Application {
 				String ans = (String) in.readObject();
 				
 				if (!ans.equals(Constants.SERVER_OK)) {
-					
-					showAlert(ans);
+					// Se la stringa genera errore, viene mostrato a schermo
+					showAlert(ans, Alert.AlertType.ERROR);
 				} else {
 					
 					if (loadFlag == false) {
 						
+						// In caso di creazione di un albero si richiede automaticamente il suo salvataggio
 						out.writeObject(Constants.CLIENT_SAVE);
 						ans = ((String) in.readObject());
-						/* Se il salvataggio dell'albero non va a buon fine, si permette comunque
+						/**
+						 * Se il salvataggio dell'albero non va a buon fine, si permette comunque
 						 * di accedere alla predizione
 						 */
 						if (!ans.equals(Constants.SERVER_OK)) {
 						
-							showAlert(Constants.ERROR_SAVING_TREE);
+							showAlert(Constants.ERROR_SAVING_TREE, Alert.AlertType.WARNING);
 						}
 					}
 					
-					
+					/**
+					 * Infine si passa alla finestra di predizione, si comunica al server di 
+					 * cominciare la predizione e si inizia.
+					 */
 					mainStage.setScene(predictScene);
 					
 					out.writeObject(Constants.CLIENT_PREDICT);
@@ -288,10 +404,19 @@ public class AppMain extends Application {
 			} catch (ClassNotFoundException | IOException e1) {
 				
 				/* 
-				 * si presuppone che la connessione sia giï¿½ stata stabilita
-				 * e pertanto non si prevede di gestire una NullPointerException
+				 * In caso di errore di comunicazione si mostra una finestra di dialogo,
+				 * si tenta di chiudere la comunicazione e si torna alla home
 				 */
-				showAlert(Constants.ERROR_INIT_CONNECTION);
+				showAlert(Constants.ERROR_INIT_CONNECTION, Alert.AlertType.ERROR);
+				if (!clientSocket.isClosed()) {
+					try {
+						
+						clientSocket.close();
+					} catch (IOException e2) {
+						
+						showAlert(Constants.ERROR_CLOSING_COMMUNICATION, Alert.AlertType.ERROR);
+					}
+				}
 				mainStage.setScene(homeScene);
 			} 
 		});
@@ -300,18 +425,21 @@ public class AppMain extends Application {
 		// si crea anche un bottone per tornare indietro alla home
 
 		Button backSelection = new Button(Constants.BUTTON_BACK);
-		backSelection.setOnAction(e->{	
+		backSelection.setOnAction(e -> {	
 			
 		try {
 				/*
-				 * Si notifica che si sta tornando alla home
-				 *la stringa comincia con # poichè nessun file può avere tale nome
+				 * Si notifica che si sta tornando alla home.
+				 * La stringa con cui lo si comunica deve essere composta in modo da non poter
+				 * rappresentare una tabella che possa essere scelta.
 				 */
 				out.writeObject(Constants.CLIENT_ABORT);
 				clientSocket.close();
+
 				} catch (IOException e1) {
-	
-				showAlert(Constants.ERROR_CLOSING_COMMUNICATION);
+					
+					showAlert(Constants.ERROR_CLOSING_COMMUNICATION, Alert.AlertType.ERROR);
+
 				}
 		
 			mainStage.setScene(homeScene);
@@ -366,6 +494,7 @@ public class AppMain extends Application {
 			ArrayList<MutableServerInformation> serializedServerList = (ArrayList<MutableServerInformation>) serversIn.readObject();
 
 			servers.clear();
+
 			for (MutableServerInformation s : serializedServerList) {
 				
 				servers.add(s.toServerInformation());
@@ -374,66 +503,20 @@ public class AppMain extends Application {
 			serversIn.close();
 			serversInFile.close();
 		} catch (IOException | ClassNotFoundException e1) {
-			
+			/**
+			 * In caso di errore durante il caricamento della lista server vengono
+			 * mostrate delle finestre di dialogo contestuali e si mantiene la lista di default
+			 */
 			if (e1 instanceof FileNotFoundException) {
 				
-				Alert serversNotFound = new Alert(Alert.AlertType.WARNING);
-				serversNotFound.setContentText(Constants.CONTENT_TEXT_NO_SERVERS_INFO);
-				serversNotFound.getDialogPane().getStylesheets().add(Constants.PATH_THEME);
-				((Stage) serversNotFound.getDialogPane().getScene().getWindow()).getIcons().add(new Image(Constants.PATH_WARNING_ICON));
-				serversNotFound.show();
+				showAlert(Constants.CONTENT_TEXT_NO_SERVERS_INFO, Alert.AlertType.WARNING);
 			} else {
 
-				showAlert(Constants.ERROR_LOADING_SERVERS);
+				showAlert(Constants.ERROR_LOADING_SERVERS, Alert.AlertType.ERROR);
 			}
 		}
 		
-		/*
-		 * Viene impostata la serializzazione della lista di server conosciuti alla chiusura
-		 * del programma.
-		 */
-		mainStage.setOnCloseRequest(e -> {
-			
-			if (clientSocket != null) {
-				if (clientSocket.isConnected()) {
-					try {
-						// se e' in corso una comunicazione col server, si notifica che si sta tornando alla home
-						if(mainStage.getScene().equals(selectionScene)) {
-							out.writeObject(Constants.CLIENT_ABORT);
-						} else {
-							out.writeObject(Constants.CLIENT_END);
-						}
-						clientSocket.close();
-					} catch (IOException e1) {
-	
-						showAlert(Constants.ERROR_CLOSING_COMMUNICATION);
-					}
-				
-				}
-			}
-			try {
-				FileOutputStream serverOutFile = new FileOutputStream(Constants.PATH_SERVER_INFO);
-				ObjectOutputStream serverOut = new ObjectOutputStream(serverOutFile);
-
-				/*
-				 * Al posto di servers, viene serializzato un ArrayList di MutableServerInformation, ovvero la controparte
-				 * mutabile di ServerInformation. Questa scelta e' stata fatta poiche' gli attributi di ServerInformation
-				 * non sono serializzabili.
-				 */
-				ArrayList<MutableServerInformation> toSerialize = new ArrayList<MutableServerInformation>(servers.size());
-				for (ServerInformation s : servers) {
-					
-					toSerialize.add(s.toMutableServerInformation());
-				}
-				serverOut.writeObject(toSerialize);
-
-				serverOut.close();
-				serverOutFile.close();
-			} catch (IOException e1) {
-
-				showAlert(Constants.ERROR_SAVING_SERVERS);
-			}
-		});
+		
 		
 		/* Definizione della schermata delle impostazioni */
 		
@@ -450,13 +533,13 @@ public class AppMain extends Application {
 		 * viene associata ogni colonna all'attributo Property relativo in ServerInformation, tramite il metodo
 		 * setCellValueFactory.
 		 */
-		TableColumn<ServerInformation, String> idCol = new TableColumn<ServerInformation, String>("ID");
+		TableColumn<ServerInformation, String> idCol = new TableColumn<ServerInformation, String>(Constants.COLUMN_ID);
 		idCol.setCellValueFactory(new PropertyValueFactory<ServerInformation, String>("id"));
 		
-		TableColumn<ServerInformation, String> ipCol = new TableColumn<ServerInformation, String>("Indirizzo Ip");
+		TableColumn<ServerInformation, String> ipCol = new TableColumn<ServerInformation, String>(Constants.COLUMN_IP_ADDRESS);
 		ipCol.setCellValueFactory(new PropertyValueFactory<ServerInformation, String>("ip"));
 		
-		TableColumn<ServerInformation, Integer> portCol = new TableColumn<ServerInformation, Integer>("Porta");
+		TableColumn<ServerInformation, Integer> portCol = new TableColumn<ServerInformation, Integer>(Constants.COLUMN_PORT);
 		portCol.setCellValueFactory(new PropertyValueFactory<ServerInformation, Integer>("port"));
 		
 		// Infine vengono aggiunte le tabelle appena create alla TableView serverTable.
@@ -471,7 +554,7 @@ public class AppMain extends Application {
 		serverTable.setFocusModel(userFocus);
 		
 		/*
-		 * Infine vengono dichiarati i bottoni per interagire con gli elementi della tabella.
+		 * Infine vengono dichiarati i pulsanti per interagire con gli elementi della tabella.
 		 */
 		HBox settingsButtonsLayout = new HBox();
 		settingsButtonsLayout.setAlignment(Pos.CENTER);
@@ -487,6 +570,10 @@ public class AppMain extends Application {
 		confirmServer.setId(Constants.ID_SMALL_BUTTON);
 		backSettings.setId(Constants.ID_SMALL_BUTTON);
 		
+		Label currentServerInfo = new Label(Constants.LABEL_SERVER_CURR + currServer.getId());
+		currentServerInfo.setId(Constants.ID_SERVER_LABEL);
+		
+		// Si definiscono i comportamenti dei tasti
 		backSettings.setOnAction(e -> {
 			
 			mainStage.setScene(homeScene);
@@ -502,17 +589,23 @@ public class AppMain extends Application {
 			servers.remove(userFocus.getFocusedItem());
 			if (servers.size() == 0) {
 				
+				//Se la tabella viene svuotata, il tasto conferma si disattiva
 				confirmServer.setDisable(true);
 			}
 		});
 		
 		settingsButtonsLayout.getChildren().addAll(addServer, removeServer, confirmServer, backSettings);
 
+		serversPane.setTop(currentServerInfo);
 		serversPane.setCenter(serverTable);
 		serversPane.setBottom(settingsButtonsLayout);
 		
 		/** AGGIUNTA NUOVO SERVER **/
 		
+		/**
+		 * Si crea una finestra con layout a griglia per l'inserimento delle informazioni
+		 * relative ad un nuovo server con cui tentare la connessione
+		 */
 		GridPane newServerPane = new GridPane();
 		newServerPane.setAlignment(Pos.CENTER);
 		newServerPane.setHgap(10);
@@ -523,8 +616,8 @@ public class AppMain extends Application {
 		Label portLabel = new Label(Constants.LABEL_SERVER_PORT);
 		Label idLabel = new Label(Constants.LABEL_SERVER_ID);
 		
-		Button backSetting = new Button(Constants.BUTTON_BACK);
-		backSetting.setOnAction(e->mainStage.setScene(homeScene));
+		Button backNewServer = new Button(Constants.BUTTON_BACK);
+		backNewServer.setOnAction(e->mainStage.setScene(settingsScene));
 		
 		
 		/*
@@ -574,12 +667,13 @@ public class AppMain extends Application {
 		updateSettingsPromptText(ipAdd, portField, idField);
 
 		/*
-		 * Infine si utilizzano due pulsanti, uno di conferma e uno per tornare alla home del programma.
+		 * Infine si utilizzano due pulsanti, uno di conferma e uno per tornare alla finestra di selezione
+		 * del server.
 		 */
 		Button confirmButtonSettings = new Button(Constants.BUTTON_CONFIRM);
 		HBox backLayoutSettings = new HBox();
 		backLayoutSettings.setAlignment(Pos.CENTER_LEFT);
-		backLayoutSettings.getChildren().add(backSetting);
+		backLayoutSettings.getChildren().add(backNewServer);
 
 		/*
 		 * Si dichiara un oggetto di tipo EventHandler<ActionEvent>, il cui metodo handle descrive il comportamento
@@ -593,15 +687,15 @@ public class AppMain extends Application {
 			public void handle(ActionEvent e) {
 				
 				/*
-				 * Viene usato uno StringBuffer per la concatenzione del nuovo indirizzo Ip per evitare
+				 * Viene usato uno StringBuffer per la concatenzione del nuovo indirizzo IP per evitare
 				 * la creazione ripetuta di nuovi oggetti String.
 				 */
 				StringBuffer newIp = null;
 				int intPort = -1;
 
 				/*
-				 * Si controlla se l'ip inserito e' un indirizzo ip valido.
-				 * Se l'indirizzo ip inserito e' mal formattato, viene visualizzato un errore, e non viene
+				 * Si controlla se l'IP inserito e' un indirizzo IP valido.
+				 * Se l'indirizzo IP inserito e' mal formattato, viene visualizzato un errore, e non viene
 				 * inserito il nuovo server.
 				 */
 				boolean isValid = true;
@@ -633,7 +727,7 @@ public class AppMain extends Application {
 					newIp.append(ipAdd[3].getText());
 				} else {
 
-					showAlert(Constants.ERROR_PARSING_IP);
+					showAlert(Constants.ERROR_PARSING_IP, Alert.AlertType.ERROR);
 					return;
 				}
 				
@@ -650,12 +744,12 @@ public class AppMain extends Application {
 						intPort = Integer.parseInt(readPort);
 						if (!(intPort > Constants.MIN_PORT && intPort <= Constants.MAX_PORT)) {
 
-							showAlert(Constants.ERROR_PARSING_PORT);
+							showAlert(Constants.ERROR_PARSING_PORT, Alert.AlertType.ERROR);
 							return;
 						}
 					} catch (NumberFormatException f) {
 
-						showAlert(Constants.ERROR_PARSING_PORT);
+						showAlert(Constants.ERROR_PARSING_PORT, Alert.AlertType.ERROR);
 						return;
 					}
 				}
@@ -668,14 +762,14 @@ public class AppMain extends Application {
 				 */
 				if (readId.equals("")) {
 					
-					showAlert(Constants.ERROR_NO_SERVER_ID);
+					showAlert(Constants.ERROR_NO_SERVER_ID, Alert.AlertType.ERROR);
 					return;
 				}
 
 				ServerInformation toAdd = new ServerInformation(newIp.toString(), intPort, readId);
 				if (servers.contains(toAdd)) {
 
-					showAlert(Constants.ERROR_ID_ALREADY_EXISTS + readId);
+					showAlert(Constants.ERROR_ID_ALREADY_EXISTS + readId, Alert.AlertType.ERROR);
 					return;
 				}
 				
@@ -693,6 +787,7 @@ public class AppMain extends Application {
 		 * o di Enter in qualsiasi campo testuale.
 		 */
 		confirmButtonSettings.setOnAction(confirmEvent);
+		
 		for (TextField i : ipAdd) {
 			
 			i.setOnKeyReleased(e -> {
@@ -714,11 +809,13 @@ public class AppMain extends Application {
 
 		/*
 		 * Questo bottone appartiene alla schermata di visione dei server, ma la dichiarazione del comportamento
-		 * e' effettuata qua, poiche' deve richiamare updateSettingsPromptText
+		 * e' effettuata qua, poiche' deve richiamare updateSettingsPromptText con i parametri
+		 * precedentemente dichiarati
 		 */
 		confirmServer.setOnAction(e -> {
 
 			currServer = userFocus.getFocusedItem();
+			currentServerInfo.setText(Constants.LABEL_SERVER_CURR + currServer.getId());
 			updateSettingsPromptText(ipAdd, portField, idField);
 			mainStage.setScene(homeScene);
 		});
@@ -735,8 +832,8 @@ public class AppMain extends Application {
 		newServerPane.add(confirmButtonSettings, 1, 4);
 		newServerPane.add(backLayoutSettings, 2, 4);
 
-		/*
-		 * Chiamata ai metodi per mostrare la scena principale
+		/**
+		 * Inizializzazione delle scene con i relativi pannelli-layout principali
 		 */
 		homeScene = new Scene(homePane, 400, 400);
 		selectionScene = new Scene(selectionPane, 400, 400);
@@ -744,12 +841,82 @@ public class AppMain extends Application {
 		newServerScene = new Scene(newServerPane, 400,400);
 		predictScene = new Scene(predictPane, 400, 400);
 
+		/**
+		 * Aggiunta per ciascuna scena dello stile visivo da adottare, descritto da un
+		 * file di tipo .css
+		 */
 		homeScene.getStylesheets().add(Constants.PATH_THEME);
 		selectionScene.getStylesheets().add(Constants.PATH_THEME);
 		settingsScene.getStylesheets().add(Constants.PATH_THEME);
 		newServerScene.getStylesheets().add(Constants.PATH_THEME);
 		predictScene.getStylesheets().add(Constants.PATH_THEME);
 
+		// Specifica della barra del titolo e del layout della schermata di home
+		mainStage.setTitle(Constants.CLIENT_WINDOW_NAME);
+		mainStage.getIcons().add(new Image(Constants.PATH_CLIENT_ICON));
+		
+		// Specifica del comportamento da assumere alla chiusura della finestra principale.
+		mainStage.setOnCloseRequest(e -> {
+			
+			/** 
+			 * Se e' in corso una comunicazione col server, si notifica la chiusura e 
+			 * si tenta l'interruzione delle comunicazioni
+			 */
+			if (clientSocket != null) {
+				if (!clientSocket.isClosed()) {
+					try {
+						
+						/** 
+						 * Si verifica in quale finestra ci si trova per 
+						 * identificare il tipo di messaggio di chiusura da mandare
+						 */
+						if (mainStage.getScene().equals(selectionScene)) {
+							
+							out.writeObject(Constants.CLIENT_ABORT);
+						} else {
+							
+							out.writeObject(Constants.CLIENT_END);
+						}
+						
+						clientSocket.close();
+					} catch (IOException e1) {
+	
+						showAlert(Constants.ERROR_CLOSING_COMMUNICATION, Alert.AlertType.ERROR);
+					}
+				
+				}
+			}
+			try {
+				/*
+				 * Viene impostata la serializzazione della lista di server conosciuti alla chiusura
+				 * del programma.
+				 */
+				FileOutputStream serverOutFile = new FileOutputStream(Constants.PATH_SERVER_INFO);
+				ObjectOutputStream serverOut = new ObjectOutputStream(serverOutFile);
+
+				/*
+				 * Al posto di servers, viene serializzato un ArrayList di MutableServerInformation, ovvero la controparte
+				 * mutabile di ServerInformation. Questa scelta e' stata fatta poiche' gli attributi di ServerInformation
+				 * non sono serializzabili.
+				 */
+				ArrayList<MutableServerInformation> toSerialize = new ArrayList<MutableServerInformation>(servers.size());
+				for (ServerInformation s : servers) {
+					
+					toSerialize.add(s.toMutableServerInformation());
+				}
+				serverOut.writeObject(toSerialize);
+
+				serverOut.close();
+				serverOutFile.close();
+			} catch (IOException e1) {
+
+				showAlert(Constants.ERROR_SAVING_SERVERS, Alert.AlertType.ERROR);
+			}
+		});
+		
+		/*
+		 * Chiamata ai metodi per mostrare la scena principale
+		 */
 		mainStage.setScene(homeScene);
 		mainStage.show();
 	}
@@ -768,17 +935,32 @@ public class AppMain extends Application {
 	}
 	
 	/** 
-	 * Se qualcosa va storto e' possibile mostrare una finestra di dialogo con un messaggio,
-	 * tramite questo metodo.
+	 * Metodo con cui costruire e mostrare una generica finestra di dialogo di tipo Alert.
+	 * Tale finestra vedrà specificato un messaggio da mostrare, <code>message</code>, e un
+	 * tipo preimpostato tra quelli resi disponibili dall'enumerazione <code>Alert.AlertType</code>
 	 * 
 	 * @param message <code>String</code> da mostrare nella finestra di dialogo 
+	 * @param type parametro di tipo <code>AlertType</code> per indicare il tipo di finestra di dialogo da mostrare
+	 * 
+	 * @see Alert
 	 */
-	private void showAlert(String message) {
+	private void showAlert(String message, Alert.AlertType type) {
 		
-		Alert toShow = new Alert(Alert.AlertType.ERROR);
+		Alert toShow = new Alert(type);
 		toShow.setContentText(message);
 		toShow.getDialogPane().getStylesheets().add(Constants.PATH_THEME);
-		((Stage) toShow.getDialogPane().getScene().getWindow()).getIcons().add(new Image(Constants.PATH_ERROR_ICON));
+		
+		// In base al tipo, viene mostrata una diversa icona
+		if (type.equals(Alert.AlertType.ERROR)) {
+			
+			((Stage) toShow.getDialogPane().getScene().getWindow()).getIcons().add(new Image(Constants.PATH_ERROR_ICON));
+		} else if  (type.equals(Alert.AlertType.WARNING)) {
+			
+			((Stage) toShow.getDialogPane().getScene().getWindow()).getIcons().add(new Image(Constants.PATH_WARNING_ICON));
+		} else {
+			
+			((Stage) toShow.getDialogPane().getScene().getWindow()).getIcons().add(new Image(Constants.PATH_CLIENT_ICON));
+		}
 		toShow.show();
 	}
 	
@@ -786,10 +968,10 @@ public class AppMain extends Application {
 	 * Metodo necessario per poter gestire la predizione attraverso il server
 	 * 
 	 * @param userChoices <code>TilePane</code> su cui inserire i tasti, corrispondenti alle possibili scelte 
-	 * (quando, esplorando l'albero di regressione, si arriva ad un nodo di split)
+	 * 		  (quando, esplorando l'albero di regressione, si arriva ad un nodo di split)
 	 * @param predictedValue <code>Label</code> su cui scrivere il risultato della predizione
 	 * @param redo <code>Button</code> necessario per poter effettuare una nuova predizione una volta finita
-	 * quella precedente. E' necessario avere questo parametro per poter gestire quando Ã¨ attivato e quando no.
+	 * 		  quella precedente. E' necessario avere questo parametro per poter gestire quando e' attivo e quando no.
 	 * 
 	 */
 	private void handlePredict(TilePane userChoices, Label predictedValue, Button redo) {
@@ -800,9 +982,9 @@ public class AppMain extends Application {
 			
 			toCheck = (String)in.readObject();
 			
-			
 			if (toCheck.equals(Constants.SERVER_QUERY)) {
 
+				// In caso di nodo di split vengono generati i pulsanti per la selezione
 				List<String> options = new ArrayList<String>((ArrayList<String>)in.readObject());
 				int i = 0;
 				for (String elem : options) {
@@ -813,6 +995,7 @@ public class AppMain extends Application {
 				
 			} else {
 				
+				// Altrimenti viene mostrato il valore predetto e si abilita il tasto per ricominciare
 				predictedValue.setText(Constants.LABEL_PREDICTED_VALUE + ((Double)in.readObject()).toString());
 				redo.setDisable(false);
 				
@@ -820,13 +1003,13 @@ public class AppMain extends Application {
 			}
 		} catch (ClassNotFoundException e) {
 			
-			showAlert(Constants.ERROR_COMMUNICATING_UNEXPECTED_ANSWER);
+			showAlert(Constants.ERROR_COMMUNICATING_UNEXPECTED_ANSWER, Alert.AlertType.ERROR);
 		} catch (IOException e) {
 
-			showAlert(Constants.ERROR_COMMUNICATING);
+			showAlert(Constants.ERROR_COMMUNICATING, Alert.AlertType.ERROR);
 		} catch (ClassCastException e) {
 			
-			showAlert(Constants.ERROR_COMMUNICATING_BAD_ANSWER);
+			showAlert(Constants.ERROR_COMMUNICATING_BAD_ANSWER, Alert.AlertType.ERROR);
 		}
 	}
 	
@@ -855,7 +1038,7 @@ public class AppMain extends Application {
 				
 			} catch (IOException e1) {
 				
-				showAlert(Constants.ERROR_SENDING_VALUE);
+				showAlert(Constants.ERROR_SENDING_VALUE, Alert.AlertType.ERROR);
 			}
 		});
 		toShow.setId(Constants.ID_PREDICTION_BUTTON);
@@ -864,12 +1047,13 @@ public class AppMain extends Application {
 	
 	/**
 	 * Metodo utilizzato per tenere aggiornati le stringhe di prompt nei campi
-	 * dove inserire indirizzo Ip e Porta del server a cui collegarsi.
-	 * Le stringhe utilizzate come testo di prompt sono i valori correnti dell'Ip
-	 * e della Porta.
+	 * dove inserire indirizzo IP, Id e Porta del server a cui collegarsi.
+	 * Le stringhe utilizzate come testo di prompt sono i valori correnti dell'IP, dell'ID
+	 * e della Porta. Il metodo, inoltre, esegue il <i>flush</i> dei campi.
 	 * 
-	 * @param ipAdd Array di <code>TextField</code> che compongono un indirizzo Ip.
-	 * @param portField <code>TextField</code> dove verra' inserito il numero di porta.
+	 * @param ipAdd Array di <code>TextField</code> che compongono un indirizzo IP.
+	 * @param portField <code>TextField</code> dove puo' essere inserito il numero di porta.
+	 * @param idField <code>TextField</code>  dove puo' essere inserito l'ID
 	 */
 	private void updateSettingsPromptText(TextField[] ipAdd, TextField portField, TextField idField) {
 		

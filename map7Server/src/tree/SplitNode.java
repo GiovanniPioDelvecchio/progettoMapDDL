@@ -19,7 +19,7 @@ import util.Constants;
  *
  */
 @SuppressWarnings("serial")
-public abstract class SplitNode extends Node implements Comparable<SplitNode> {
+abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	
 	/**
 	 * Classe contenente informazioni che descrivono lo split effettuato nello SplitNode.
@@ -27,36 +27,36 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
 	 *
 	 */
-	protected class SplitInfo implements Serializable {
+	class SplitInfo implements Serializable {
 
 		/**
 		 * Valore assunto dall'attributo di split dello SplitNode in una determinata
 		 * porzione di dataset.
 		 */
-		Object splitValue;
+		private Object splitValue;
 		
 		/**
 		 * Indice iniziale nella tabella contenente il sottoinsieme rappresentato da SplitNode
 		 * degli esempi aggregati in base al valore dell'attributo di split.
 		 */
-		int beginIndex;
+		private int beginIndex;
 		
 		/**
 		 * Indice finale nella tabella contenente il sottoinsieme rappresentato da SplitNode
 		 * degli esempi aggregati in base al valore dell'attributo di split.
 		 */
-		int endIndex;
+		private int endIndex;
 		
 		/**
 		 * Numero del nodo figlio di SplitNode rappresentato da SplitInfo.
 		 */
-		int numberChild;
+		private int numberChild;
 		
 		/**
 		 * Stringa contenente il simbolo della relazione fra i valori dell'attributo di split
 		 * rappresentati da un'istanza di SplitInfo, e i possibili valori dell'attributo di split.
 		 */
-		String comparator = Constants.DISCRETE_COMPARATOR;
+		private String comparator = Constants.DISCRETE_COMPARATOR;
 		
 		/**
 		 * Costruttore di SplitInfo.
@@ -98,7 +98,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * 
 		 * @return L'indice iniziale del sottoinsieme associato a SplitInfo.
 		 */
-		int getBeginindex() {
+		int getBeginIndex() {
 
 			return beginIndex;			
 		}
@@ -119,7 +119,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * @return Il valore di split associata a SplitInfo (sotto forma di istanza di Object, in quanto
 		 * non si conosce a priori la natura dello split).
 		 */
-		 Object getSplitValue() {
+		Object getSplitValue() {
 
 			return splitValue;
 		}
@@ -127,7 +127,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 /**
 		 * Sovrascrittura del metodo <code>toString</code> di <code>Object</code>.
 		 * 
-		 * @return lo stato dell'oggetto sotto forma di stringa.
+		 * @return Lo stato dell'oggetto sotto forma di stringa.
 		 */
 		 @Override
 		 public String toString() {
@@ -177,7 +177,9 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * Dato un valore, controlla se esiste un figlio del nodo di split con split value pari all'attributo passato in input.
 	 * 
 	 * @param value Possibile valore dell'attributo di split.
+	 * 
 	 * @return Identificativo del figlio a cui appartiene il valore rappresentato di value.
+	 * 
 	 * @throws UnknownValueException Viene lanciata nel caso in cui non esiste un figlio del nodo di split a cui apparterrebbe <code>value</code>.
 	 */
 	abstract int testCondition(Object value) throws UnknownValueException;
@@ -193,7 +195,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * @param endExampleIndex Indice finale nella tabella del sottoinsieme del training set rappresentato dallo SplitNode.
 	 * @param attribute Attributo su cui viene effettuato lo split.
 	 */
-	public SplitNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
+	SplitNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
 
 			super(trainingSet, beginExampleIndex, endExampleIndex);
 			this.attribute = attribute;
@@ -204,7 +206,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 			splitVariance = 0;
 			for (SplitInfo si : mapSplit) {
 
-				double localVariance = new LeafNode(trainingSet, si.getBeginindex(), si.getEndIndex()).getVariance();
+				double localVariance = new LeafNode(trainingSet, si.getBeginIndex(), si.getEndIndex()).getVariance();
 				splitVariance += (localVariance);
 			}
 	}
@@ -224,7 +226,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * 
 	 * @return La varianza dell'attributo target nel nodo di split.
 	 */
-	public double getVariance() {
+	double getVariance() {
 		
 		return splitVariance;
 	}
@@ -234,7 +236,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * 
 	 * @return Il numero di figli dello split (maggiore di 0).
 	 */
-	public int getNumberOfChildren() {
+	int getNumberOfChildren() {
 		 
 		return mapSplit.size();
 	}
@@ -243,11 +245,28 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * Getter per l'istanza di <code>SplitInfo</code> che descrive un certo figlio del nodo di split.
 	 * 
 	 * @param child Indice del figlio del nodo di split di cui conoscere lo SplitInfo.
+	 * 
 	 * @return L'istanza di SplitInfo associata al figlio dello split node specificato.
 	 */
 	SplitInfo getSplitInfo(int child) {
 		
 		return mapSplit.get(child);
+	}
+	
+	
+	/**
+	 * Metodo per formulare una stringa che descrive un nodo di split ed enumera i suoi figli.
+	 * 
+	 * @return Una stringa contenente informazioni sullo split e i suoi figli.
+	 */
+	String formulateQuery() {
+		
+		String query = "";
+		for (int i = 0; i < mapSplit.size(); i++) {
+
+			query += (i + ":" + attribute + mapSplit.get(i).getComparator() + mapSplit.get(i).getSplitValue()) + "\n";
+		}
+		return query;
 	}
 	
 	/**
@@ -269,7 +288,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	/**
 	 * Sovrascrittura del metodo <code>toString</code> di <code>Object</code>.
 	 * 
-	 * @return lo stato dell'oggetto sotto forma di stringa.
+	 * @return Lo stato dell'oggetto sotto forma di stringa.
 	 */
 	@Override
 	public String toString() {
