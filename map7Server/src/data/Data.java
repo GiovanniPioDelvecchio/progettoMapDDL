@@ -160,7 +160,7 @@ public class Data {
 		} finally {
 			
 			/* 
-			 * Qualsiasi cosa accada nel blocco precedente, si chiude la connessione al database
+			 * Qualsiasi cosa accada nel blocco precedente, si chiude la connessione al database.
 			 * Ricordiamo che se la connessione rimane aperta, potrebbero essere generati ulteriori errori
 			 * poiche' il database ha un massimale di connessioni aperte che puo' mantenere.
 			 */ 

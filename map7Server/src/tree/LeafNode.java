@@ -23,7 +23,7 @@ class LeafNode extends Node {
 	
 
 	/**
-	 * Costruttore di LeafNode.
+	 * Costruttore di <code>LeafNode</code>.
 	 * 
 	 * Implementato in maniera incrementale rispetto al costruttore di Node. Successivamente
 	 * alla chiamata del costruttore della superclasse, viene calcolato il valore predetto

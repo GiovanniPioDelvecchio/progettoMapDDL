@@ -111,6 +111,7 @@ class ContinuousNode extends SplitNode {
 			mapSplit.add(new SplitInfo(currentSplitValue, beginExampleIndex, endExampleIndex, 0));
 		} else {
 
+			// Si rimuovono split inutili (che includono tutti gli esempi nella stessa partizione)
 			if ((mapSplit.get(1).getBeginIndex() == mapSplit.get(1).getEndIndex())) {
 
 				mapSplit.remove(1);
