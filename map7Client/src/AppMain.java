@@ -239,7 +239,7 @@ public class AppMain extends Application {
 		/** FINESTRA DI PREDIZIONE **/
 		
 		/*	
-		 * La definizione della finestra di predizione si trova in maniera piuttosto illogica prima
+		 * La definizione della finestra di predizione si trova in maniera piuttosto controintuitiva prima
 		 * della definizione della finestra di selezione poiche' quest'ultima richiama elementi della prima.
 		 * Ad ogni modo, questa inversione di ordine non inficia il funzionamento del programma.
 		 */
