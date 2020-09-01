@@ -57,7 +57,7 @@ public class Data {
 	 * 
 	 * @throws TrainingDataException viene lanciata se vi e' un errore nella connessione alla base di dati,
 	 * 		   l'attributo target non e' dichiarato come numerico o ha valori non accettabili,
-	 * 		   vi sono meno di due attributi o la tabella e' vuota o non presente.
+	 * 		   vi sono meno di due attributi o la tabella e' vuota, non presente o ha valori nulli.
 	 */
 	public Data(String tableName) throws TrainingDataException {
 		
@@ -88,7 +88,7 @@ public class Data {
 			
 			if (schema.getNumberOfAttributes() == 0) {
 				
-				// schema e' restituito senza attributi se la tabella non esiste.
+				// Schema e' restituito senza attributi se la tabella non esiste.
 				throw new TrainingDataException(Constants.ERROR_TABLE_NOT_FOUND);
 			}
 			
@@ -102,6 +102,12 @@ public class Data {
 				
 				// Si lancia un'eccezione se l'ultimo attributo (target) della tabella non e' numerico.
 				throw new TrainingDataException(Constants.ERROR_NO_CLASS_ATTRIBUTE);
+			}
+			
+			if(data.hasNull(tableName)) {
+				
+				// Si lancia un'eccezione se vi è una tupla con almeno un valore nullo
+				throw new TrainingDataException(Constants.ERROR_NULL_VALUES);
 			}
 			
 			int index = 0;
@@ -149,7 +155,6 @@ public class Data {
 			numberOfExamples = this.data.size();
 			
 		} catch (SQLException e) {
-			
 			// In caso di errore durante la manipolazione del database, viene rilanciata l'eccezione sottoforma di TDException
 			throw new TrainingDataException(e.getMessage());
 		} catch (ClassCastException e) {
