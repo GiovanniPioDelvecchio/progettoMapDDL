@@ -241,8 +241,9 @@ INSERT INTO notarget(X,Y,Z) VALUES
 	(3.3333, 'AAA', 'BC'),
 	(6.3, 'A+', 'CC');
 
-CREATE TABLE fewatt(c double);
-INSERT INTO fewatt(c) VALUES
+CREATE TABLE few_attributes(c double);
+
+INSERT INTO few_attributes(c) VALUES
 	(3.3333),
 	(8.88),
 	(10),
