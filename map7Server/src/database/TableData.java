@@ -143,12 +143,12 @@ public class TableData {
 		Statement s = db.getConnection().createStatement();
 		boolean numFlag = column.isNumber();
 		String colName = column.getColumnName();
-
+		
 		// Si esegue la query per ottenere tutti gli elementi
 		ResultSet r = s.executeQuery(
 		"SELECT DISTINCT " + colName + " " +
 		"FROM " + table);
-	
+
 		if (numFlag) { // Si controlla se la colonna è numerica e si leggono i valori di conseguenza 
 			
 			while (r.next()) {
@@ -205,6 +205,35 @@ public class TableData {
 	
 		return queryResult;
 
+	}
+	
+	public boolean hasNull(String table) throws SQLException {
+		
+		boolean result;
+		TableSchema schema = new TableSchema(db, table);
+		if (schema.getNumberOfAttributes() == 0) {
+			
+			// Lancia una SQLException se la tabella non esiste (lo schema non ha colonne)
+			throw new SQLException();			
+		}
+		
+		StringBuffer query = new StringBuffer("SELECT COUNT(*) FROM " + table + " WHERE " +
+				schema.getColumn(0).getColumnName() + " IS NULL ");
+		
+		for (int i=1; i<schema.getNumberOfAttributes(); i++) {
+			
+			query.append("OR " + schema.getColumn(i).getColumnName() + " IS NULL ");
+		}
+		
+		query.append(";");
+		
+		Statement s = db.getConnection().createStatement();
+		ResultSet r = s.executeQuery(query.toString());
+		result = r.getInt("count(*)") != 0;
+		
+		r.close();
+		s.close();
+		return result;
 	}
 	
 	/**
