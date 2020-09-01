@@ -1,1 +1,1 @@
-java -jar client.bat
+java -jar client.jar
