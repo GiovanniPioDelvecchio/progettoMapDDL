@@ -222,3 +222,31 @@ INSERT INTO servo(motor,screw,pgain,vgain,class) VALUES
 	('C','D',4,3,0.9562557),
 	('A','B',3,2,4.499986),
 	('A','A',6,5,0.8062546);
+
+CREATE TABLE vuota(
+	X int,
+	Y char(1),
+	Z char(2),
+	class float);
+
+CREATE TABLE notarget(
+	X float,
+	Y char(3),
+	Z char(2));
+
+INSERT INTO notarget(X,Y,Z) VALUES
+	(3.4, 'AAA', 'BB'),
+	(3.3355, 'AA', 'BB'),
+	(6.66, 'A+', 'CC'),
+	(3.3333, 'AAA', 'BC'),
+	(6.3, 'A+', 'CC');
+
+CREATE TABLE few_attributes(c DOUBLE);
+
+INSERT INTO few_attributes(c) VALUES
+	(3.3333),
+	(8.88),
+	(10),
+	(3.666),
+	(9.0001),
+	(1.9);
