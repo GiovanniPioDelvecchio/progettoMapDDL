@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Classe utilizzata per modellare lo schema di una tabella di un database. A tale scopo
  * questa classe fa utilizzo della classe <code>Column</code> la quale modella, appunto, le colonne dello schema.<br>
- * <code>TableSchema</code> inoltre implementa l'interfaccia <code>Iterable</code> in modo da poter scorrerne
+ * <code>TableSchema</code> inoltre implementa l'interfaccia <code>Iterable</code> in modo da poter scorrerne<br>
  * le colonne con un'istanza di <code>Iterator</code>
  * 
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea

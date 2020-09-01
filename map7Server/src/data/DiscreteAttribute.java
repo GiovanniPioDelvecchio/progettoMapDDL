@@ -17,9 +17,9 @@ import java.util.TreeSet;
 public class DiscreteAttribute extends Attribute implements Iterable<String> {
 	
 	/**
-	 * Set di Stringhe che contiene i valori assumibili (dominio) dall'attributo
-	 * E' implementato come un TreeSet poichè l'ordinamento lessicografico delle stringhe
-	 * ottimizza le operazioni di ricerca che sono le più frequenti.
+	 * Set di Stringhe che contiene i valori assumibili (dominio) dall'attributo.
+	 * E' implementato come un TreeSet poiche' l'ordinamento lessicografico delle stringhe
+	 * ottimizza le operazioni di ricerca, che sono le più frequenti.
 	 */
 	private Set<String> values = new TreeSet<>();
 	

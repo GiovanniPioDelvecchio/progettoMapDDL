@@ -48,12 +48,12 @@ public class Data {
 	
 	/**
 	 * Costruttore di <code>Data</code>.
-	 * Inizializza il training set a partire da una tabella di un database, il cui nome  fornito in 
+	 * Inizializza il training set a partire da una tabella di un database, il cui nome e' fornito in 
 	 * input. Tale tabella deve essere non vuota, con almeno due attributi di cui l'ultimo deve sempre essere l'attributo target.
 	 * 
 	 * @param tableName Stringa contenente il nome della tabella da cui inizializzare il training set.
 	 * 
-	 * @throws TrainingDataException viene lanciata se nella connessione alla base di dati, l'attributo target non e' dichiarato
+	 * @throws TrainingDataException Lanciata se vi e' un errore nella connessione alla base di dati, l'attributo target non e' dichiarato
 	 * come numerico o ha valori non accettabili, vi sono meno di due attributi o la tabella e' vuota o non presente.
 	 */
 	public Data(String tableName) throws TrainingDataException {
@@ -120,8 +120,8 @@ public class Data {
 				} else {
 
 					/*
-					 * Poiche' getDistinctColumnValues restituisce un set di object, ed esso non puo' essere
-					 * direttamente castato in un set di stringhe (utile ad inizializzare l'attributo discreto)
+					 * Poiche' getDistinctColumnValues restituisce un set di Object, ed esso non puo' essere
+					 * direttamente "castato" in un Set di stringhe (utile ad inizializzare l'attributo discreto)
 					 * si esegue un "travaso" con cast esplicito.
 					 * In caso di errore durante il cast viene sollevata un'eccezione gestita in seguito.
 					 */
@@ -162,7 +162,7 @@ public class Data {
 			/* 
 			 * Qualsiasi cosa accada nel blocco precedente, si chiude la connessione al database
 			 * Ricordiamo che se la connessione rimane aperta, potrebbero essere generati ulteriori errori
-			 * poiche' il database ha un massimale di connessioni aperte che puo' mantenere
+			 * poiche' il database ha un massimale di connessioni aperte che puo' mantenere.
 			 */ 
 			try {
 
@@ -205,9 +205,9 @@ public class Data {
 	 * 
 	 * @param exampleIndex Intero non negativo rappresentante un indice di un esempio. 
 	 * 
-	 * @return un oggetto di tipo Double contenente il valore dell'attributo target dell'esempio.
+	 * @return Un oggetto di tipo Double contenente il valore dell'attributo target dell'esempio.
 	 * 
-	 * @throws IndexOutOfBoundsException Lancia un'eccezione se l'indice e' fuori range.
+	 * @throws IndexOutOfBoundsException Lanciata se l'indice fornito e' fuori range.
 	 */
 	public Double getClassValue(int exampleIndex) {
 		
@@ -275,7 +275,7 @@ public class Data {
 	}
 
 	/**
-	 * Metodo di sorting per Data. Ordina il set rispetto attributo passato in input sulla porzione di esempi
+	 * Metodo di sorting per <code>Data</code>. Ordina il set rispetto all'attributo passato in input sulla porzione di esempi
 	 * indicata da beginExampleIndex e endExampleIndex, utilizzando l'algoritmo del quicksort.
 	 * 
 	 * @param attribute Attributo rispetto al quale eseguire il sorting del set.
@@ -378,7 +378,7 @@ public class Data {
 				j--;
 			}
 			
-			if(i < j) {
+			if (i < j) {
 				
 				swap(i, j);
 			} else {
@@ -401,13 +401,16 @@ public class Data {
 	private void quicksort(Attribute attribute, int inf, int sup) {
 		
 		if (sup >= inf) {
-			
+
 			int pos;
-			if (attribute instanceof DiscreteAttribute)
-				pos = partition((DiscreteAttribute)attribute, inf, sup);
-			else
-				pos = partition((ContinuousAttribute)attribute, inf, sup);
-					
+			if (attribute instanceof DiscreteAttribute) {
+			
+				pos = partition((DiscreteAttribute) attribute, inf, sup);
+			} else {
+				
+				pos = partition((ContinuousAttribute) attribute, inf, sup);
+			}
+			
 			if ((pos - inf) < (sup - pos + 1)) {
 				
 				quicksort(attribute, inf, pos - 1); 

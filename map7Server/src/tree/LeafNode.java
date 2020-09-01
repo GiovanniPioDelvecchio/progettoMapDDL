@@ -13,7 +13,7 @@ import data.Data;
  *
  */
 @SuppressWarnings("serial")
-public class LeafNode extends Node {
+class LeafNode extends Node {
 	
 	/**
 	 * Predizione sul valore dell'attributo target in relazione al sottoinsieme del training
@@ -33,7 +33,7 @@ public class LeafNode extends Node {
 	 * @param beginExampleIndex Indice iniziale nella tabella contenente il sottoinsieme del dataset rappresentato dal nodo.
 	 * @param endExampleIndex Indice finale nella tabella contenente il sottoinsieme del dataset rappresentato dal nodo.
 	 */
-	public LeafNode(Data trainingSet, int beginExampleIndex, int endExampleIndex) {
+	LeafNode(Data trainingSet, int beginExampleIndex, int endExampleIndex) {
 		
 		super(trainingSet, beginExampleIndex, endExampleIndex);
 		
@@ -52,7 +52,7 @@ public class LeafNode extends Node {
 	 * 
 	 * @return Il valore predetto dell'attributo target relativo al nodo foglia corrente.
 	 */
-	public double getPredictedClassValue() {
+	double getPredictedClassValue() {
 		
 		return predictedClassValue;
 	}
@@ -62,7 +62,7 @@ public class LeafNode extends Node {
 	 * 
 	 * @return 0 per definizione di nodo foglia
 	 */
-	public int getNumberOfChildren() {
+	int getNumberOfChildren() {
 
 		return 0;
 	}
@@ -70,7 +70,7 @@ public class LeafNode extends Node {
 	/**
 	 * Sovrascrittura del metodo <code>toString</code> di <code>Object</code>.
 	 * 
-	 * @return lo stato dell'oggetto sotto forma di stringa.
+	 * @return Lo stato dell'oggetto sotto forma di stringa.
 	 */
 	@Override
 	public String toString() {

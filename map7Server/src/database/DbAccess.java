@@ -16,12 +16,12 @@ import java.sql.SQLException;
 public class DbAccess {
 
 	/**
-	 * Costante privata contenente il nome della classe-Driver per accedere ad un database MySQL
+	 * Costante contenente il nome della classe-Driver per accedere ad un database MySQL
 	 */
 	private final String DRIVER_CLASS_NAME = "com.mysql.cj.jdbc.Driver";
 	
 	/**
-	 * Costante privata contenente il nome del DBMS a cui il programma deve accedere. Nel caso in esame è MySQL
+	 * Costante contenente il nome del DBMS a cui il programma deve accedere. Nel caso in esame è MySQL
 	 */
 	private final String DBMS = "jdbc:mysql"; 
 	
@@ -42,7 +42,7 @@ public class DbAccess {
 	private final String PORT = "3306"; 
 	
 	/**
-	 * Stringa contenente lo username utilizzato per accedere al database
+	 * Stringa contenente lo UserName utilizzato per accedere al database
 	 */
 	private String USER_ID = "MapUser";
 	
@@ -60,8 +60,8 @@ public class DbAccess {
 	 * Metodo per inizializzare la connessione alla base di dati.
 	 * A tale fine fa utilizzo delle informazioni di default.
 	 * 
-	 * @throws DatabaseConnectionException Lancia un'eccezione in caso non venga trovata la classe del driver,
-	 * 		   in caso ci sia errore o accesso illegale ad una classe durante l'istanziazione del driver 
+	 * @throws DatabaseConnectionException Lanciata in caso non venga trovata la classe del driver,
+	 * 		   si verifichi un errore o un accesso illegale ad una classe durante l'istanziazione del driver, 
 	 *         o se viene sollevata un'eccezione durante la creazione della connessione.
 	 */
 	public void initConnection() throws DatabaseConnectionException {
@@ -74,7 +74,7 @@ public class DbAccess {
 			/**
 			 * In caso la classe del driver non sia disponibile, oppure vengano
 			 * generati errori durante la sua istanziazione, tali eccezioni vengono
-			 * propagate come DatabasebConnectionException.
+			 * propagate come DatabaseConnectionException.
 			 * Il messaggio di errore viene però stampato nella console e non inserito nell'eccezione
 			 * poiche' non e' necessario notificare al Client la natura dell'errore durante la connessione.
 			 */
@@ -126,7 +126,7 @@ public class DbAccess {
 	/**
 	 * Chiude la connessione al database. Se la connessione non è stata inizializzata, non esegue alcuna operazione.
 	 * 
-	 * @throws DatabaseConnectionException Lancia un'eccezione se la chiusura di una connessione genera una <code>SQLExcepition</code>.
+	 * @throws DatabaseConnectionException Lanciata se la chiusura di una connessione genera una <code>SQLExcepition</code>.
 	 */
 	public void closeConnection() throws DatabaseConnectionException {
 		

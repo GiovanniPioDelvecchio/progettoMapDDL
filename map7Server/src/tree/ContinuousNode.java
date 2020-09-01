@@ -15,7 +15,7 @@ import server.UnknownValueException;
  * 
  */
 @SuppressWarnings("serial")
-public class ContinuousNode extends SplitNode {
+class ContinuousNode extends SplitNode {
 
 	/**
 	 * Costruttore di ContinuousNode.
@@ -29,7 +29,7 @@ public class ContinuousNode extends SplitNode {
 	 * 
 	 * @see ContinuousAttribute
 	 */
-	public ContinuousNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, ContinuousAttribute attribute) {
+	ContinuousNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, ContinuousAttribute attribute) {
 		
 		super(trainingSet, beginExampleIndex, endExampleIndex, attribute);
 	}
@@ -39,7 +39,7 @@ public class ContinuousNode extends SplitNode {
 	 * 
 	 * Il metodo si occupa di trascrivere le informazioni relative al modo in cui si e' effettuato lo split sull'attributo continuo.
 	 * 
-	 * @param trainingSet Istanza di <code>Data</code> contenente il training set su cui costrutire l'albero di regressione
+	 * @param trainingSet Istanza di <code>Data</code> contenente il training set su cui costruire l'albero di regressione.
 	 * @param beginExampleIndex Indice di inizio nella tabella contenente il sottoinsieme di training set rappresentato dal nodo di split continuo. 
 	 * @param endExampleIndex Indice di fine nella tabella contenente il sottoinsieme di training set rappresentato dal nodo di split continuo.
 	 * @param attribute Attributo continuo indipendente su cui viene effettuato lo split. All'atto pratico, <code>attribute</code> deve essere

@@ -9,8 +9,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Classe che modella l’insieme di transazioni da un database e collezionate in una tabella.<br>
- * Da essa è possibile ottenere una lista di tuple per poter manipolarle, nonche' ottenere tutti i valori
+ * Classe che modella l’insieme di transazioni da un database, collezionate in una tabella.<br>
+ * Da essa e' possibile ottenere una lista di tuple per poter manipolarle, nonche' ottenere tutti i valori
  * distinti all'interno di una colonna.
  * 
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
@@ -127,10 +127,10 @@ public class TableData {
 	 * @param column istanza di Column contenente il nome della colonna della tabella da 
 	 * 		  cui ricavare i valori distinti
 	 *
-	 * @return un <code>Set</code> di <code>Object</code> contenente i valori distinti assunti nell'attributo specificato nella tabella.
+	 * @return Un <code>Set</code> di <code>Object</code> contenente i valori distinti assunti nell'attributo specificato nella tabella.
 	 * 		   Il <code>Set</code> ha i propri elementi ordinati in ordine ascendente.
 	 * 
-	 * @throws SQLException Se avvene un errore nell'esecuzione della <i>query</i>.
+	 * @throws SQLException Lanciata se avviene un errore nell'esecuzione della <i>query</i>.
 	 */
 	public Set<Object> getDistinctColumnValues(String table, Column column) throws SQLException {
 
