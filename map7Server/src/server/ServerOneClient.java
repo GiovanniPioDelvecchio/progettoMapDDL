@@ -301,7 +301,7 @@ public class ServerOneClient extends Thread {
 				 */
 				if (clientDecision != null && clientDecision == -1) {
 
-					log = "Thread " + this.getId() + ": " + "closing connection with " + socket + " at " + Instant.now();
+					log = "Thread " + this.getId() + ": " + "Closing connection with " + socket + " at " + Instant.now();
 					System.out.println(log);
 					 
 					synchronized (logFile) {
@@ -311,7 +311,7 @@ public class ServerOneClient extends Thread {
 					}
 				} else {
 
-					log = "Thread " + this.getId() + ": " + "aborted connection with " + socket + " at " + Instant.now();
+					log = "Thread " + this.getId() + ": " + "Aborted connection with " + socket + " at " + Instant.now();
 					System.out.println(log);
 					synchronized (logFile) {
 

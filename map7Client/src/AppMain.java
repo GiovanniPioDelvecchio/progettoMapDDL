@@ -491,6 +491,9 @@ public class AppMain extends Application {
 			 * modificabili. Dopo la lettura della lista, i suoi contenuti vengono inseriti nell'attributo
 			 * servers, sotto forma di ServerInformation (quindi oggetti read-only).
 			 */
+			@SuppressWarnings("unchecked")
+			// Il compilatore solleva un warning sul cast non sicuro (a causa dell'erasure).
+			// Viene ignorato poichè si e' certi di cio' che è stato memorizzato.
 			ArrayList<MutableServerInformation> serializedServerList = (ArrayList<MutableServerInformation>) serversIn.readObject();
 
 			servers.clear();
@@ -542,8 +545,11 @@ public class AppMain extends Application {
 		TableColumn<ServerInformation, Integer> portCol = new TableColumn<ServerInformation, Integer>(Constants.COLUMN_PORT);
 		portCol.setCellValueFactory(new PropertyValueFactory<ServerInformation, Integer>("port"));
 		
-		// Infine vengono aggiunte le tabelle appena create alla TableView serverTable.
-		serverTable.getColumns().setAll(idCol, ipCol, portCol);
+		// Infine vengono aggiunte le tabelle appena create alla TableView serverTable..
+		serverTable.getColumns().add(idCol);
+		serverTable.getColumns().add(ipCol);
+		serverTable.getColumns().add(portCol);
+
 		serverTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		
 		/*
@@ -985,7 +991,10 @@ public class AppMain extends Application {
 			if (toCheck.equals(Constants.SERVER_QUERY)) {
 
 				// In caso di nodo di split vengono generati i pulsanti per la selezione
-				List<String> options = new ArrayList<String>((ArrayList<String>)in.readObject());
+				@SuppressWarnings("unchecked")
+				// Il compilatore solleva un warning sul cast non sicuro che può esser ignorato
+				// in quanto si e' sicuri di ricevere dal server (nella versione apposita) un arrayList di stringhe
+				List<String> options = new ArrayList<String>((ArrayList<String>) in.readObject());
 				int i = 0;
 				for (String elem : options) {
 					
