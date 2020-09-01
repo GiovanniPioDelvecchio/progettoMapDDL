@@ -17,7 +17,8 @@ public class ContinuousAttribute extends Attribute {
 	 * 
 	 * 
 	 * @param name Stringa contenente il nome dell'attributo.
-	 * @param index Intero indicante l'indice identificativo dell'attributo.+
+	 * @param index Intero indicante l'indice identificativo dell'attributo.
+	 * 
  	 * @see Attribute
 	 */
 	public ContinuousAttribute(String name, int index) {

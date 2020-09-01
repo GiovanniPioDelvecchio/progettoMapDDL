@@ -67,7 +67,7 @@ abstract class Node implements Serializable {
 		double delta;
 		int n = 0;
 		
-		// Algoritmo proposto da Knuth in Art of Computer Programming per il calcolo della varianza
+		// Algoritmo proposto da Knuth in "The Art of Computer Programming" per il calcolo della varianza
 		// in un solo ciclo
 		for (int i = beginExampleIndex; i <= endExampleIndex; i++) {
 

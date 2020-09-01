@@ -184,6 +184,7 @@ public class Data {
 	 * @return una stringa contenente tutti gli esempi del training set separati dal carattere di fine linea e
 	 * 		   coi valori separati da virgole.
 	 */
+	 @Override
     public String toString() {
         
         StringBuffer value = new StringBuffer("");

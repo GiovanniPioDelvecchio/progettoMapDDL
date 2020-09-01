@@ -60,6 +60,7 @@ public class Column {
 	 * 
 	 * @return Una stringa che concatena nome e tipo della colonna nel formato "[nome]:[tipo]".
 	 */
+	@Override
 	public String toString() {
 		
 		return name + ":" + type;

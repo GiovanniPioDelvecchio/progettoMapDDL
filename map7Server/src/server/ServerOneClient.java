@@ -14,11 +14,13 @@ import tree.RegressionTree;
 import util.Constants;
 
 /**
- * Classe utilizzata per comunicare con un singolo Client su di un Thread separato da quello principale.
+ * Classe utilizzata per comunicare con un singolo Client su di un Thread separato da quello principale.<br>
  * 
  * Questa classe viene istanziata dal metodo <code>run()</code> di <code>MultiServer</code> quando un Client
  * vuole connettersi al Server. Il suo compito principale e' quello di comunicare con il Client ed effettuare
- * le operazioni richieste. Come per <code>MultiServer</code>, anche questa classe opera su di un file di log.
+ * le operazioni richieste. <br>
+ * Come per <code>MultiServer</code>, anche questa classe opera sullo stesso file di log, passato come parametro
+ * al costruttore.
  * 
  * 
  * @see MultiServer

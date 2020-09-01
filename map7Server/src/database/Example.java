@@ -77,6 +77,7 @@ public class Example implements Comparable<Example>, Iterable<Object> {
 	 * 
 	 * @return Una stringa che concatena le stringhe restituite dal <code>toString</code> di ogni oggetto nella tupla.
 	 */
+	@Override
 	public String toString() {
 		
 		StringBuffer str = new StringBuffer("");

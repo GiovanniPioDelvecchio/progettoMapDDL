@@ -28,6 +28,7 @@ public class TrainingDataException extends Exception {
 	 * 
 	 * @return Una stringa che racchiude il nome e il messaggio dell'eccezione.
 	 */
+	@Override
 	public String toString() {
 		
 		return this.getClass().getName() + ": " + this.getMessage();

@@ -11,7 +11,7 @@ import util.Constants;
 public class MainTest {
 	
 	/**
-	 * Main del server. Inizializza un thread di tipo MultiServer sulla porta indicata tra gli argomenti
+	 * Main del server. Inizializza un oggetto di tipo MultiServer con porta indicata tra gli argomenti
 	 * a riga di comando. Se tale porta è assente, viene utilizzata la porta di default 8080, se non è possbile
 	 * parsificarla o risulta essere fuori range, viene visualizzato un messaggio di errore e il server
 	 * <b>non</b> viene avviato.
@@ -33,7 +33,7 @@ public class MainTest {
 					System.out.println(Constants.ERROR_BAD_PORT);
 					return;
 				}
-			} catch(NumberFormatException e) {
+			} catch (NumberFormatException e) {
 				
 				System.out.println(Constants.ERROR_BAD_PORT);
 				return;

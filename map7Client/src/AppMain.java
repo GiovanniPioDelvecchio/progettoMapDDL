@@ -36,8 +36,8 @@ import javafx.stage.Stage;
 import utility.Constants;
 
 /**
- * Classe che si occupa dell'interfaccia grafica del lato Client. Tale classe sfrutta<br>
- * quanto messo a disposizione dalla libreria javafx, la quale è <i>built-in</in> in Java 8.<br>
+ * Classe che si occupa dell'interfaccia grafica del lato Client.<br>
+ * Tale classe sfrutta quanto messo a disposizione dalla libreria javafx, la quale e' <i>built-in</in> in Java 8.<br>
  * Inoltre, <code>AppMain</code> gestisce anche la comunicazione via socket e permette il salvataggio
  * della lista dei server con cui il programma comunica. 
  * 
@@ -72,7 +72,8 @@ public class AppMain extends Application {
 
 	/**
 	 * Istanza di ServerInformation contenente le informazioni, appunto, relative al
-	 * server con il quale instaurare la comunicazione. Di default viene inizializzato al localhost
+	 * server selezionato con il quale instaurare la comunicazione. 
+	 * Di default viene inizializzato al localhost.
 	 */
 	private ServerInformation currServer = servers.get(0);
 
@@ -99,12 +100,15 @@ public class AppMain extends Application {
 	}
 	
 	/**
-	 * @override del metodo start di Application. Tale metodo rappresenta il "<i>main</i>"
-	 * dell'applicazione che viene eseguito all'inizio del programma e il cui scopo è di definire
-	 * il comportamento delle varie componenti interattive (pulstanti, barre, finestre di dialogo...) e 
-	 * il loro aspetto.
+	 * Sovrascrittura del metodo <code>start</code> di <code>Application</code>.
+	 * Tale metodo rappresenta il principale dell'applicazione che viene eseguito all'inizio del programma e
+	 * il cui scopo e' di definireil comportamento delle varie componenti interattive (pulstanti, barre,
+	 * finestre di dialogo...) e il loro aspetto.
 	 * 
 	 * @param mainStage riferimento alla finestra principale dell'applicazione.
+	 * 
+	 * @see Application
+	 * 
 	 */
 	public void start(Stage mainStage) {
 		
@@ -234,10 +238,11 @@ public class AppMain extends Application {
 		/** FINESTRA DI PREDIZIONE **/
 		
 		/*	
-		 * La definizione della finestra di predizione si in maniera piuttosto illogica prima
-		 * della definizione della finestra di selezione poichè quest'ultima richiama elementi della prima
-		 * Ad ogni modo, questa inversione di orfine non inficia il funzionamento del programma
+		 * La definizione della finestra di predizione si trova in maniera piuttosto illogica prima
+		 * della definizione della finestra di selezione poiche' quest'ultima richiama elementi della prima.
+		 * Ad ogni modo, questa inversione di ordine non inficia il funzionamento del programma.
 		 */
+		
 		// Definizione del layout generale della finestra
 		BorderPane predictPane = new BorderPane();
 		
@@ -252,8 +257,9 @@ public class AppMain extends Application {
 		userChoices.setVgap(5d);
 		userChoices.setPrefColumns(3);
 		
-		/** Etichetta per mostrare il risultato della predizione
-		 *  Quando non si è ancora giunti alla predizione, mostra un'istruzione
+		/** 
+		 * Etichetta per mostrare il risultato della predizione
+		 * Quando non si è ancora giunti alla predizione, mostra un'istruzione
 		 */
 		Label predictedValue = new Label(Constants.LABEL_PREDICTION_QUERY);
 		predictedValue.setAlignment(Pos.CENTER);
@@ -279,7 +285,7 @@ public class AppMain extends Application {
 			} catch (IOException e1) {
 				/**
 				 * in caso di errore durante la comunicazione, si mostra una finestra di dialogo, 
-				 * si tenta di chiudere la cominicazione (se non è possibile si mostra un'altra finestra)
+				 * si tenta di chiudere la cominicazione (se non e' possibile si mostra un'altra finestra)
 				 * e si torna alla home.
 				 */
 				showAlert(Constants.ERROR_SERVER_UNREACHABLE, Alert.AlertType.ERROR);
@@ -350,7 +356,7 @@ public class AppMain extends Application {
 		TextField tableName = new TextField();
 		selectionPane.add(tableName, 0, 1, 2, 1);
 		
-		// Si inserisce un pulasnte di conferma che rimane disattivato se non viene inserito del testo
+		// Si inserisce un pulsante di conferma che rimane disattivato se non viene inserito del testo
 		Button confirm = new Button(Constants.BUTTON_CONFIRM);
 		confirm.setDisable(true);
 		confirm.setOnAction(e -> {
@@ -368,10 +374,12 @@ public class AppMain extends Application {
 				} else {
 					
 					if (loadFlag == false) {
-						// In caso di creazioen di albero si comunica la volontà di salvare l'albero
+						
+						// In caso di creazione di un albero si richiede automaticamente il suo salvataggio
 						out.writeObject(Constants.CLIENT_SAVE);
 						ans = ((String) in.readObject());
-						/* Se il salvataggio dell'albero non va a buon fine, si permette comunque
+						/**
+						 * Se il salvataggio dell'albero non va a buon fine, si permette comunque
 						 * di accedere alla predizione
 						 */
 						if (!ans.equals(Constants.SERVER_OK)) {
@@ -420,7 +428,7 @@ public class AppMain extends Application {
 			
 		try {
 				/*
-				 * Si notifica che si sta tornando alla home
+				 * Si notifica che si sta tornando alla home.
 				 * La stringa con cui lo si comunica deve essere composta in modo da non poter
 				 * rappresentare una tabella che possa essere scelta.
 				 */
@@ -842,22 +850,24 @@ public class AppMain extends Application {
 		newServerScene.getStylesheets().add(Constants.PATH_THEME);
 		predictScene.getStylesheets().add(Constants.PATH_THEME);
 
-		// specifica della barra del titolo e del layout della schermata di home
+		// Specifica della barra del titolo e del layout della schermata di home
 		mainStage.setTitle(Constants.CLIENT_WINDOW_NAME);
 		mainStage.getIcons().add(new Image(Constants.PATH_CLIENT_ICON));
 		
 		// Specifica del comportamento da assumere alla chiusura della finestra principale.
 		mainStage.setOnCloseRequest(e -> {
 			
-			/** Se e' in corso una comunicazione col server, si notifica la chiusura e 
-			 * 	si tenta l'interruzione delle comunicazioni
+			/** 
+			 * Se e' in corso una comunicazione col server, si notifica la chiusura e 
+			 * si tenta l'interruzione delle comunicazioni
 			 */
 			if (clientSocket != null) {
 				if (!clientSocket.isClosed()) {
 					try {
 						
-						/** Si verifica in quale finestra ci si trova per 
-						 * 	identificare il tipo di messaggio di chiusura da mandare
+						/** 
+						 * Si verifica in quale finestra ci si trova per 
+						 * identificare il tipo di messaggio di chiusura da mandare
 						 */
 						if (mainStage.getScene().equals(selectionScene)) {
 							

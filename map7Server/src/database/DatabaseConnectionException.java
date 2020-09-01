@@ -39,6 +39,7 @@ public class DatabaseConnectionException extends Exception {
 	 * @return una stringa contenente il nome dell'eccezione concatenato al messaggio, se c'e', o
 	 * 		   ad un messaggio generico.
 	 */
+	@Override
 	public String toString() {
 		
 		if (this.getMessage() == null ) {
