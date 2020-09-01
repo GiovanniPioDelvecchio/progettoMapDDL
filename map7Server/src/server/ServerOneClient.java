@@ -14,32 +14,49 @@ import tree.RegressionTree;
 import util.Constants;
 
 /**
- * Classe utilizzata per comunicare con un singolo Client su un Thread separato da quello principale.
+ * Classe utilizzata per comunicare con un singolo Client su di un Thread separato da quello principale.<br>
  * 
  * Questa classe viene istanziata dal metodo <code>run()</code> di <code>MultiServer</code> quando un Client
  * vuole connettersi al Server. Il suo compito principale e' quello di comunicare con il Client ed effettuare
- * le operazioni richieste.
+ * le operazioni richieste. <br>
+ * Come per <code>MultiServer</code>, anche questa classe opera sullo stesso file di log, passato come parametro
+ * al costruttore.
+ * 
  * 
  * @see MultiServer
- * 
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
  *
  */
 public class ServerOneClient extends Thread {
 
-	
+	/**
+	 * Socket utilizzata per la comunicazione con un client.
+	 */
 	private Socket socket;
+	
+	/**
+	 * Stream di Input su cui verranno ricevute le comunicazioni del Client. 
+	 */
 	private ObjectInputStream in;
+	
+	/**
+	 * Stream di Output su verranno inviate le comunicazioni al Client.
+	 */
 	private ObjectOutputStream out;
+	
+	/**
+	 * Stream testuale per la scrittura del log dell'attivita' del thread su file.
+	 */
 	private BufferedWriter logFile;
 	
 	/**
-	 * Costruttore di ServerOneClient.
+	 * Costruttore di <code>ServerOneClient</code>.
 	 * 
 	 * La nuova istanza della classe comunichera' con il Client su di un nuovo thread.
 	 * 
 	 * @param s Socket di comunicazione con il Client che ha effettuato la connessione.
-	 * @param logFileName Nome del file che viene utilizzato per trascrivere i log
+	 * @param l Stream testuale già aperto che viene utilizzato per trascrivere i log.
+	 * 
 	 * @throws IOException Lanciata in caso di errore di comunicazione con il Client.
 	 */
 	public ServerOneClient(Socket s, BufferedWriter l) throws IOException {
@@ -69,11 +86,11 @@ public class ServerOneClient extends Thread {
 	}
 	
 	/**
-	 * Metodo principale di esecuzione di ServerOneClient.
+	 * Metodo principale di esecuzione di <code>ServerOneClient</code>.
 	 * 
 	 * Si occupa di ricevere richieste dal Client e fornire i dati richiesti.
 	 * Ogni operazione e' identificata da un Integer, che viene letto e scritto tramite
-	 * gli ObjectInputStream/ObjectOutputStream.
+	 * gli ObjectInputStream e ObjectOutputStream.
 	 * 
 	 */
 	public void run() {
@@ -92,10 +109,10 @@ public class ServerOneClient extends Thread {
 			 * Si attende poi da parte del client la stringa contenente il nome di una tabella/file valido
 			 * (finchè noTable = false)
 			 */
-			while(noTable) {
+			while (noTable) {
 				String trainingfileName = (String) in.readObject();
 				
-				if(trainingfileName.equals(Constants.CLIENT_ABORT)) {
+				if (trainingfileName.equals(Constants.CLIENT_ABORT)) {
 					// Se viene ricevuta la stringa speciale di chiusura (l'utente torna alla home)
 					// si procede alla chiusura della connessione
 					clientDecision = Constants.CLIENT_END;
@@ -114,7 +131,7 @@ public class ServerOneClient extends Thread {
 						 */
 						trainingSet = new Data(trainingfileName);
 						tree = new RegressionTree(trainingSet);
-	
+
 						/*
 						 * Per comunicare al Client che non ci sono stati problemi, viene inviata la stringa "OK"
 						 */
@@ -143,6 +160,7 @@ public class ServerOneClient extends Thread {
 									logFile.write("\n" + e.toString());
 									logFile.flush();
 								}
+								
 								out.writeObject(e.toString());
 							} finally {
 								/*
@@ -165,12 +183,13 @@ public class ServerOneClient extends Thread {
 				/*
 				 * La lettura dell'intero 2 indica il caricamento di un albero di regressione presente in memoria.
 				 */
-				if(clientDecision == Constants.CLIENT_LOAD) {
+				if (clientDecision == Constants.CLIENT_LOAD) {
 					
 					try {
 	
 						/*
-						 * L'utente non ha bisogno di inserire l'estensione ".dmp" nella stringa inserita.
+						 * Al nome della tabella fornita dall'utente, viene aggiunta l'estensione ".dmp", e successivamente viene
+						 * caricata l'istanza di RegressionTree serializzata in precedenza nel file da tale nome.
 						 */
 						tree = RegressionTree.carica(trainingfileName + ".dmp");
 						noTable = false;
@@ -184,7 +203,7 @@ public class ServerOneClient extends Thread {
 	
 						/*
 						 * Nel caso in cui non fosse presente in memoria il file dal nome specificato, viene inviato al Client
-						 * un messaggio di errore.
+						 * un messaggio di errore, ma la connessione non viene interrotta.
 						 */
 						out.writeObject(e.toString());
 					} catch (IOException e) {
@@ -260,11 +279,13 @@ public class ServerOneClient extends Thread {
 					logFile.write("\n" + log);
 					logFile.flush();
 				}
+				
 			} catch (IOException e2) {
 
 				System.out.println("Unable to log on file: " + e2.getMessage());
 			}
 			return;
+			
 		} finally {
 
 			/*
@@ -303,7 +324,7 @@ public class ServerOneClient extends Thread {
 
 				/*
 				 * In caso di errore di comunicazione con il Client durante la chiusura del Socket, viene
-				 * stampato un messaggio di errore sulla console del Server.
+				 * stampato un messaggio di errore sulla console del Server e nel file di log.
 				 */
 				log = "Thread " + this.getId() + ": " + "error closing connection with " + socket + " : " + e.getClass().getName()
 						+ " : " + e.getMessage();

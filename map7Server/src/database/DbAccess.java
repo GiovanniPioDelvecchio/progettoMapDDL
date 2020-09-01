@@ -7,28 +7,29 @@ import java.sql.SQLException;
 import util.Constants;
 
 /**
- * Classe che modella un accesso ad un database MySQL.<br> In particolare la classe stabilisce una connessione
- * di default al database "MapDB" locato sulla macchina dove il programma viene lanciato alla porta 3306 con
- * credenziali "MapUser" e "map" (UserName e Password).
+ * Classe che modella un accesso ad un database MySQL.<br> 
+ * In particolare la classe stabilisce una connessione di default al database "MapDB" locato sulla macchina
+ * dove il programma viene lanciato alla porta 3306.
+ * L'utente utilizzato dal server e' "MapUser".
  * 
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
  *
  */
-
 public class DbAccess {
 
 	/**
-	 * Costante privata contenente il nome della classe-Driver per accedere ad un database MySQL
+	 * Costante contenente il nome della classe-Driver per accedere ad un database MySQL
 	 */
 	private final String DRIVER_CLASS_NAME = "com.mysql.cj.jdbc.Driver";
 	
 	/**
-	 * Costante privata contenente il nome del DBMS a cui il programma deve accedere. Nel caso in esame è MySQL
+	 * Costante contenente il nome del DBMS a cui il programma deve accedere. Nel caso in esame è MySQL
 	 */
 	private final String DBMS = "jdbc:mysql"; 
 	
 	/**
-	 * Stringa contenente il nome del server dov'è locato il database.
+	 * Stringa contenente l'indirizzo IP del server dove si trova il database.
+	 * Il valore localhost indica la macchina su cui si sta eseguendo il server.
 	 */
 	private String SERVER = "localhost";
 	
@@ -38,17 +39,17 @@ public class DbAccess {
 	private String DATABASE = "MapDB";
 	
 	/**
-	 * Costante privata contenente il numero di porta del server MySQL
+	 * Costante contenente il numero di porta del server MySQL
 	 */
 	private final String PORT = "3306"; 
 	
 	/**
-	 * Stringa contenente l'id da user utilizzato per accedere al database
+	 * Stringa contenente lo UserName utilizzato per accedere al database
 	 */
 	private String USER_ID = "MapUser";
 	
 	/**
-	 * Stringa contenente la password corredata all'UserName da utilizzare per accedere al db
+	 * Stringa contenente la password associata all'UserName da utilizzare per accedere al db
 	 */
 	private String PASSWORD = "map";
 	
@@ -61,7 +62,7 @@ public class DbAccess {
 	 * Metodo per inizializzare la connessione alla base di dati.
 	 * A tale fine fa utilizzo delle informazioni di default.
 	 * 
-	 * @throws DatabaseConnectionException Lancia un'eccezione in caso non venga trovata la classe del driver,
+	 * @throws DatabaseConnectionException Lanciata in caso non venga trovata la classe del driver,
 	 * 		   in caso ci sia errore o accesso illegale ad una classe durante l'istanziazione del driver 
 	 *         o se viene sollevata un'eccezione durante la creazione della connessione.
 	 */
@@ -69,15 +70,15 @@ public class DbAccess {
 		
 		try {
 			
-			//Crea una istanza del driver per verificare che esso sia disponibile per l'utilizzo
+			// Crea una istanza del driver per verificare che esso sia disponibile per l'utilizzo
 			Class.forName(DRIVER_CLASS_NAME).newInstance();
 			
 			/**
 			 * In caso la classe del driver non sia disponibile, oppure vengano
 			 * generati errori durante la sua istanziazione, tali eccezioni vengono
-			 * propagate come DbCException.
+			 * propagate come DatabaseConnectionException.
 			 * Il messaggio di errore viene però stampato nella console e non inserito nell'eccezione
-			 * poichè non è necessario notificare al Client la natura dell'errore durante la connessione.
+			 * poiche' non e' necessario notificare al Client la natura dell'errore durante la connessione.
 			 */
 		} catch(ClassNotFoundException e) {
 			
@@ -117,7 +118,7 @@ public class DbAccess {
 	/**
 	 * Metodo getter per ottenere la connessione incapsulata in un'istanza di DBAccess.
 	 *
-	 * @return la connessione al database se inizializzata, null altrimenti.
+	 * @return La connessione al database se inizializzata, null altrimenti.
 	 */
 	public Connection getConnection() {
 
@@ -127,16 +128,16 @@ public class DbAccess {
 	/**
 	 * Chiude la connessione al database. Se la connessione non è stata inizializzata, non esegue alcuna operazione.
 	 * 
-	 * @throws DatabaseConnectionException Lancia un'eccezione se la chiusura di una connessione genera una <code>SQLExcepition</code>.
+	 * @throws DatabaseConnectionException Lanciata se la chiusura di una connessione genera una <code>SQLExcepition</code>.
 	 */
 	public void closeConnection() throws DatabaseConnectionException {
 		
 		try {
+			
 			if (conn != null) {
 				
 				conn.close();
 			}
-			
 		} catch (SQLException e) {
 
 			throw new DatabaseConnectionException(Constants.ERROR_DB_CONNECTION_CLOSING);

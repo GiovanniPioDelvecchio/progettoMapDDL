@@ -4,18 +4,17 @@ import util.Constants;
 
 /**
  * Classe che modella un'eccezione generata durante la connessione al Database.
- * Poich� pu� essere lanciata solamente all'interno del package <code>database</code>
- * ma gestita all'esterno, � pubblica mentre i suoi costruttori hanno visibilit� package.
+ * Poiche' puo' essere lanciata solamente all'interno del package <code>database</code>
+ * ma gestita all'esterno, e' pubblica mentre i suoi costruttori hanno visibilita' package.
  * 
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
  *
  */
-
 @SuppressWarnings("serial")
 public class DatabaseConnectionException extends Exception {
 
 	/**
-	 * Costruttore a 0 args di DbCException.
+	 * Costruttore a 0 argomenti di DbCException.
 	 * Richiama il costruttore della classe Exception.
 	 */
 	DatabaseConnectionException() {
@@ -27,7 +26,7 @@ public class DatabaseConnectionException extends Exception {
 	 * Costruttore con messaggio di DbException.
 	 * Richiama il costruttore con messaggio della classe Exception.
 	 * 
-	 * @param message stringa contenente la descrizione dell'errore che l'eccezione modella.
+	 * @param message Stringa contenente la descrizione dell'errore che l'eccezione modella.
 	 */
 	DatabaseConnectionException(String message) {
 		
@@ -37,9 +36,10 @@ public class DatabaseConnectionException extends Exception {
 	/**
 	 * Sovrascrittura del metodo <code>toString()</code> di <code>Object</code>
 	 * 
-	 * @return una stringa contenente il nome dell'eccezione concatenato al messaggio, se c'�, o
+	 * @return una stringa contenente il nome dell'eccezione concatenato al messaggio, se c'e', o
 	 * 		   ad un messaggio generico.
 	 */
+	@Override
 	public String toString() {
 		
 		if (this.getMessage() == null ) {
