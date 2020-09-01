@@ -9,12 +9,12 @@ import utility.Keyboard;
 /**
  * Classe utilizzata per definire un client CLI che comunica con il server definito in map7Server.
  * 
- * L'unico elemento contenuto nella classe e' il metodo <code>main</code>.
+ * L'unico elemento contenuto nella classe e' il metodo <code>main</code>, che si occupa di mostrare
+ * all'utente le informazioni fornite dal server e comunicare le operazioni da effettuare.
  * 
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
  * 
  */
-
 public class MainTest {
 
 	/**
@@ -29,7 +29,7 @@ public class MainTest {
 	 * <li>la porta dove e' locato il server</li>
 	 * </ol>
 	 */
-	public static void main(String[] args){
+	public static void main(String[] args) {
 
 		InetAddress addr;
 
@@ -57,13 +57,13 @@ public class MainTest {
 		ObjectInputStream in = null;
 
 		/*
-		 * Viene inizializzata la socket di comunicazione con il client (e stram di input/output)
+		 * Viene inizializzata la socket di comunicazione con il client (e stream di input/output)
 		 * tramite gli argomenti forniti al client.
 		 */
 		try {
 			
 			socket = new Socket(args[0], Integer.parseInt(args[1]));
-			System.out.println(socket);		
+			System.out.println(socket);
 			out = new ObjectOutputStream(socket.getOutputStream());
 			in = new ObjectInputStream(socket.getInputStream());
 		} catch (UnknownHostException e) {
@@ -89,7 +89,7 @@ public class MainTest {
 		/*
 		 * L'utente puo' scegliere se generare un nuovo albero di regressione a
 		 * partire da un dataset presente nel database del server, o caricarne
-		 * uno già creato in precedenza dal server. La scelta e' identificata
+		 * uno gia' creato in precedenza dal server. La scelta e' identificata
 		 * da un intero.
 		 */
 		int decision = 0;
@@ -108,9 +108,9 @@ public class MainTest {
 		String tableName = "";
 		System.out.println("File name:");
 		tableName = Keyboard.readString();
-		
+
 		try {
-		
+
 			/*
 			 * Se l'utente vuole creare un  nuovo albero di regressione, viene inviato
 			 * l'intero 0 al server, che creera' un nuovo albero di regressione a partire
@@ -119,11 +119,10 @@ public class MainTest {
 			if (decision == 1) {
 				System.out.println("Starting data acquisition phase!");
 				
-				
 				out.writeObject(0);
 				out.writeObject(tableName);
 				answer = in.readObject().toString();
-				
+
 				/*
 				 * Se non sono stati sollevati problemi lato server, il client riceve
 				 * la stringa "OK". In caso di errore, viene stampato il messaggio ricevuto e
@@ -200,11 +199,12 @@ public class MainTest {
 					// In caso di mancato raggiungimento di un nodo foglia, viene stampato il messaggio inviato dal server
 					System.out.println(answer);
 				}
-			
+
 				// L'utente puo' ripetere l'esplorazione dell'albero
 				System.out.println("Would you repeat ? (y/n)");
 				risp = Keyboard.readChar();
 			} while (Character.toUpperCase(risp) == 'Y');
+
 			// Il client indica la sua chiusura al server scrivendo l'intero -1 sul socket
 			out.writeObject(-1);
 			

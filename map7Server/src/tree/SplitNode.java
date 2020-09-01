@@ -18,7 +18,7 @@ import server.UnknownValueException;
  *
  */
 @SuppressWarnings("serial")
-public abstract class SplitNode extends Node implements Comparable<SplitNode> {
+abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	
 	/**
 	 * Classe contenente informazioni che descrivono lo split effettuato nello SplitNode.
@@ -26,7 +26,8 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
 	 *
 	 */
-	 protected class SplitInfo implements Serializable {
+	class SplitInfo implements Serializable {
+
 
 		/**
 		 * Valore assunto dall'attributo di split dello SplitNode in una determinata
@@ -38,24 +39,24 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * Indice iniziale nella tabella contenente il sottoinsieme rappresentato da SplitNode
 		 * degli esempi aggregati in base al valore dell'attributo di split.
 		 */
-		int beginIndex;
+		private int beginIndex;
 		
 		/**
 		 * Indice finale nella tabella contenente il sottoinsieme rappresentato da SplitNode
 		 * degli esempi aggregati in base al valore dell'attributo di split.
 		 */
-		int endIndex;
+		private int endIndex;
 		
 		/**
 		 * Numero del nodo figlio di SplitNode rappresentato da SplitInfo.
 		 */
-		int numberChild;
+		private int numberChild;
 		
 		/**
 		 * Stringa contenente il simbolo della relazione fra i valori dell'attributo di split
 		 * rappresentati da un'istanza di SplitInfo, e i possibili valori dell'attributo di split.
 		 */
-		String comparator = "=";
+		private String comparator = "=";
 		
 		/**
 		 * Costruttore di SplitInfo.
@@ -66,7 +67,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * @param endIndex Indice finale nella tabella contenente il training set della porzione rappresentata.
 		 * @param numberChild Identificativo numerico del figlio di uno SplitNode rappresentato da SplitInfo. 
 		 */
-		SplitInfo(Object splitValue,int beginIndex,int endIndex,int numberChild) {
+		SplitInfo(Object splitValue, int beginIndex, int endIndex, int numberChild) {
 			
 			this.splitValue = splitValue;
 			this.beginIndex = beginIndex;
@@ -97,7 +98,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * 
 		 * @return L'indice iniziale del sottoinsieme associato a SplitInfo.
 		 */
-		int getBeginindex() {
+		protected int getBeginIndex() {
 
 			return beginIndex;			
 		}
@@ -118,7 +119,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * @return Il valore di split associata a SplitInfo (sotto forma di istanza di Object, in quanto
 		 * non si conosce a priori la natura dello split).
 		 */
-		 Object getSplitValue() {
+		Object getSplitValue() {
 
 			return splitValue;
 		}
@@ -126,7 +127,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 /**
 		 * Sovrascrittura del metodo <code>toString</code> di <code>Object</code>.
 		 * 
-		 * @return lo stato dell'oggetto sotto forma di stringa.
+		 * @return Lo stato dell'oggetto sotto forma di stringa.
 		 */
 		 @Override
 		 public String toString() {
@@ -154,7 +155,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	/**
 	 * Lista contenente informazioni sui nodi figli generati dallo split.
 	 */
-	ArrayList<SplitInfo> mapSplit;
+	protected ArrayList<SplitInfo> mapSplit;
 	
 	/**
 	 * Varianza dell'attributo target in relazione allo split eseguito su di un attributo
@@ -192,7 +193,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * @param endExampleIndex Indice finale nella tabella del sottoinsieme del training set rappresentato dallo SplitNode.
 	 * @param attribute Attributo su cui viene effettuato lo split.
 	 */
-	public SplitNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
+	SplitNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
 
 			super(trainingSet, beginExampleIndex, endExampleIndex);
 			this.attribute = attribute;
@@ -203,7 +204,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 			splitVariance = 0;
 			for (SplitInfo si : mapSplit) {
 
-				double localVariance = new LeafNode(trainingSet, si.getBeginindex(), si.getEndIndex()).getVariance();
+				double localVariance = new LeafNode(trainingSet, si.getBeginIndex(), si.getEndIndex()).getVariance();
 				splitVariance += (localVariance);
 			}
 	}
@@ -223,7 +224,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * 
 	 * @return La varianza dell'attributo target nel nodo di split.
 	 */
-	public double getVariance() {
+	double getVariance() {
 		
 		return splitVariance;
 	}
@@ -233,7 +234,7 @@ public abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 * 
 	 * @return Il numero di figli dello split (maggiore di 0).
 	 */
-	public int getNumberOfChildren() {
+	int getNumberOfChildren() {
 		 
 		return mapSplit.size();
 	}

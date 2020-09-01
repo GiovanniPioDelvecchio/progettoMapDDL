@@ -12,7 +12,7 @@ import data.TrainingDataException;
 import tree.RegressionTree;
 
 /**
- * Classe utilizzata per comunicare con un singolo Client su un Thread separato da quello principale.
+ * Classe utilizzata per comunicare con un singolo Client su di un Thread separato da quello principale.
  * 
  * Questa classe viene istanziata dal metodo <code>run()</code> di <code>MultiServer</code> quando un Client
  * vuole connettersi al Server. Il suo compito principale e' quello di comunicare con il Client ed effettuare
@@ -25,9 +25,19 @@ import tree.RegressionTree;
  */
 public class ServerOneClient extends Thread {
 
-	
+	/**
+	 * Socket utilizzata per la comunicazione con un client.
+	 */
 	private Socket socket;
+	
+	/**
+	 * Stream di Input su cui verranno ricevute le comunicazioni del Client. 
+	 */
 	private ObjectInputStream in;
+	
+	/**
+	 * Stream di Output su verranno inviate le comunicazioni al Client.
+	 */
 	private ObjectOutputStream out;
 	
 	/**
@@ -60,18 +70,20 @@ public class ServerOneClient extends Thread {
 	 * 
 	 * Si occupa di ricevere richieste dal Client e fornire i dati richiesti.
 	 * Ogni operazione e' identificata da un Integer, che viene letto e scritto tramite
-	 * gli ObjectInputStream/ObjectOutputStream.
+	 * gli ObjectInputStream e ObjectOutputStream.
 	 * 
 	 */
 	public void run() {
 
-		
 		Integer clientDecision = null;
 		RegressionTree tree = null;
 		
 		try {
 			
-			// Viene letta la prima scelta effettuata dall'utente tramite il Client
+			/*
+			 * Le prime operazioni fatte sono la lettura dell'intero rappresentante l'operazione
+			 * da effettuare (creazione o caricamento), e lettura della tabella contenente il dataset.
+			 */
 			clientDecision = (Integer) in.readObject();
 			String trainingfileName = (String) in.readObject();
 
@@ -83,10 +95,9 @@ public class ServerOneClient extends Thread {
 				try {
 
 					/*
-					 * E' stata letta dallo Stream la stringa contenente il nome della tabella SQL
-					 * contenente il dataset da cui creare l'albero di regressione.
+					 * Si istanziano quindi nuove istanze di Data e RegressionTree a partire dal
+					 * dataset specificato dall'utente.
 					 */
-
 					trainingSet = new Data(trainingfileName);
 					tree = new RegressionTree(trainingSet);
 
@@ -136,9 +147,8 @@ public class ServerOneClient extends Thread {
 				try {
 
 					/*
-					 * E'stata letta dal Client la stringa contenente il nome della tabella SQL di cui si era creato
-					 * l'albero di regressione in precedenza. L'utente non ha bisogno di inserire l'estenzione ".dmp"
-					 * nella stringa inserita.
+					 * Al nome della tabella fornita dall'utente, viene aggiunta l'estensione ".dmp", e successivamente viene
+					 * caricata l'istanza di RegressionTree serializzata in precedenza nel file da tale nome.
 					 */
 					tree = RegressionTree.carica(trainingfileName + ".dmp");
 				} catch (FileNotFoundException e) {
@@ -196,8 +206,6 @@ public class ServerOneClient extends Thread {
 					 * scritto sull ObjectOutputStream da parte del Server.
 					 */
 					out.writeObject(tree.predictClass(out, in));
-
-
 				} catch (UnknownValueException e) {
 
 					/*
