@@ -7,6 +7,7 @@ package server;
  * @author Domenico Dell'Olio, Giovanni Pio Delvecchio, Giuseppe Lamantea
  *
  */
+@SuppressWarnings("serial")
 public class UnknownValueException extends Exception {
 
 	/**
