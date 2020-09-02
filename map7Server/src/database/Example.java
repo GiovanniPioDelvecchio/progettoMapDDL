@@ -55,6 +55,12 @@ public class Example implements Comparable<Example>, Iterable<Object> {
 	 * @throws ClassCastException Lanciata se uno degli oggetti della tupla non implementa l'interfaccia
 	 * 		   <code>Comparable</code>.
 	 */
+	@SuppressWarnings("unchecked")
+	/**
+	 *  Il compilatore solleva un warning poiche' a causa dell'erasure non puo' controllare che "o" sia castabile
+	 *  a Comparable di Object ma solo a Comparable. Viene ignorato poiche' in realtà example puo' mantenere tipi
+	 *  diversi e pertanto il cast preciso non è fondamentale.
+	 */
 	public int compareTo(Example ex) {
 		
 		int i = 0;
@@ -63,7 +69,7 @@ public class Example implements Comparable<Example>, Iterable<Object> {
 
 			if (!o.equals(this.example.get(i))) {
 
-				return ((Comparable) o).compareTo(example.get(i));
+				return ((Comparable<Object>) o).compareTo(example.get(i));
 			}
 			
 			i++;
