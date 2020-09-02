@@ -154,7 +154,7 @@ abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	/**
 	 * Lista contenente informazioni sui nodi figli generati dallo split.
 	 */
-	protected ArrayList<SplitInfo> mapSplit;
+	ArrayList<SplitInfo> mapSplit;
 	
 	/**
 	 * Varianza dell'attributo target in relazione allo split eseguito su di un attributo
