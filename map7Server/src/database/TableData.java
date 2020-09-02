@@ -117,20 +117,22 @@ public class TableData {
 		
 		return transSet;
 	}
-
+	
 	/**
 	 * Metodo che restituisce l'insieme dei valori distinti che possono essere rinvenuti in una singola
 	 * colonna di una tabella di un database. Il risultato viene ottenuto eseguendo una <i>query</i> al database
 	 * per ottenere i valori distinti di quella specifica tabella.
 	 * 
 	 * @param table Stringa contenente il nome della tabella da cui ricavare i valori
-	 * @param column istanza di Column contenente il nome della colonna della tabella da 
+	 * @param column Istanza di Column contenente il nome della colonna della tabella da 
 	 * 		  cui ricavare i valori distinti
-	 *
-	 * @return Un <code>Set</code> di <code>Object</code> contenente i valori distinti assunti nell'attributo specificato nella tabella.
-	 * 		   Il <code>Set</code> ha i propri elementi ordinati in ordine ascendente.
 	 * 
-	 * @throws SQLException Lanciata se avviene un errore nell'esecuzione della <i>query</i>.
+	 * 
+	 * @return un <code>Set</code> di <code>Object</code> contenente i valori distinti assunti nell'attributo specificato nella tabella.
+	 * 		   Il <code>Set</code> ha i propri elementi ordinati in ordine ascendente.  
+	 * 
+	 * @throws SQLException Se avviene un errore nell'esecuzione della <i>query</i>.
+	 * @throws NullPointerException Se uno dei valori letti in una colonna a valori discreti e' <code>NULL</code>
 	 */
 	public Set<Object> getDistinctColumnValues(String table, Column column) throws SQLException {
 
@@ -146,7 +148,7 @@ public class TableData {
 		"SELECT DISTINCT " + colName + " " +
 		"FROM " + table);
 	
-		// Si controlla se la colonna è numerica e si leggono i valori di conseguenza
+		// Si controlla se la colonna e' numerica e si leggono i valori di conseguenza
 		if (numFlag) {
 
 			while (r.next()) {
@@ -166,6 +168,52 @@ public class TableData {
 		s.close();
 	
 		return queryResult;
+	}
+	
+	/**
+	 * Metodo per verificare che nella tabella non ci siano tuple con almeno un attributo nullo.
+	 * Tale metodo e' fondamentale poiche' la presenza di valori "NULL" puo' generare errori in altri metodi
+	 * o alterare i risultati delle operazioni eseguite sui valori nella tabella.
+	 * 
+	 * @param table Stringa contenente il nome della tabella in cui controllare la presenza di valori <code>NULL</code>
+	 * 
+	 * @return True se nella tabella table vi e' almeno una tupla con almeno un attributo avvalorato con <code>NULL</code>,
+	 * 		   False altrimenti.
+	 * 
+	 * @throws SQLException Se la tabella non e' stata trovata o in caso di errori durante la connessione al database.
+	 */
+	public boolean hasNull(String table) throws SQLException {
+		
+		boolean result;
+		TableSchema schema = new TableSchema(db, table);
+		if (schema.getNumberOfAttributes() == 0) {
+			
+			// Lancia una SQLException se la tabella non esiste (lo schema non ha colonne)
+			throw new SQLException();			
+		}
+
+		// Si costruisce la query in modo da contare le tuple con almeno un attributo nullo
+		StringBuffer query = new StringBuffer("SELECT COUNT(*) FROM " + table + " WHERE " +
+				schema.getColumn(0).getColumnName() + " IS NULL ");
+		
+		for (int i = 1; i < schema.getNumberOfAttributes(); i++) {
+			
+			query.append("OR " + schema.getColumn(i).getColumnName() + " IS NULL ");
+		}
+		
+		query.append(";");
+		
+		Statement s = db.getConnection().createStatement();
+		ResultSet r = s.executeQuery(query.toString());
+		// Si sposta il cursore sul risultato prodotto dalla count
+		r.next();
+		// Il risultato e' ottenuto confrontando il risultato del conteggio con 0
+		result = r.getInt("count(*)") != 0;
+		
+		// Chiude Statement e ResultSet una volta terminata la lettura
+		r.close();
+		s.close();
+		return result;
 	}
 	
 	/**

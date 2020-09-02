@@ -31,6 +31,12 @@ public class MainTest {
 	 */
 	public static void main(String[] args) {
 
+		@SuppressWarnings("unused")
+		/*
+		 * La seguente variabile viene utilizzata solamente per verificare che l'indirizzo passato
+		 * sia corretto, e non viene più utilizzata, pertanto il compilatore solleva un warning.
+		 * Quest'ultimo viene qui ignorato poiche' la variabile e il suo utilizzo sono stati forniti in principio così.
+		 */
 		InetAddress addr;
 
 		/*

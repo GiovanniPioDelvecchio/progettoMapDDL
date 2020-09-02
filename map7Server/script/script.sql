@@ -250,3 +250,17 @@ INSERT INTO few_attributes(c) VALUES
 	(3.666),
 	(9.0001),
 	(1.9);
+	
+CREATE TABLE null_values(
+	color char(1),
+	brand varchar(15),
+	wheels int,
+	horsepower int);
+
+INSERT INTO null_values(color,brand,wheels,horsepower) VALUES
+	('R', 'Bugatti', 4, 2000),
+	('R', null, 2, 500),
+	('B', 'Ferrari', 4, null),
+	('B', 'Fiat', null, null),
+	(null, 'Autobianchi', 4, 900),
+	('W', 'Ducati', 2, 850);

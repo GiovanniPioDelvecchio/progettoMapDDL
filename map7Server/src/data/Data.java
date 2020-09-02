@@ -53,8 +53,9 @@ public class Data {
 	 * 
 	 * @param tableName Stringa contenente il nome della tabella da cui inizializzare il training set.
 	 * 
-	 * @throws TrainingDataException Lanciata se vi e' un errore nella connessione alla base di dati, l'attributo target non e' dichiarato
-	 * come numerico o ha valori non accettabili, vi sono meno di due attributi o la tabella e' vuota o non presente.
+	 * @throws TrainingDataException viene lanciata se vi e' un errore nella connessione alla base di dati,
+	 * 		   l'attributo target non e' dichiarato come numerico o ha valori non accettabili,
+	 * 		   vi sono meno di due attributi o la tabella e' vuota, non presente o ha valori nulli.
 	 */
 	public Data(String tableName) throws TrainingDataException {
 
@@ -86,7 +87,7 @@ public class Data {
 			 */
 			if (schema.getNumberOfAttributes() == 0) {
 				
-				// schema e' restituito senza attributi se la tabella non esiste.
+				// Schema e' restituito senza attributi se la tabella non esiste.
 				throw new TrainingDataException("Table not found");
 			}
 			
@@ -101,8 +102,15 @@ public class Data {
 				// Si lancia un'eccezione se l'ultimo attributo (target) della tabella non e' numerico.
 				throw new TrainingDataException("Missing class attribute");
 			}
-
+			
+			if (data.hasNull(tableName)) {
+				
+				// Si lancia un'eccezione se vi e' una tupla con almeno un valore nullo
+				throw new TrainingDataException("The table has NULL values");
+			}
+			
 			int index = 0;
+			
 			for (Column c : schema) {
 
 				// per ogni colonna nello schema si crea il relativo attributo e lo si inserisce nell'explanatory set.
