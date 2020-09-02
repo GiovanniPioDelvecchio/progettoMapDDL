@@ -493,7 +493,7 @@ public class AppMain extends Application {
 			 */
 			@SuppressWarnings("unchecked")
 			// Il compilatore solleva un warning sul cast non sicuro (a causa dell'erasure).
-			// Viene ignorato poichè si e' certi di cio' che è stato memorizzato.
+			// Viene ignorato poiche' si e' certi di cio' che e' stato memorizzato.
 			ArrayList<MutableServerInformation> serializedServerList = (ArrayList<MutableServerInformation>) serversIn.readObject();
 
 			servers.clear();
@@ -545,7 +545,7 @@ public class AppMain extends Application {
 		TableColumn<ServerInformation, Integer> portCol = new TableColumn<ServerInformation, Integer>(Constants.COLUMN_PORT);
 		portCol.setCellValueFactory(new PropertyValueFactory<ServerInformation, Integer>("port"));
 		
-		// Infine vengono aggiunte le tabelle appena create alla TableView serverTable..
+		// Infine vengono aggiunte le tabelle appena create alla TableView serverTable.
 		serverTable.getColumns().add(idCol);
 		serverTable.getColumns().add(ipCol);
 		serverTable.getColumns().add(portCol);
@@ -992,7 +992,7 @@ public class AppMain extends Application {
 
 				// In caso di nodo di split vengono generati i pulsanti per la selezione
 				@SuppressWarnings("unchecked")
-				// Il compilatore solleva un warning sul cast non sicuro che può esser ignorato
+				// Il compilatore solleva un warning sul cast non sicuro che puo' esser ignorato
 				// in quanto si e' sicuri di ricevere dal server (nella versione apposita) un arrayList di stringhe
 				List<String> options = new ArrayList<String>((ArrayList<String>) in.readObject());
 				int i = 0;
