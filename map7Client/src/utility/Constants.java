@@ -24,13 +24,13 @@ public class Constants {
 	public static final String HELP_WINDOW_NAME = "Aiuto";
 	
 	// Path per le risorse utilizzate nel programma
-	public static final String PATH_CLIENT_ICON = "file:res/icon.png";
-	public static final String PATH_GEAR_ICON = "file:res/gear.png";
-	public static final String PATH_HELP_ICON = "file:res/questionMark.png";
-	public static final String PATH_THEME = "file:src/theme.css";
+	public static final String PATH_CLIENT_ICON = "images/icon.png";
+	public static final String PATH_GEAR_ICON = "images/gear.png";
+	public static final String PATH_HELP_ICON = "images/questionMark.png";
+	public static final String PATH_THEME = "theme.css";
 	public static final String PATH_SERVER_INFO = "servers.info";
-	public static final String PATH_WARNING_ICON = "file:res/warning.png";
-	public static final String PATH_ERROR_ICON = "file:res/error.png";
+	public static final String PATH_WARNING_ICON = "images/warning.png";
+	public static final String PATH_ERROR_ICON = "images/error.png";
 
 	// Contenuti dei pulsanti
 	public static final String BUTTON_OPTIONS = "Opzioni";

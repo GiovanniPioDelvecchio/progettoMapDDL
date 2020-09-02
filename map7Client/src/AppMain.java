@@ -113,7 +113,6 @@ public class AppMain extends Application {
 	@Override
 	public void start(Stage mainStage) {
 		
-
 		/** HOME **/
 		
 		BorderPane homePane = new BorderPane();
@@ -199,6 +198,7 @@ public class AppMain extends Application {
 		create.setOnAction(e -> {
 
 			try {
+
 				loadFlag = false;
 				connectToServer();
 				out.writeObject(Constants.CLIENT_CREATE);
