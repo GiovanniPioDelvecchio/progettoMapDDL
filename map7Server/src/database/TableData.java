@@ -135,6 +135,7 @@ public class TableData {
 	 * 		   Il <code>Set</code> ha i propri elementi ordinati in ordine ascendente.  
 	 * 
 	 * @throws SQLException Se avviene un errore nell'esecuzione della <i>query</i>.
+	 * @throws NullPointerException Se uno dei valori letti in una colonna a valori discreti e' <code>NULL</code>
 	 */
 	public Set<Object> getDistinctColumnValues(String table, Column column) throws SQLException {
 		
@@ -144,14 +145,14 @@ public class TableData {
 		Statement s = db.getConnection().createStatement();
 		boolean numFlag = column.isNumber();
 		String colName = column.getColumnName();
-
+		
 		// Si esegue la query per ottenere tutti gli elementi
 		ResultSet r = s.executeQuery(
 		"SELECT DISTINCT " + colName + " " +
 		"FROM " + table);
 	
-		// Si controlla se la colonna è numerica e si leggono i valori di conseguenza 
-		if (numFlag) { 
+		// Si controlla se la colonna e' numerica e si leggono i valori di conseguenza 
+		if (numFlag) {
 
 			
 			while (r.next()) {
@@ -172,6 +173,52 @@ public class TableData {
 	
 		return queryResult;
 
+	}
+	
+	/**
+	 * Metodo per verificare che nella tabella non ci siano tuple con almeno un attributo nullo.
+	 * Tale metodo e' fondamentale poiche' la presenza di valori "NULL" puo' generare errori in altri metodi
+	 * o alterare i risultati delle operazioni eseguite sui valori nella tabella.
+	 * 
+	 * @param table Stringa contenente il nome della tabella in cui controllare la presenza di valori <code>NULL</code>
+	 * 
+	 * @return True se nella tabella table vi e' almeno una tupla con almeno un attributo avvalorato con <code>NULL</code>,
+	 * 		   False altrimenti.
+	 * 
+	 * @throws SQLException Se la tabella non e' stata trovata o in caso di errori durante la connessione al database.
+	 */
+	public boolean hasNull(String table) throws SQLException {
+		
+		boolean result;
+		TableSchema schema = new TableSchema(db, table);
+		if (schema.getNumberOfAttributes() == 0) {
+			
+			// Lancia una SQLException se la tabella non esiste (lo schema non ha colonne)
+			throw new SQLException();			
+		}
+
+		// Si costruisce la query in modo da contare le tuple con almeno un attributo nullo
+		StringBuffer query = new StringBuffer("SELECT COUNT(*) FROM " + table + " WHERE " +
+				schema.getColumn(0).getColumnName() + " IS NULL ");
+		
+		for (int i = 1; i < schema.getNumberOfAttributes(); i++) {
+			
+			query.append("OR " + schema.getColumn(i).getColumnName() + " IS NULL ");
+		}
+		
+		query.append(";");
+		
+		Statement s = db.getConnection().createStatement();
+		ResultSet r = s.executeQuery(query.toString());
+		// Si sposta il cursore sul risultato prodotto dalla count
+		r.next();
+		// Il risultato e' ottenuto confrontando il risultato del conteggio con 0
+		result = r.getInt("count(*)") != 0;
+		
+		// Chiude Statement e ResultSet una volta terminata la lettura
+		r.close();
+		s.close();
+		return result;
 	}
 	
 	/**

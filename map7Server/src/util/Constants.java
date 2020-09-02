@@ -71,7 +71,7 @@ public class Constants {
 	public static final String ERROR_BAD_DISCRETE_VALUE_CAST = "Errore durante il casting di un valore discreto";
 	public static final String ERROR_EMPTY_TABLE = "Tabella vuota";
 	public static final String ERROR_DB_CONNECTION_CLOSING = "Errore durante la chiusura della connesione con il database";
-	
+	public static final String ERROR_NULL_VALUES = "La tabella presenta esempi con attributi non avvalorati";
 	
 	// ContinousNode
 	public static final String ERROR_BAD_TEST_CONDITION = "Si e' tentato di testare un nodo di split con "
