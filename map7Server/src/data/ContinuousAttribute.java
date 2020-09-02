@@ -1,7 +1,5 @@
 package data;
 
-import data.Attribute;
-
 /**
  * Classe creata per modellare un generico attributo continuo di un esempio.<br>
  * Per "attributo continuo" si intende dal dominio continuo (generalmente numerico).

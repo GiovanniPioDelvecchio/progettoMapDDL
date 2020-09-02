@@ -2,7 +2,6 @@ package tree;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 import data.Attribute;
 import data.Data;
