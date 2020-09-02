@@ -104,7 +104,7 @@ public class Data {
 				throw new TrainingDataException(Constants.ERROR_NO_CLASS_ATTRIBUTE);
 			}
 			
-			if(data.hasNull(tableName)) {
+			if (data.hasNull(tableName)) {
 				
 				// Si lancia un'eccezione se vi è una tupla con almeno un valore nullo
 				throw new TrainingDataException(Constants.ERROR_NULL_VALUES);

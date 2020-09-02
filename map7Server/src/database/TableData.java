@@ -135,7 +135,7 @@ public class TableData {
 	 * 		   Il <code>Set</code> ha i propri elementi ordinati in ordine ascendente.  
 	 * 
 	 * @throws SQLException Se avviene un errore nell'esecuzione della <i>query</i>.
-	 * @throws NullPointerException Se uno dei valori letti in una colonna a valori discreti è <code>NULL</code>
+	 * @throws NullPointerException Se uno dei valori letti in una colonna a valori discreti e' <code>NULL</code>
 	 */
 	public Set<Object> getDistinctColumnValues(String table, Column column) throws SQLException {
 		
@@ -177,15 +177,15 @@ public class TableData {
 	
 	/**
 	 * Metodo per verificare che nella tabella non ci siano tuple con almeno un attributo nullo.
-	 * Tale metodo è fondamentale poichè la presenza di valori "NULL" puo' generare errori in altri metodi
+	 * Tale metodo e' fondamentale poiche' la presenza di valori "NULL" puo' generare errori in altri metodi
 	 * o alterare i risultati delle operazioni eseguite sui valori nella tabella.
 	 * 
 	 * @param table Stringa contenente il nome della tabella in cui controllare la presenza di valori <code>NULL</code>
 	 * 
-	 * @return True se nella tabella table vi è almeno una tupla con almeno un attributo avvalorato con <code>NULL</code>,
+	 * @return True se nella tabella table vi e' almeno una tupla con almeno un attributo avvalorato con <code>NULL</code>,
 	 * 		   False altrimenti.
 	 * 
-	 * @throws SQLException Se la tabella non è stata trovata o in caso di errori durante la connessione al database.
+	 * @throws SQLException Se la tabella non e' stata trovata o in caso di errori durante la connessione al database.
 	 */
 	public boolean hasNull(String table) throws SQLException {
 		
@@ -201,7 +201,7 @@ public class TableData {
 		StringBuffer query = new StringBuffer("SELECT COUNT(*) FROM " + table + " WHERE " +
 				schema.getColumn(0).getColumnName() + " IS NULL ");
 		
-		for (int i=1; i<schema.getNumberOfAttributes(); i++) {
+		for (int i = 1; i < schema.getNumberOfAttributes(); i++) {
 			
 			query.append("OR " + schema.getColumn(i).getColumnName() + " IS NULL ");
 		}
