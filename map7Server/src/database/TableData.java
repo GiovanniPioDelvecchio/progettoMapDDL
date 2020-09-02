@@ -151,7 +151,7 @@ public class TableData {
 		"SELECT DISTINCT " + colName + " " +
 		"FROM " + table);
 	
-		// Si controlla se la colonna è numerica e si leggono i valori di conseguenza 
+		// Si controlla se la colonna e' numerica e si leggono i valori di conseguenza 
 		if (numFlag) {
 
 			

@@ -106,7 +106,7 @@ public class Data {
 			
 			if (data.hasNull(tableName)) {
 				
-				// Si lancia un'eccezione se vi è una tupla con almeno un valore nullo
+				// Si lancia un'eccezione se vi e' una tupla con almeno un valore nullo
 				throw new TrainingDataException(Constants.ERROR_NULL_VALUES);
 			}
 			
