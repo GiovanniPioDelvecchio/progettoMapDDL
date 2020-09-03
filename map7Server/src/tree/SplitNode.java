@@ -27,6 +27,7 @@ abstract class SplitNode extends Node implements Comparable<SplitNode> {
 	 */
 	class SplitInfo implements Serializable {
 
+
 		/**
 		 * Valore assunto dall'attributo di split dello SplitNode in una determinata
 		 * porzione di dataset.
