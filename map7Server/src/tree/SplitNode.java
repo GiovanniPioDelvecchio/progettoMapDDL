@@ -31,7 +31,7 @@ abstract class SplitNode extends Node implements Comparable<SplitNode> {
 		 * Valore assunto dall'attributo di split dello SplitNode in una determinata
 		 * porzione di dataset.
 		 */
-		Object splitValue;
+		private Object splitValue;
 		
 		/**
 		 * Indice iniziale nella tabella contenente il sottoinsieme rappresentato da SplitNode
