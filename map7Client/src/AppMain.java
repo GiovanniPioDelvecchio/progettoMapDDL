@@ -37,7 +37,7 @@ import utility.Constants;
 
 /**
  * Classe che si occupa dell'interfaccia grafica del lato Client.<br>
- * Tale classe sfrutta quanto messo a disposizione dalla libreria javafx, la quale e' <i>built-in</in> in Java 8.<br>
+ * Tale classe sfrutta quanto messo a disposizione dalla libreria javafx, la quale e' <i>built-in</i> in Java 8.<br>
  * Inoltre, <code>AppMain</code> gestisce anche la comunicazione via socket e permette il salvataggio
  * della lista dei server con cui il programma comunica. 
  * 
