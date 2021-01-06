@@ -5,7 +5,7 @@ Stile adottato:https://google.github.io/styleguide/javaguide.html#s4-formatting
 
 **Note del Redattore:**
 
-## Regole della casa (per il _Drip_ che costa tanto)
+## Regole della casa
 
   * Se il blocco è piccolo,la riga vuota solo dopo la segnatura
   
