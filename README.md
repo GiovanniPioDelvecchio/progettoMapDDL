@@ -13,6 +13,5 @@ Stile adottato:https://google.github.io/styleguide/javaguide.html#s4-formatting
   
   * Lasciare le dichiarazioni array _c-style_ (cioè le quadre come parte del nome es int pippo[] e non int[] pippo)
   
-  * Se non le seguite, vi piace il cazzo. (no homo)
   
 
